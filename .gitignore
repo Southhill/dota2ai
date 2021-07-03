@@ -40,7 +40,5 @@ luac.out
 *.hex
 
 LICENSE
-.vscode
 .DS_Store
 .idea
-

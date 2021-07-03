@@ -165,6 +165,10 @@ function M.ItemPurchase(ItemsToBuy)
 
 	M.SellExtraItem(ItemsToBuy)
 
+    function getCurrentHealthRate()
+        return npcBot:GetHealth() / npcBot:GetMaxHealth()
+    end
+
 	if npcBot:DistanceFromFountain()<=2500 or npcBot:GetHealth()/npcBot:GetMaxHealth()<=0.35
 	then
 		npcBot.secretShopMode = false

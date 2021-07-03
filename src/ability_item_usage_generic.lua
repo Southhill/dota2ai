@@ -5,6 +5,7 @@
 -------
 _G._savedEnv = getfenv()
 module("ability_item_usage_generic", package.seeall)
+
 local utility = require(GetScriptDirectory() .. "/utility")
 local Courier = dofile(GetScriptDirectory() .. "/util/CourierSystem")
 local ItemUsageSystem = dofile(GetScriptDirectory() .. "/util/ItemUsageSystem")

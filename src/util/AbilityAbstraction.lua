@@ -278,7 +278,7 @@ M.Distinct = function(self, tb, equals)
     return g
 end
 
-M.Reverse = function(self, tb) 
+M.Reverse = function(self, tb)
     local g = NewTable()
     for i = #tb, 1, -1 do
         table.insert(g, tb[i])
@@ -330,7 +330,7 @@ M.Repeat = function(self, element, count)
     for i = 1, count do
         table.insert(g, element)
     end
-    return g 
+    return g
 end
 
 M.Select = M.Map
@@ -374,14 +374,14 @@ M.IndexOf = function(self, tb, filter)
             end
         elseif filter ~= nil then
             if v == filter then
-                return k 
+                return k
             end
         end
     end
     return -1
 end
 
-M.Zip2 = function(self, tb1, tb2, map) 
+M.Zip2 = function(self, tb1, tb2, map)
     if map == nil then
         map = function(a, b)
             return {a, b}
@@ -405,7 +405,7 @@ M.Map2 = function(self, tb1, tb2, map)
     for i = 1, #tb1 do
         table.insert(g, map(tb1[i], tb2[i], i))
     end
-    return g 
+    return g
 end
 
 M.Filter2 = function(self, tb1, tb2, filter, map)
@@ -418,7 +418,7 @@ M.Filter2 = function(self, tb1, tb2, filter, map)
             table.insert(map(tb1[i], tb2[i], i))
         end
     end
-    return g 
+    return g
 end
 
 M.SlowSort = function(self, tb, sort)
@@ -573,7 +573,7 @@ end
 local function AddLinqFunctionsToMetatable(mt)
     for k, v in pairs(M) do
         mt[k] = function(...)
-            return v(M, ...) 
+            return v(M, ...)
         end
     end
     for functionName, func in pairs(table) do
@@ -1355,7 +1355,7 @@ M.IsChannelingAbility = function(self, npc)
 end
 
 function M:IsChannelingBreakWorthAbility(npc)
-    if not npc:IsChanneling() then 
+    if not npc:IsChanneling() then
         return false
     end
     local ability = npc:GetCurrentActiveAbility()
@@ -1447,7 +1447,7 @@ M.DetectIllusion = function(self, npcBot)
     nearbyEnemyGroups = self:Filter(nearbyEnemyGroups, function(t) return #t > 1 end)
     self:ForEach(nearbyEnemyGroups, function(nearbyEnemyGroup)
         local castingEnemies = self:Filter(nearbyEnemyGroup, function(t)
-            return (t:IsUsingAbility() or t:IsChanneling() or self:HasNonIllusionModifier(t) or t.markedAsRealHero) and not t.markedAsIllusion 
+            return (t:IsUsingAbility() or t:IsChanneling() or self:HasNonIllusionModifier(t) or t.markedAsRealHero) and not t.markedAsIllusion
         end)
         local castingEnemy = castingEnemies[1]
         if castingEnemy and not self:CanIllusionUseAbility(castingEnemy) then
@@ -1508,7 +1508,7 @@ function M:GetNearbyEnemyUnits(npc, range)
     local h3 = npc:GetNearbyCreeps(range, true)
     return self:Concat(h1, h3)
 end
-    
+
 
 M.GetEnemyHeroUnique = function(self, npcBot, enemies)
     local p = self:Filter(enemies, function(t) self:MayNotBeIllusion(npcBot, t) end)
@@ -1554,7 +1554,7 @@ end
 
 function M:GetMagicImmuneRemainingDuration(npc)
     local remainingTime = self:Map(self.magicImmuneModifiers, function(t) return { t, self:GetModifierRemainingDuration(npc, t)} end)
-    remainingTime = self:SortByMaxFirst(remainingTime, function(t) return t[2] end) 
+    remainingTime = self:SortByMaxFirst(remainingTime, function(t) return t[2] end)
     remainingTime = remainingTime[1]
     return remainingTime and remainingTime[2] or 0
 end
@@ -1814,7 +1814,7 @@ M.IsBoots = function(self, item)
 end
 
 M.SwapCheapestItemToBackpack = function(self, npc)
-    local cheapestItem = self:First(self:Sort(self:Filter(self:GetInventoryItems(npc), function(t) 
+    local cheapestItem = self:First(self:Sort(self:Filter(self:GetInventoryItems(npc), function(t)
         return not self:IsBoots(t) and not string.match(t:GetName(), "item_ward")
     end), function(a, b) return GetItemCost(a:GetName()) - GetItemCost(b:GetName()) end))
     if cheapestItem == nil then
@@ -2386,7 +2386,7 @@ M.GetLocationToLocationDistance = function(self, a, b)
 end
 
 function M:GetDegree(loc1, loc2)
-    local y = loc2.y-loc1.y 
+    local y = loc2.y-loc1.y
     local x = loc2.x-loc1.x
     return math.atan2(y, x) * 180 / math.pi
 end
@@ -2446,14 +2446,14 @@ M.MinValue = function(self, coefficients, min, max)
         for index, coefficient in pairs(coefficients) do
             g[index-1] = coefficient*index
         end
-        return g 
+        return g
     end
     local function Y(coefficients, x)
         local g = 0
         for index, coefficient in pairs(coefficients) do
             g = g + coefficient * x ^ index
         end
-        return g 
+        return g
     end
 
     local differential = Differential(coefficients)
@@ -2478,7 +2478,7 @@ M.MinValue = function(self, coefficients, min, max)
                 return math.min(val1, val2)
             end
         end
-    else 
+    else
         return Y(coefficients, min)
     end
 end
@@ -2497,7 +2497,7 @@ M.GetCollapseInfo = function(self, obj1, obj2, timeLimit)
     local coefficient0 = x1^2
     local coefficient1 = 2*x1*x2
     local coefficient3 = x2^2
-    x1 = obj1.location.y-obj2.location.y 
+    x1 = obj1.location.y-obj2.location.y
     x2 = obj2.velocity.y-obj2.velocity.y
     coefficient0 = coefficient0
 end
@@ -2627,7 +2627,7 @@ M.GetIllusionBattlePower = function(self, npc)
     if npc:HasModifier("modifier_special_bonus_mana_break") then-- mirana talent[5]
         t = t+0.04
     end
-    return t 
+    return t
 end
 
 M.GetNetWorth = function(self, npc, isEnemy)
@@ -2852,10 +2852,12 @@ function M:TickFromDota()
             error(coroutineResult[2])
         end
     end
+
     if dotaTimer == nil then
         dotaTimer = time
         return
     end
+
     if not FloatEqual(time, dotaTimer) then
         frameNumber = frameNumber + 1
         self:ForEach(slowFunctionRegistries, function(t) t(time - dotaTimer) end)
