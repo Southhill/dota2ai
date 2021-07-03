@@ -1,3 +1,4 @@
+<p align="center"><a href="./README_CN.md">中文</a> | <a href="./README.md">英文</a></p>
 # Enjoy Play AI
 该项目是基于Valve默认AI的改进的Dota2 Bot脚本。它能为无法在线游戏的玩家提供一个良好的练习环境，以提高自己的游戏水平。（中文说明在后面）
 ## 特性

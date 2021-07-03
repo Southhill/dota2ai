@@ -1,4 +1,4 @@
-<p style="text-align: center;"><a href="./README_CN.md">中文</a> | <a href="./README.md">英文</a></p>
+<p align ="center"><a href="./README_CN.md">中文</a> | <a href="./README.md">英文</a></p>
 
 # Enjoy Play AI
 This project is a improved Dota2 Bot script based on Valve's default AI. It can provide a good practice environment for players who cannot compete online, in order to improve their own game level.
