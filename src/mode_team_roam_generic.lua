@@ -357,7 +357,7 @@ function GetAllyFactor(npcAlly)
 	-- end
 
 	local factor = StateFactor * 0.7 + distFactor * 0.3
-	 --+powerFactor*0.4
+	--+powerFactor*0.4
 	return factor
 end
 

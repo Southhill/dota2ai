@@ -15,9 +15,10 @@ function M.SendVersionAnnouncement()
                 local npcBot = GetBot()
                 if (npcBot:GetPlayerID() == id) then
                     npcBot:ActionImmediate_Chat("don't worry, be happy!", true)
-                    npcBot:ActionImmediate_Chat("Welcome to Enjoy Play AI. The current version is " .. version ..
-                                                    ", updated on " .. updateDate, true)
-                    npcBot:ActionImmediate_Chat("Please use hard or unfair mode and do not play as Monkey king.", true)
+                    npcBot:ActionImmediate_Chat(
+                        "Welcome to Team Rhythm AI. The current version is " .. version .. ", updated on " .. updateDate,
+                        true
+                    )
                 end
 
                 return
