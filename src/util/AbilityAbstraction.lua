@@ -1,6 +1,6 @@
 local M = {}
 
-local binlib = require(GetScriptDirectory().."/util/BinDecHex")
+local binlib = require(GetScriptDirectory() .. "/util/BinDecHex")
 
 -- LINQ functions
 
@@ -13,7 +13,9 @@ end
 magicTable.__index = magicTable
 
 M.Range = function(self, min, max, step)
-    if step == nil then step = 1 end
+    if step == nil then
+        step = 1
+    end
     local g = NewTable()
     for i = min, max, step do
         table.insert(g, i)
@@ -22,7 +24,9 @@ M.Range = function(self, min, max, step)
 end
 
 M.Contains = function(self, tb, value, equals)
-    equals = equals or function(a, b) return a == b end
+    equals = equals or function(a, b)
+            return a == b
+        end
     for _, v in ipairs(tb) do
         if equals(v, value) then
             return true
@@ -32,7 +36,9 @@ M.Contains = function(self, tb, value, equals)
 end
 
 M.ContainsKey = function(self, tb, key, equals)
-    equals = equals or function(a, b) return a == b end
+    equals = equals or function(a, b)
+            return a == b
+        end
     for k, _ in pairs(tb) do
         if equals(key, k) then
             return true
@@ -79,9 +85,12 @@ M.Count = function(self, tb, filter)
 end
 
 function M:NonEmpty(self, tb)
-    return self:Filter(tb, function(t)
-        return t ~= nil and #t ~= 0
-    end)
+    return self:Filter(
+        tb,
+        function(t)
+            return t ~= nil and #t ~= 0
+        end
+    )
 end
 
 M.Map = function(self, tb, transform)
@@ -210,7 +219,7 @@ end
 
 M.Remove = function(self, a, b)
     local g = self:ShallowCopy(a)
-    for k,v in pairs(a) do
+    for k, v in pairs(a) do
         if v == b then
             g[k] = nil
         end
@@ -219,7 +228,7 @@ M.Remove = function(self, a, b)
 end
 M.RemoveAll = function(self, a, b)
     local g = NewTable()
-    for _,v in pairs(a) do
+    for _, v in pairs(a) do
         if not self:Contains(b, v) then
             table.insert(g, v)
         end
@@ -232,8 +241,12 @@ M.Prepend = function(self, a, b)
 end
 
 M.GroupBy = function(self, collection, keySelector, elementSelector, resultSelector, comparer)
-    comparer = comparer or function(a,b) return a==b end
-    resultSelector = resultSelector or function(key, value) return value end
+    comparer = comparer or function(a, b)
+            return a == b
+        end
+    resultSelector = resultSelector or function(key, value)
+            return value
+        end
     elementSelector = elementSelector or self.IdentityFunction
     local keys = NewTable()
     local values = NewTable()
@@ -248,7 +261,7 @@ M.GroupBy = function(self, collection, keySelector, elementSelector, resultSelec
         end
         if not keyFound then
             table.insert(keys, keySelector(k))
-            table.insert(values, { elementSelector(k) })
+            table.insert(values, {elementSelector(k)})
         end
     end
     return self:Map2(keys, values, resultSelector)
@@ -268,7 +281,9 @@ M.Partition = function(self, tb, filter)
 end
 
 M.Distinct = function(self, tb, equals)
-    equals = equals or function(a, b) return a == b end
+    equals = equals or function(a, b)
+            return a == b
+        end
     local g = NewTable()
     for _, v in pairs(tb) do
         if not self:Contains(g, v, equals) then
@@ -290,8 +305,12 @@ M.Last = function(self, tb, filter)
     return self:First(self:Reverse(tb), filter)
 end
 
-function M:Identity(t) return t end
-M.IdentityFunction = function(t) return t end
+function M:Identity(t)
+    return t
+end
+M.IdentityFunction = function(t)
+    return t
+end
 
 function M:Max(tb, map)
     if #tb == 0 then
@@ -410,7 +429,9 @@ end
 
 M.Filter2 = function(self, tb1, tb2, filter, map)
     if map == nil then
-        map = function(a,b,c) return {a,b,c} end
+        map = function(a, b, c)
+            return {a, b, c}
+        end
     end
     local g = NewTable()
     for i = 1, #tb1 do
@@ -425,16 +446,16 @@ M.SlowSort = function(self, tb, sort)
     local g = self:ShallowCopy(tb)
     local len = #g
     if sort ~= nil then
-        for i = 1, len-1 do
-            for j = i+1, len do
+        for i = 1, len - 1 do
+            for j = i + 1, len do
                 if sort(g[i], g[j]) > 0 then
                     g[i], g[j] = g[j], g[i]
                 end
             end
         end
     else
-        for i = 1, len-1 do
-            for j = i+1, len do
+        for i = 1, len - 1 do
+            for j = i + 1, len do
                 if g[i] > g[j] then
                     g[i], g[j] = g[j], g[i]
                 end
@@ -446,7 +467,9 @@ end
 
 M.MergeSort = function(self, tb, sort)
     if sort == nil then
-        sort = function(a, b) return a-b end
+        sort = function(a, b)
+            return a - b
+        end
     end
     local function Merge(a, b)
         local g = NewTable()
@@ -457,10 +480,10 @@ M.MergeSort = function(self, tb, sort)
         while i <= aLen and j <= bLen do
             if sort(a[i], b[j]) > 0 then
                 table.insert(g, b[j])
-                j = j+1
+                j = j + 1
             else
                 table.insert(g, a[i])
-                i = i+1
+                i = i + 1
             end
         end
         if i <= aLen then
@@ -480,8 +503,8 @@ M.MergeSort = function(self, tb, sort)
         if tableLength == 1 then
             return tab
         end
-        local left = SortRec(self:Take(tab, tableLength/2))
-        local right = SortRec(self:Skip(tab, tableLength/2))
+        local left = SortRec(self:Take(tab, tableLength / 2))
+        local right = SortRec(self:Skip(tab, tableLength / 2))
         local merge = Merge(left, right)
         return merge
     end
@@ -490,22 +513,34 @@ end
 
 M.Sort = M.SlowSort
 M.SortByMaxFirst = function(self, tb, map)
-    map = map or function(a, b) return b-a end
-    return self:Sort(tb, function(a, b)
-        return map(b) - map(a)
-    end)
+    map = map or function(a, b)
+            return b - a
+        end
+    return self:Sort(
+        tb,
+        function(a, b)
+            return map(b) - map(a)
+        end
+    )
 end
 M.SortByMinFirst = function(self, tb, map)
-    map = map or function(a, b) return a-b end
-    return self:Sort(tb, function(a, b)
-        return map(a) - map(b)
-    end)
+    map = map or function(a, b)
+            return a - b
+        end
+    return self:Sort(
+        tb,
+        function(a, b)
+            return map(a) - map(b)
+        end
+    )
 end
 
 function M:Remove_Modify(tb, item)
     local filter = item
     if type(item) ~= "function" then
-        filter = function(t) return t == item end
+        filter = function(t)
+            return t == item
+        end
     end
     local i = 1
     local d = #tb
@@ -563,7 +598,6 @@ function M:Let(tb, block)
     return block(tb)
 end
 
-
 -- function M:ClampGroup(tb, min, max)
 --     local vmin = math.min(tb)
 --     local vmax = math.max(tb)
@@ -610,12 +644,16 @@ M.TrimDesire = function(self, desire)
 end
 
 M.GetAbilityImportance = function(self, cooldown)
-    return Trim(cooldown/120, 0, 1)
+    return Trim(cooldown / 120, 0, 1)
 end
 
 M.IsFarmingOrPushing = function(self, npcBot)
     local mode = npcBot:GetActiveMode()
-    return mode==BOT_MODE_FARM or mode==BOT_MODE_PUSH_TOWER_BOT or mode==BOT_MODE_PUSH_TOWER_MID or mode==BOT_MODE_PUSH_TOWER_TOP or mode == BOT_MODE_DEFEND_TOWER_BOT or mode==BOT_MODE_DEFEND_TOWER_MID or mode==BOT_MODE_DEFEND_TOWER_TOP
+    return mode == BOT_MODE_FARM or mode == BOT_MODE_PUSH_TOWER_BOT or mode == BOT_MODE_PUSH_TOWER_MID or
+        mode == BOT_MODE_PUSH_TOWER_TOP or
+        mode == BOT_MODE_DEFEND_TOWER_BOT or
+        mode == BOT_MODE_DEFEND_TOWER_MID or
+        mode == BOT_MODE_DEFEND_TOWER_TOP
 end
 
 M.IsLaning = function(self, npcBot)
@@ -625,7 +663,8 @@ end
 
 M.IsAttackingEnemies = function(self, npcBot)
     local mode = npcBot:GetActiveMode()
-    return mode == BOT_MODE_ROAM or mode == BOT_MODE_TEAM_ROAM or mode == BOT_MODE_ATTACK or mode ==  BOT_MODE_DEFEND_ALLY
+    return mode == BOT_MODE_ROAM or mode == BOT_MODE_TEAM_ROAM or mode == BOT_MODE_ATTACK or
+        mode == BOT_MODE_DEFEND_ALLY
 end
 
 M.IsRetreating = function(self, npcBot)
@@ -640,7 +679,8 @@ M.HasEnoughManaToUseAttackAttachedAbility = function(self, npcBot, ability)
     if percent >= 0.8 and npcBot:GetMana() >= 650 then
         return true
     end
-    return percent >= 0.4 and npcBot:GetMana() >= 300 and npcBot:GetManaRegen() >= npcBot:GetAttackSpeed() / 100 * ability:GetManaCost() * 0.75
+    return percent >= 0.4 and npcBot:GetMana() >= 300 and
+        npcBot:GetManaRegen() >= npcBot:GetAttackSpeed() / 100 * ability:GetManaCost() * 0.75
 end
 
 -- function generator
@@ -701,7 +741,10 @@ M.PreventEnemyTargetAbilityUsageAtAbilityBlock = function(self, npcBot, oldConsi
             if target:HasModifier("modifier_antimage_counterspell") then
                 return 0
             end
-            if target:HasModifier "modifier_item_sphere" or target:HasModifier("modifier_roshan_spell_block") or target:HasModifier("modifier_special_bonus_spell_block") then -- qop lv 25
+            if
+                target:HasModifier "modifier_item_sphere" or target:HasModifier("modifier_roshan_spell_block") or
+                    target:HasModifier("modifier_special_bonus_spell_block")
+             then -- qop lv 25
                 if cooldown >= 30 then
                     desire = desire - abilityImportance
                 elseif cooldown <= 20 then
@@ -711,7 +754,7 @@ M.PreventEnemyTargetAbilityUsageAtAbilityBlock = function(self, npcBot, oldConsi
             if target:HasModifier("modifier_item_sphere_target") then
                 if cooldown >= 60 then
                     desire = 0
-                elseif cooldown >= 30  then
+                elseif cooldown >= 30 then
                     desire = desire - abilityImportance + 0.1
                 elseif cooldown <= 20 then
                     desire = desire + abilityImportance
@@ -724,11 +767,11 @@ M.PreventEnemyTargetAbilityUsageAtAbilityBlock = function(self, npcBot, oldConsi
                 if npcBot:GetActiveMode() == BOT_MODE_RETREAT then
                     desire = 0
                 else
-                    desire = desire - abilityImportance/2
+                    desire = desire - abilityImportance / 2
                 end
             end
             if target:HasModifier("modifier_mirror_shield_delay") then
-                desire = desire - abilityImportance*1.5
+                desire = desire - abilityImportance * 1.5
             end
 
             desire = self:TrimDesire(desire)
@@ -753,7 +796,11 @@ M.AddCooldownToChargeAbility = function(self, oldConsider, ability, abilityInfoT
         if not (ability:GetCurrentCharges() > 0 and ability:IsFullyCastable()) then
             return 0
         end
-        if DotaTime() <= abilityInfoTable.lastUsedTime + additionalCooldown and abilityInfoTable.lastUsedCharge >= ability:GetCurrentCharges() and abilityInfoTable.lastUsedRemainingCooldown <= ability:GetCooldownTimeRemaining() then
+        if
+            DotaTime() <= abilityInfoTable.lastUsedTime + additionalCooldown and
+                abilityInfoTable.lastUsedCharge >= ability:GetCurrentCharges() and
+                abilityInfoTable.lastUsedRemainingCooldown <= ability:GetCooldownTimeRemaining()
+         then
             return 0
         end
         return oldConsider()
@@ -763,11 +810,19 @@ end
 M.AutoModifyConsiderFunction = function(self, npcBot, considers, abilitiesReal)
     for index, ability in pairs(abilitiesReal) do
         if not binlib.Test(ability:GetBehavior(), ABILITY_BEHAVIOR_PASSIVE) and considers[index] == nil then
-            print("Missing consider function "..ability:GetName())
-        elseif binlib.Test(ability:GetTargetTeam(), ABILITY_TARGET_TEAM_ENEMY) and binlib.Test(ability:GetTargetType(), binlib.Or(ABILITY_TARGET_TYPE_HERO, ABILITY_TARGET_TYPE_CREEP, ABILITY_TARGET_TYPE_BUILDING)) and binlib.Test(ability:GetBehavior(), ABILITY_BEHAVIOR_UNIT_TARGET) then
+            print("Missing consider function " .. ability:GetName())
+        elseif
+            binlib.Test(ability:GetTargetTeam(), ABILITY_TARGET_TEAM_ENEMY) and
+                binlib.Test(
+                    ability:GetTargetType(),
+                    binlib.Or(ABILITY_TARGET_TYPE_HERO, ABILITY_TARGET_TYPE_CREEP, ABILITY_TARGET_TYPE_BUILDING)
+                ) and
+                binlib.Test(ability:GetBehavior(), ABILITY_BEHAVIOR_UNIT_TARGET)
+         then
             considers[index] = self.PreventAbilityAtIllusion(self, npcBot, considers[index], ability)
             if not self:IgnoreAbilityBlock(ability) then
-                considers[index] = self.PreventEnemyTargetAbilityUsageAtAbilityBlock(self, npcBot, considers[index], ability)
+                considers[index] =
+                    self.PreventEnemyTargetAbilityUsageAtAbilityBlock(self, npcBot, considers[index], ability)
             end
         end
     end
@@ -821,7 +876,7 @@ M.UndisjointableProjectiles = {
     "spectre_spectral_dagger",
     "tiny_toss",
     "tusk_snowball",
-    "witch_doctor_paralyzing_cask",
+    "witch_doctor_paralyzing_cask"
 }
 
 M.targetTrackingStunAbilities = {
@@ -835,7 +890,7 @@ M.targetTrackingStunAbilities = {
     "skeleton_king_hellfire_blast",
     "sven_storm_hammer",
     "vengefulspirit_magic_missile",
-    "windrunner_shackleshot",
+    "windrunner_shackleshot"
 }
 
 M.targetNonTrackingStunAbilities = {
@@ -853,7 +908,7 @@ M.targetNonTrackingStunAbilities = {
     "pudge_dismember",
     "rubick_telekinesis",
     "shadow_shaman_shackles",
-    "storm_spirit_electric_vortex",
+    "storm_spirit_electric_vortex"
 }
 
 M.targetStunAbilities = M:Concat(M.targetTrackingStunAbilities, M.targetNonTrackingStunAbilities)
@@ -884,14 +939,14 @@ M.locationStunAbilities = {
     "puck_dream_coil",
     "sand_king_burrowstrike",
     "slardar_slithereen_crush",
-    "tidehunter_ravage",
+    "tidehunter_ravage"
 }
 
 M.targetTrackingDisableAbilities = {
     "gleipnir_eternal_chains",
     "naga_siren_ensnare",
     "riki_sleeping_dart",
-    "viper_viper_strike",
+    "viper_viper_strike"
 }
 
 M.targetNonTrackingDisableAbilities = {
@@ -903,7 +958,7 @@ M.targetNonTrackingDisableAbilities = {
     "item_sheepstick",
     "lion_vex",
     "shadow_demon_purge",
-    "shadow_shaman_voodoo",
+    "shadow_shaman_voodoo"
 }
 
 M.targetDisableAbilities = M:Concat(M.targetNonTrackingStunAbilities, M.targetTrackingDisableAbilities)
@@ -916,7 +971,7 @@ M.locationDisableAbilities = {
     "drow_ranger_wave_of_silence",
     "elder_titan_echo_stomp",
     "invoker_deafening_wave",
-    "treant_overgrowth",
+    "treant_overgrowth"
 }
 
 M.targetTrackingHeavyDamageAbilities = {
@@ -924,7 +979,7 @@ M.targetTrackingHeavyDamageAbilities = {
     "lich_chain_frost",
     "lion_finger_of_death",
     "morphling_adaptive_strike_agi",
-    "sniper_assassinate",
+    "sniper_assassinate"
 }
 
 M.targetNonTrackingHeavyDamageAbilities = {
@@ -933,7 +988,7 @@ M.targetNonTrackingHeavyDamageAbilities = {
     "lina_laguna_blade",
     "pugna_life_drain",
     "tinker_laser",
-    "zuus_lightning_bolt",
+    "zuus_lightning_bolt"
 }
 
 M.targetHeavyDamageAbilities = M:Concat(M.targetTrackingHeavyDamageAbilities, M.targetNonTrackingHeavyDamageAbilities)
@@ -954,7 +1009,7 @@ M.locationHeavyDamageAbilities = {
     "queenofpain_sonic_wave",
     "sand_king_epicenter",
     "skywrath_mage_mystic_flare",
-    "venomancer_poison_nova",
+    "venomancer_poison_nova"
 }
 
 M.heavyDamageAbilities = M:Concat(M.targetTrackingHeavyDamageAbilities, M.locationHeavyDamageAbilities)
@@ -977,7 +1032,7 @@ M.invisibleModifiers = {
     "modifier_storm_wind_walk",
     "modifier_templar_assassin_meld",
     "modifier_visage_silent_as_the_grave",
-    "modifier_weaver_shukuchi",
+    "modifier_weaver_shukuchi"
 }
 
 M.phaseModifiers = {
@@ -996,7 +1051,7 @@ M.phaseModifiers = {
     "modifier_slardar_sprint",
     "modifier_storm_wind_walk",
     "modifier_templar_assassin_meld",
-    "modifier_weaver_shukuchi",
+    "modifier_weaver_shukuchi"
 }
 
 M.phaseUnits = {
@@ -1010,7 +1065,7 @@ M.phaseUnits = {
     "npc_dota_techies_land_mine",
     "npc_dota_techies_stasis_trap",
     "npc_dota_techies_remote_mine",
-    "npc_dota_weaver_swarm",
+    "npc_dota_weaver_swarm"
 }
 
 M.unobstructedMovementModifiers = {
@@ -1024,13 +1079,13 @@ M.unobstructedMovementModifiers = {
     "modifier_nyx_assassin_vendetta",
     "modifier_spectre_spectral_dagger_path_phased",
     "modifier_item_spider_legs_active",
-    "modifier_visage_silent_as_the_grave",
+    "modifier_visage_silent_as_the_grave"
 }
 
 M.flyingModifiers = {
     "modifier_rattletrap_jetpack",
     "modifier_night_stalker_darkness",
-    "modifier_winter_wyvern_arctic_burn_flight",
+    "modifier_winter_wyvern_arctic_burn_flight"
 }
 
 M.flyingUnits = {
@@ -1038,7 +1093,7 @@ M.flyingUnits = {
     "npc_dota_visage_familiar2",
     "npc_dota_visage_familiar3",
     "npc_dota_flying_courier",
-    "npc_dota_beastmaster_hawk",
+    "npc_dota_beastmaster_hawk"
 }
 
 M.positiveForceMovementModifiers = {
@@ -1056,14 +1111,14 @@ M.positiveForceMovementModifiers = {
     "modifier_snapfire_firesnap_cookie",
     "modifier_snapfire_gobble_up",
     "modifier_sand_king_burrowstrike",
-    "modifier_techies_suicide_leap",
+    "modifier_techies_suicide_leap"
 }
 
 M.timeSensitivePositiveModifiers = {
     "modifier_item_black_king_bar",
     "modifier_faceless_void_chronosphere_selfbuff",
     "modifier_medusa_stone_gaze",
-    "modifier_monkey_king_fur_army_soldier_in_position",
+    "modifier_monkey_king_fur_army_soldier_in_position"
 }
 -- sorted by importance, used by dispell abilities
 
@@ -1087,7 +1142,7 @@ M.basicDispellablePositiveModifiers = {
     "modifier_visage_silent_as_the_grave",
     "modifier_spirit_breaker_bulldoze",
     "modifier_item_spider_legs_active",
-    "modifier_item_bullwhip_buff",
+    "modifier_item_bullwhip_buff"
 }
 
 M.basicDispellWorthPositiveModifiers = {
@@ -1104,17 +1159,14 @@ M.basicDispellWorthPositiveModifiers = {
     "modifier_necrolyte_sadist_active",
     "modifier_pugna_decrepify",
     "modifier_item_ethereal_blade_ethereal",
-    "modifier_ghost_state",
+    "modifier_ghost_state"
 }
 
-M.basicDispellWorthNegativeModifiers = {
-    "modifier_abaddon_frostmourne_debuff_bonus",
-}
+M.basicDispellWorthNegativeModifiers = {"modifier_abaddon_frostmourne_debuff_bonus"}
 
 M.basicDispellableNegativeModifiers = {
     "modifier_abaddon_frostmourne_debuff",
-    "modifier_abaddon_frostmourne_debuff_bonus",
-
+    "modifier_abaddon_frostmourne_debuff_bonus"
 }
 
 M.unbreakableChannelAbilities = {
@@ -1122,37 +1174,37 @@ M.unbreakableChannelAbilities = {
     "pangolier_gyroshell",
     "lone_druid_true_form",
     "phoenix_supernova",
-    "lycan_shapeshift",
+    "lycan_shapeshift"
 }
 
 M.nonIllusionModifiers = {}
 
 M.valubleNeutrals = {
     "npc_dota_neutral_alpha_wolf",
-	"npc_dota_neutral_centaur_khan",
-	"npc_dota_neutral_polar_furbolg_ursa_warrior",
-	"npc_dota_neutral_dark_troll_warlord",
-	"npc_dota_neutral_mud_golem",
-	"npc_dota_neutral_satyr_hellcaller",
+    "npc_dota_neutral_centaur_khan",
+    "npc_dota_neutral_polar_furbolg_ursa_warrior",
+    "npc_dota_neutral_dark_troll_warlord",
+    "npc_dota_neutral_mud_golem",
+    "npc_dota_neutral_satyr_hellcaller"
 }
 
 M.valubleAncientNeutrals = {
     "npc_dota_neutral_black_dragon",
     "npc_dota_neutral_rock_golem",
-    "npc_dota_neutral_big_thunder_lizard",
+    "npc_dota_neutral_big_thunder_lizard"
 }
 
 M.hypnosisModifiers = {
     "modifier_lich_sinister_gaze",
     "modifier_void_spirit_aether_remnant_pull",
-    "modifier_keeper_of_the_light_will_o_wisp",
+    "modifier_keeper_of_the_light_will_o_wisp"
 }
 
 M.fearModifiers = {
     "modifier_dark_willow_debuff_fear",
     "modifier_lone_druid_savage_roar",
     "modifier_shadow_fiend_requiem_fear",
-    "modifier_terrorblade_fear",
+    "modifier_terrorblade_fear"
 }
 
 M.hexModifiers = {
@@ -1160,7 +1212,7 @@ M.hexModifiers = {
     "modifier_shadow_shaman_voodoo",
     "modifier_sheepstick_debuff",
     "modifier_item_princes_knife_hex",
-    "modifier_hexxed", -- dazzle_poison_touch lv 25
+    "modifier_hexxed" -- dazzle_poison_touch lv 25
 }
 
 M.silenceModifiers = {
@@ -1180,7 +1232,7 @@ M.silenceModifiers = {
     "modifier_riki_smoke_screen",
     "modifier_silencer_global_silence",
     "modifier_silencer_last_word",
-    "modifier_skywrath_mage_ancient_seal",
+    "modifier_skywrath_mage_ancient_seal"
 }
 
 M.timedSilenceModifiers = {
@@ -1196,7 +1248,7 @@ M.timedSilenceModifiers = {
     "modifier_orchid_malevolence_debuff",
     "modifier_silencer_global_silence",
     "modifier_silencer_last_word",
-    "modifier_skywrath_mage_ancient_seal",
+    "modifier_skywrath_mage_ancient_seal"
 }
 
 M.magicImmuneModifiers = {
@@ -1207,36 +1259,31 @@ M.magicImmuneModifiers = {
     "modifier_elder_titan_echo_stomp_magic_immune",
     "modifier_huskar_life_break_charge",
     "modifier_legion_commander_press_the_attack_immunity",
-    "modifier_lion_mana_drain_immunity",
+    "modifier_lion_mana_drain_immunity"
 }
 
-M.muteModifiers = {
-    "modifier_tusk_snowball",
-    "modifier_doom_bringer_doom",
-    "modifier_disruptor_static_storm_mute",
-}
+M.muteModifiers = {"modifier_tusk_snowball", "modifier_doom_bringer_doom", "modifier_disruptor_static_storm_mute"}
 
 M.breakModifiers = {
     -- "modifier_doom_bringer_doom",--only breaks with scepter
     "modifier_hoodwink_sharpshooter",
     "modifier_phantom_assassin_fan_of_knives",
     -- "modifier_shadow_demon_purge_slow",--only break with scepter
-    "modifier_silver_edge_debuff",
-    -- "modifier_spirit_breaker_greaterbash_break",--only break with shard
-    "modifier_viper_nethertoxin",
+    "modifier_silver_edge_debuff", -- "modifier_spirit_breaker_greaterbash_break",--only break with shard
+    "modifier_viper_nethertoxin"
 }
 -- TODO: how to record he caster of these abilities
 
 M.noTrueSightRootAbilityAssociation = {
     dark_willow_branble_maze = "modifier_dark_willow_bramble_maze",
-    item_diffusal_blade = "modifier_rooted", -- most people don't know diffusal blade apply root on non-hero units
+    item_diffusal_blade = "modifier_rooted" -- most people don't know diffusal blade apply root on non-hero units
 }
 
 M.conditionalTrueSightRootAbilityAssociation = {
     dark_troll_warlord_ensnare = "modifier_dark_troll_warlord_ensnare",
     ember_spirit_searing_chains = "modifier_ember_spirit_searing_chains",
     oracle_fortunes_end = "modifier_oracle_fortunes_end_purge",
-    item_rod_of_atos = "modifier_rod_of_atos_debuff",
+    item_rod_of_atos = "modifier_rod_of_atos_debuff"
 }
 
 M.permanentTrueSightRootAbilityAssociation = {
@@ -1248,26 +1295,49 @@ M.permanentTrueSightRootAbilityAssociation = {
     techies_stasis_trap = "modifier_techies_stasis_trap_stunned",
     treant_overgrowth = "modifier_treant_overgrowth",
     troll_warlord_berserkers_rage = "modifier_troll_warlord_berserkers_rage_ensnare",
-    abyssal_underlord_pit_of_malice = "modifier_abyssal_underlord_pit_of_malice_ensare",
+    abyssal_underlord_pit_of_malice = "modifier_abyssal_underlord_pit_of_malice_ensare"
 }
 
-M.rootAbilityAssociation = M:Concat(M.noTrueSightRootAbilityAssociation, M.conditionalTrueSightRootAbilityAssociation, M.permanentTrueSightRootAbilityAssociation)
+M.rootAbilityAssociation =
+    M:Concat(
+    M.noTrueSightRootAbilityAssociation,
+    M.conditionalTrueSightRootAbilityAssociation,
+    M.permanentTrueSightRootAbilityAssociation
+)
 
 local keysAfterAbilityInformation = M:Keys(M)
 local abilityInformationKeys = keysAfterAbilityInformation:RemoveAll(keysBeforeAbilityInformation)
-abilityInformationKeys:ForEach(function(t) setmetatable(M[t], magicTable) end)
-abilityInformationKeys = abilityInformationKeys:Filter(function(t) return t:match("AbilityAssociation") end)
+abilityInformationKeys:ForEach(
+    function(t)
+        setmetatable(M[t], magicTable)
+    end
+)
+abilityInformationKeys =
+    abilityInformationKeys:Filter(
+    function(t)
+        return t:match("AbilityAssociation")
+    end
+)
 
 local function ExtendAssociation(association)
-    return association:MapDic(function(key, value) return key end), association:Map(function(key, value) return value end):Distinct()
+    return association:MapDic(
+        function(key, value)
+            return key
+        end
+    ), association:Map(
+        function(key, value)
+            return value
+        end
+    ):Distinct()
 end
-abilityInformationKeys:ForEach(function(t)
-    local a, b = ExtendAssociation(M[t])
-    local k = t:sub(1, #t-#"AbilityAssociation")
-    M[k.."Abilities"] = a
-    M[k.."Modifiers"] = b
-end)
-
+abilityInformationKeys:ForEach(
+    function(t)
+        local a, b = ExtendAssociation(M[t])
+        local k = t:sub(1, #t - #"AbilityAssociation")
+        M[k .. "Abilities"] = a
+        M[k .. "Modifiers"] = b
+    end
+)
 
 -- unit function
 
@@ -1299,23 +1369,33 @@ end
 M.GetIncomingDodgeWorthProjectiles = function(self, npc)
     local health = npc:GetHealth()
     local projectiles = npc:GetIncomingTrackingProjectiles()
-    projectiles = self:Filter(projectiles, function(t)
-        if t.is_attack or npc:GetTeam() == t.caster:GetTeam() then
-            return false
-        end
-        local ability = t.ability
-        if ability then
-            local abilityName = ability:GetName()
-            if self:Contains(self.UndisjointableProjectiles, abilityName) then
+    projectiles =
+        self:Filter(
+        projectiles,
+        function(t)
+            if t.is_attack or npc:GetTeam() == t.caster:GetTeam() then
                 return false
             end
-            if self:Contains(self.targetTrackingStunAbilities, abilityName) or self:Contains(self.targetTrackingDisableAbilities, abilityName) or self:Contains(self.targetTrackingHeavyDamageAbilities, abilityName) or npc:GetHealth() <= npc:GetActualIncomingDamage(ability:GetAbilityDamage(), ability:GetDamageType()) then
-                return true
+            local ability = t.ability
+            if ability then
+                local abilityName = ability:GetName()
+                if self:Contains(self.UndisjointableProjectiles, abilityName) then
+                    return false
+                end
+                if
+                    self:Contains(self.targetTrackingStunAbilities, abilityName) or
+                        self:Contains(self.targetTrackingDisableAbilities, abilityName) or
+                        self:Contains(self.targetTrackingHeavyDamageAbilities, abilityName) or
+                        npc:GetHealth() <=
+                            npc:GetActualIncomingDamage(ability:GetAbilityDamage(), ability:GetDamageType())
+                 then
+                    return true
+                end
+                return false
             end
-            return false
+            return true
         end
-        return true
-    end)
+    )
     return projectiles
 end
 
@@ -1347,7 +1427,8 @@ M.GetTargetHealAmplifyPercent = function(self, npc)
 end
 
 M.IsChannelingItem = function(self, npc)
-    return npc:HasModifier("modifier_item_meteor_hammer") or npc:HasModifier("modifier_teleporting") or npc:HasModifier("modifier_boots_of_travel_incoming")
+    return npc:HasModifier("modifier_item_meteor_hammer") or npc:HasModifier("modifier_teleporting") or
+        npc:HasModifier("modifier_boots_of_travel_incoming")
 end
 
 M.IsChannelingAbility = function(self, npc)
@@ -1386,18 +1467,22 @@ end
 
 M.GetEnemyTeamMemberNames = function(self, npcBot)
     local enemies = self:GetEnemyHeroUnique(npcBot, GetUnitList(UNIT_LIST_ENEMY_HEROES))
-    return self:Map(enemies, function(t) return t:GetUnitName()  end)
+    return self:Map(
+        enemies,
+        function(t)
+            return t:GetUnitName()
+        end
+    )
 end
 
 M.enemyVisibleIllusionModifiers = {
-    "modifier_illusion",
-    -- "modifier_phantom_lancer_doppelwalk_illusion",
+    "modifier_illusion", -- "modifier_phantom_lancer_doppelwalk_illusion",
     -- "modifier_phantom_lancer_juxtapose_illusion",
     "modifier_terrorblade_conjureimage",
     "modifier_grimstroke_scepter_buff",
     "modifier_arc_warden_tempest_double",
     "modifier_skeleton_king_reincarnation_active",
-    "modifier_vengefulspirit_hybrid_special",
+    "modifier_vengefulspirit_hybrid_special"
 }
 
 M.MustBeIllusion = function(self, npcBot, target)
@@ -1415,7 +1500,9 @@ M.MustBeIllusion = function(self, npcBot, target)
     end
     return false
 end
-M.MayNotBeIllusion = function(self, npcBot, target) return not self:MustBeIllusion(npcBot, target) end
+M.MayNotBeIllusion = function(self, npcBot, target)
+    return not self:MustBeIllusion(npcBot, target)
+end
 
 function M:IsOnSameTeam(a, b)
     return a:GetTeam() == b:GetTeam()
@@ -1442,22 +1529,52 @@ end
 
 M.DetectIllusion = function(self, npcBot)
     local nearbyEnemies = self:GetNearbyNonIllusionHeroes(npcBot, 1599)
-    nearbyEnemies = self:Filter(nearbyEnemies, function(t) return string.match(t:GetUnitName(), "npc_dota_hero") end)
-    local nearbyEnemyGroups = self:GroupBy(nearbyEnemies, function(t) return t:GetUnitName() end)
-    nearbyEnemyGroups = self:Filter(nearbyEnemyGroups, function(t) return #t > 1 end)
-    self:ForEach(nearbyEnemyGroups, function(nearbyEnemyGroup)
-        local castingEnemies = self:Filter(nearbyEnemyGroup, function(t)
-            return (t:IsUsingAbility() or t:IsChanneling() or self:HasNonIllusionModifier(t) or t.markedAsRealHero) and not t.markedAsIllusion
-        end)
-        local castingEnemy = castingEnemies[1]
-        if castingEnemy and not self:CanIllusionUseAbility(castingEnemy) then
-            castingEnemy.markedAsRealHero = true
-            castingEnemies = self:Remove(nearbyEnemyGroup, castingEnemy)
-            self:ForEach(castingEnemies, function(t)
-                t.markedAsIllusion = true
-            end)
+    nearbyEnemies =
+        self:Filter(
+        nearbyEnemies,
+        function(t)
+            return string.match(t:GetUnitName(), "npc_dota_hero")
         end
-    end)
+    )
+    local nearbyEnemyGroups =
+        self:GroupBy(
+        nearbyEnemies,
+        function(t)
+            return t:GetUnitName()
+        end
+    )
+    nearbyEnemyGroups =
+        self:Filter(
+        nearbyEnemyGroups,
+        function(t)
+            return #t > 1
+        end
+    )
+    self:ForEach(
+        nearbyEnemyGroups,
+        function(nearbyEnemyGroup)
+            local castingEnemies =
+                self:Filter(
+                nearbyEnemyGroup,
+                function(t)
+                    return (t:IsUsingAbility() or t:IsChanneling() or self:HasNonIllusionModifier(t) or
+                        t.markedAsRealHero) and
+                        not t.markedAsIllusion
+                end
+            )
+            local castingEnemy = castingEnemies[1]
+            if castingEnemy and not self:CanIllusionUseAbility(castingEnemy) then
+                castingEnemy.markedAsRealHero = true
+                castingEnemies = self:Remove(nearbyEnemyGroup, castingEnemy)
+                self:ForEach(
+                    castingEnemies,
+                    function(t)
+                        t.markedAsIllusion = true
+                    end
+                )
+            end
+        end
+    )
 end
 
 M.GetNearbyHeroes = function(self, npcBot, range, getEnemy, botModeMask)
@@ -1477,11 +1594,19 @@ M.GetNearbyNonIllusionHeroes = function(self, npcBot, range, getEnemy, botModeMa
     end
     botModeMask = botModeMask or BOT_MODE_NONE
     local heroes = npcBot:GetNearbyHeroes(range, getEnemy, botModeMask)
-    return self:Filter(heroes, function(t) return self:MayNotBeIllusion(npcBot, t) end)
+    return self:Filter(
+        heroes,
+        function(t)
+            return self:MayNotBeIllusion(npcBot, t)
+        end
+    )
 end
 
 function M:AttackOnceDamage(npcBot, target)
-    return target:GetActualIncomingDamage(npcBot:GetAttackDamage() - npcBot:GetBaseDamageVariance()/2, DAMAGE_TYPE_PHYSICAL)
+    return target:GetActualIncomingDamage(
+        npcBot:GetAttackDamage() - npcBot:GetBaseDamageVariance() / 2,
+        DAMAGE_TYPE_PHYSICAL
+    )
 end
 
 function M:GetNearbyAttackableCreeps(npcBot, range, getEnemy)
@@ -1490,7 +1615,13 @@ function M:GetNearbyAttackableCreeps(npcBot, range, getEnemy)
     end
     local creeps = npcBot:GetNearbyCreeps(range, getEnemy)
     if getEnemy then
-        creeps = self:Filter(creeps, function(t) return t:HasModifier("modifier_fountain_glyph") end)
+        creeps =
+            self:Filter(
+            creeps,
+            function(t)
+                return t:HasModifier("modifier_fountain_glyph")
+            end
+        )
     end
     return creeps
 end
@@ -1509,9 +1640,14 @@ function M:GetNearbyEnemyUnits(npc, range)
     return self:Concat(h1, h3)
 end
 
-
 M.GetEnemyHeroUnique = function(self, npcBot, enemies)
-    local p = self:Filter(enemies, function(t) self:MayNotBeIllusion(npcBot, t) end)
+    local p =
+        self:Filter(
+        enemies,
+        function(t)
+            self:MayNotBeIllusion(npcBot, t)
+        end
+    )
     local g = NewTable()
     local readNames = NewTable()
     for _, enemy in pairs(p) do
@@ -1545,31 +1681,57 @@ M.imprisonmentModifier = {
     "modifier_shadow_demon_disruption",
     "modifier_obsidian_destroyer_astral_imprisonment_prison",
     "modifier_brewmaster_storm_cyclone",
-    "modifier_invoker_tornado",
-    --"modifier_x_marks_the_target",
+    "modifier_invoker_tornado" -- "modifier_x_marks_the_target",
 }
 M.GetImprisonmentRemainingDuration = function(self, npc)
-    return self:First(self:Map(self.imprisonmentModifier, function(t) return self:GetModifierRemainingDuration(npc, t)  end), function(t) return t ~= 0  end) or 0
+    return self:First(
+        self:Map(
+            self.imprisonmentModifier,
+            function(t)
+                return self:GetModifierRemainingDuration(npc, t)
+            end
+        ),
+        function(t)
+            return t ~= 0
+        end
+    ) or 0
 end
 
 function M:GetMagicImmuneRemainingDuration(npc)
-    local remainingTime = self:Map(self.magicImmuneModifiers, function(t) return { t, self:GetModifierRemainingDuration(npc, t)} end)
-    remainingTime = self:SortByMaxFirst(remainingTime, function(t) return t[2] end)
+    local remainingTime =
+        self:Map(
+        self.magicImmuneModifiers,
+        function(t)
+            return {t, self:GetModifierRemainingDuration(npc, t)}
+        end
+    )
+    remainingTime =
+        self:SortByMaxFirst(
+        remainingTime,
+        function(t)
+            return t[2]
+        end
+    )
     remainingTime = remainingTime[1]
     return remainingTime and remainingTime[2] or 0
 end
 
 function M:GetSilenceRemainingDuration(npc)
-    local silenceModifierRemainings = self:Map(self.timedSilenceModifiers, function(t)
-        return self:GetModifierRemainingDuration(npc, t)
-    end)
+    local silenceModifierRemainings =
+        self:Map(
+        self.timedSilenceModifiers,
+        function(t)
+            return self:GetModifierRemainingDuration(npc, t)
+        end
+    )
     if npc:HasModifier("modifier_disruptor_static_storm") then
         table.insert(silenceModifierRemainings, 1, 6)
     end
     if npc:HasModifier("modifier_enigma_black_hole_pull") or npc:HasModifier("modifier_riki_smoke_screen") then
         table.insert(silenceModifierRemainings, 1, 4)
     end
-    silenceModifierRemainings = #silenceModifierRemainings ~= 0 and math.max(self:Unpack(silenceModifierRemainings)) or 0
+    silenceModifierRemainings =
+        #silenceModifierRemainings ~= 0 and math.max(self:Unpack(silenceModifierRemainings)) or 0
     return silenceModifierRemainings
 end
 
@@ -1592,7 +1754,13 @@ function M:HasUnobstructedMovement(npc)
         end
         return true
     end
-    local activeFlyingModifiers = self:Filter(self.unobstructedMovementModifiers, function(t) return npc:HasModifier(t) end)
+    local activeFlyingModifiers =
+        self:Filter(
+        self.unobstructedMovementModifiers,
+        function(t)
+            return npc:HasModifier(t)
+        end
+    )
     if #activeFlyingModifiers ~= 0 then
         local dragonKnightDragonForm = self:IndexOf(activeFlyingModifiers, "modifier_dragon_knight_dragon_form")
         if dragonKnightDragonForm ~= -1 then
@@ -1623,8 +1791,8 @@ M.GetAvailableItem = function(self, npc, itemName)
     end
 end
 
-local radianceAncientLocation = Vector(-7200,-6666)
-local direAncientLocation = Vector(7137,6548)
+local radianceAncientLocation = Vector(-7200, -6666)
+local direAncientLocation = Vector(7137, 6548)
 
 M.GetAncientLocation = function(self, npc)
     if npc:GetTeam() == TEAM_RADIANT then
@@ -1654,32 +1822,32 @@ M.TryUseTp = function(self, npc)
 end
 
 M.GetAvailableBlink = function(self, npc)
-    local blinks = {
-        "item_blink",
-        "item_overwhelming_blink",
-        "item_swift_blink",
-        "item_arcane_blink",
-    }
-    return self:Aggregate(nil, blinks, function(a, blinkName)
-        return a or self:GetAvailableItem(npc, blinkName)
-    end)
+    local blinks = {"item_blink", "item_overwhelming_blink", "item_swift_blink", "item_arcane_blink"}
+    return self:Aggregate(
+        nil,
+        blinks,
+        function(a, blinkName)
+            return a or self:GetAvailableItem(npc, blinkName)
+        end
+    )
 end
 
 function M:GetAvailableTravelBoots(npc)
-    local travelBoots = {
-        "item_travel_boots",
-        "item_travel_boots_2",
-    }
-    return self:Aggregate(nil, travelBoots, function(seed, t)
-        return seed or self:GetAvailableItem(npc, t)
-    end)
+    local travelBoots = {"item_travel_boots", "item_travel_boots_2"}
+    return self:Aggregate(
+        nil,
+        travelBoots,
+        function(seed, t)
+            return seed or self:GetAvailableItem(npc, t)
+        end
+    )
 end
 
 M.GetEmptyInventorySlots = function(self, npc)
     local g = 0
     for i = 0, 5 do
         if npc:GetItemInSlot(i) == nil then
-            g = g+1
+            g = g + 1
         end
     end
     return g
@@ -1689,7 +1857,7 @@ M.GetEmptyItemSlots = function(self, npc)
     local g = 0
     for i = 0, 8 do
         if npc:GetItemInSlot(i) == nil then
-            g = g+1
+            g = g + 1
         end
     end
     return g
@@ -1699,14 +1867,14 @@ M.GetEmptyBackpackSlots = function(self, npc)
     local g = 0
     for i = 7, 9 do
         if npc:GetItemInSlot(i) == nil then
-            g = g+1
+            g = g + 1
         end
     end
     return g
 end
 
 M.SwapItemToBackpack = function(self, npc, itemIndex)
-    for i = 6,8 do
+    for i = 6, 8 do
         if npc:GetItemInSlot(i) == nil then
             npc:ActionImmediate_SwapItems(itemIndex, i)
             return true
@@ -1782,7 +1950,7 @@ function M:GetMyCourier(npcBot)
 end
 
 function M:FindCourier(npcBot)
-    for i = 0,4 do
+    for i = 0, 4 do
         local courier = GetCourier(i)
         if courier ~= nil then
             if courier:GetPlayerID() == npcBot:GetPlayerID() then
@@ -1810,13 +1978,25 @@ M.IsBoots = function(self, item)
     if type(item) ~= "string" then
         item = item:GetName()
     end
-    return string.match(item, "boots") or item == "item_guardian_greaves" or #item >= 17 and string.sub(item, 17) == "item_power_treads"
+    return string.match(item, "boots") or item == "item_guardian_greaves" or
+        #item >= 17 and string.sub(item, 17) == "item_power_treads"
 end
 
 M.SwapCheapestItemToBackpack = function(self, npc)
-    local cheapestItem = self:First(self:Sort(self:Filter(self:GetInventoryItems(npc), function(t)
-        return not self:IsBoots(t) and not string.match(t:GetName(), "item_ward")
-    end), function(a, b) return GetItemCost(a:GetName()) - GetItemCost(b:GetName()) end))
+    local cheapestItem =
+        self:First(
+        self:Sort(
+            self:Filter(
+                self:GetInventoryItems(npc),
+                function(t)
+                    return not self:IsBoots(t) and not string.match(t:GetName(), "item_ward")
+                end
+            ),
+            function(a, b)
+                return GetItemCost(a:GetName()) - GetItemCost(b:GetName())
+            end
+        )
+    )
     if cheapestItem == nil then
         return false
     end
@@ -1828,7 +2008,7 @@ M.SuitableForSilence = function(self, npc, target)
 end
 
 M.GetHeroFullName = function(self, s)
-    return "npc_dota_hero_"..s
+    return "npc_dota_hero_" .. s
 end
 M.GetHeroShortName = function(self, s)
     return string.sub(s, 12)
@@ -1837,11 +2017,17 @@ end
 M.IsMeleeHero = function(self, npc)
     local range = npc:GetAttackRange()
     local name = npc:GetUnitName()
-    return range <= 210 or name == self:GetHeroFullName("tiny") or name == self:GetHeroFullName("doom_bringer") or name == self:GetHeroFullName("pudge")
+    return range <= 210 or name == self:GetHeroFullName("tiny") or name == self:GetHeroFullName("doom_bringer") or
+        name == self:GetHeroFullName("pudge")
 end
 
 function M:HasAnyModifier(npc, modifierGroup)
-    return self:First(modifierGroup, function(t) return npc:HasModifier(t) end)
+    return self:First(
+        modifierGroup,
+        function(t)
+            return npc:HasModifier(t)
+        end
+    )
 end
 
 M.AttackPassiveAbilities = {
@@ -1849,13 +2035,9 @@ M.AttackPassiveAbilities = {
     "drow_ranger_frost_arrows",
     "clinkz_fire_arrows",
     "viper_poison_attack",
-    "obsidian_destroyer_arcane_orb",
+    "obsidian_destroyer_arcane_orb"
 }
-M.OtherIgnoreAbilityBlockAbilities = {
-    "batrider_flaming_lasso",
-    "gyrocopter_homing_missile",
-    "axe_culling_blade",
-}
+M.OtherIgnoreAbilityBlockAbilities = {"batrider_flaming_lasso", "gyrocopter_homing_missile", "axe_culling_blade"}
 M.IgnoreAbilityBlockAbilities = {
     "dark_seer_ion_shell",
     "grimstroke_soulbind",
@@ -1865,19 +2047,20 @@ M.IgnoreAbilityBlockAbilities = {
     "urn_of_shadows_soul_release",
     "spirit_vessel_soul_release",
     "medallion_of_courage_valor",
-    "solar_crest_armor_shine",
+    "solar_crest_armor_shine"
 }
 
 M.IgnoreAbilityBlock = function(self, ability)
     local abilityName = ability:GetName()
-    return self:Contains(self.AttackPassiveAbilities, abilityName) or self:Contains(self.IgnoreAbilityBlockAbilities, abilityName) or self:Contains(self.OtherIgnoreAbilityBlockAbilities, abilityName)
+    return self:Contains(self.AttackPassiveAbilities, abilityName) or
+        self:Contains(self.IgnoreAbilityBlockAbilities, abilityName) or
+        self:Contains(self.OtherIgnoreAbilityBlockAbilities, abilityName)
 end
 
 M.AbilityRetargetModifiers = {
     "modifier_antimage_counterspell",
     "modifier_item_lotus_orb_active",
-    "modifier_nyx_assassin_spiked_carapace",
-    -- "modifier_item_blade_mail",
+    "modifier_nyx_assassin_spiked_carapace" -- "modifier_item_blade_mail",
 }
 M.HasAbilityRetargetModifier = function(self, npc)
     return self:HasAnyModifier(npc, self.AbilityRetargetModifiers)
@@ -1889,11 +2072,11 @@ end
 
 function M:CannotMove(npc)
     return -- npc:IsStunned() or self:IsNightmared(npc) or --actually still able to cast abilities or move while stunned or nightmared, but provides no dfference
-            npc:IsRooted() or self:IsTaunted(npc)or self:IsHypnosed(npc) or self:IsFeared(npc)
+    npc:IsRooted() or self:IsTaunted(npc) or self:IsHypnosed(npc) or self:IsFeared(npc)
 end
 
 function M:CannotTeleport(npc)
-    return npc:IsRooted() or self:IsTaunted(npc)or self:IsHypnosed(npc) or self:IsFeared(npc)
+    return npc:IsRooted() or self:IsTaunted(npc) or self:IsHypnosed(npc) or self:IsFeared(npc)
 end
 
 function M:IsNightmared(npc)
@@ -1907,16 +2090,24 @@ end
 function M:IsDuelCaster(npc)
     local function IsTaunting(_npc)
         local ability = _npc:GetAbilityByName("legion_commander_duel")
-        return ability and ability:GetCooldownTimeRemaining() + self:GetModifierRemainingDuration(_npc, "modifier_legion_commander_duel") + 1 >= ability:GetCooldown()
+        return ability and
+            ability:GetCooldownTimeRemaining() +
+                self:GetModifierRemainingDuration(_npc, "modifier_legion_commander_duel") +
+                1 >=
+                ability:GetCooldown()
     end
     local npcBot = GetBot()
     if npcBot:GetTeam() == npc:GetTeam() then
         return IsTaunting(npc)
     else
         local players = self:Map(self:Range(0, 4), GetTeamMember)
-        local tauntingPlayer = self:First(players, function(t)
-            return IsTaunting(t) and t:GetAttackTarget() == npc
-        end)
+        local tauntingPlayer =
+            self:First(
+            players,
+            function(t)
+                return IsTaunting(t) and t:GetAttackTarget() == npc
+            end
+        )
         return not IsTaunting(tauntingPlayer)
     end
 end
@@ -1934,11 +2125,12 @@ function M:IsFeared(npc)
 end
 
 M.IsSeverelyDisabled = function(self, npc)
-    return npc:IsStunned() or npc:IsHexed() or npc:IsRooted() or self:IsFeared(npc) or self:IsHypnosed(npc)
-            or self:IsNightmared(npc)
-            or npc:HasModifier("modifier_legion_commander_duel") and not self:IsDuelCaster(npc) or npc:HasModifier("modifier_axe_berserkers_call")
-            or npc:HasModifier("modifier_shadow_demon_purge_slow")
-            or npc:HasModifier("modifier_doom_bringer_doom")
+    return npc:IsStunned() or npc:IsHexed() or npc:IsRooted() or self:IsFeared(npc) or self:IsHypnosed(npc) or
+        self:IsNightmared(npc) or
+        npc:HasModifier("modifier_legion_commander_duel") and not self:IsDuelCaster(npc) or
+        npc:HasModifier("modifier_axe_berserkers_call") or
+        npc:HasModifier("modifier_shadow_demon_purge_slow") or
+        npc:HasModifier("modifier_doom_bringer_doom")
 end
 
 M.IsSeverelyDisabledOrSlowed = function(self, npc)
@@ -1947,9 +2139,12 @@ end
 
 M.HasSeverelyDisableProjectiles = function(self, npc)
     local projectiles = self:GetIncomingDodgeableProjectiles(npc)
-    return self:Any(projectiles, function(t)
-        return self:Contains(self.targetTrackingStunAbilities, t.ability:GetName())
-    end)
+    return self:Any(
+        projectiles,
+        function(t)
+            return self:Contains(self.targetTrackingStunAbilities, t.ability:GetName())
+        end
+    )
 end
 
 M.IsOrGoingToBeSeverelyDisabled = function(self, npc)
@@ -1961,7 +2156,7 @@ M.EtherealModifiers = {
     "modifier_item_ethereal_blade_ethereal",
     "modifier_necrolyte_death_seeker",
     "modifier_necrolyte_sadist_active",
-    "modifier_pugna_decrepify",
+    "modifier_pugna_decrepify"
 }
 M.IsEthereal = function(self, npc)
     return self:HasAnyModifier(npc, self.EtherealModifiers)
@@ -1975,47 +2170,84 @@ M.CannotBeTargetted = function(self, npc)
     return self:HasAnyModifier(npc, self.CannotBeTargettedModifiers)
 end
 
-M.CanBeTargettedFunction = function(npc) return not M:CanBeTargetted(npc) end
+M.CanBeTargettedFunction = function(npc)
+    return not M:CanBeTargetted(npc)
+end
 
 M.CannotBeAttacked = function(self, npc)
     return self:IsEthereal(npc) or self:IsInvulnerable(npc) or self:CannotBeTargetted(npc)
 end
 
-M.CanBeAttackedFunction = function(npc) return not M:CanBeAttacked(npc) end
+M.CanBeAttackedFunction = function(npc)
+    return not M:CanBeAttacked(npc)
+end
 
 M.IsInvulnerable = function(self, npc)
-    return npc:IsInvulnerable() or self:Any(self.IgnoreDamageModifiers, function(t) return npc:HasModifier(t) end)
+    return npc:IsInvulnerable() or
+        self:Any(
+            self.IgnoreDamageModifiers,
+            function(t)
+                return npc:HasModifier(t)
+            end
+        )
 end
 
 M.MayNotBeSeen = function(self, npc)
-    if not npc:IsInvisible() or npc:HasModifier("modifier_item_dust") or npc:HasModifier("modifier_bounty_hunter_track") or npc:HasModifier("modifier_slardar_amplify_damage") or npc:HasModifier("modifier_truesight") then
+    if
+        not npc:IsInvisible() or npc:HasModifier("modifier_item_dust") or
+            npc:HasModifier("modifier_bounty_hunter_track") or
+            npc:HasModifier("modifier_slardar_amplify_damage") or
+            npc:HasModifier("modifier_truesight")
+     then
         return false
     end
     if self:HasAnyModifier(npc, self.permanentTrueSightRootModifiers) then
         return false
     end
     local enemies = self:GetNearbyHeroes(npc)
-    return self:All(enemies, function(t)
-        if t:HasItem("item_gem") then
-            return false
-        end
-        if t:GetAttackTarget() == npc then
-            return false
-        end
-        if t:IsUsingAbility() then
-            local ability = t:GetCurrentActiveAbility()
-            if binlib.Test(ability:GetBehavior(), ABILITY_BEHAVIOR_UNIT_TARGET) and t:IsFacingLocation(npc:GetLocation(), 10) then
+    return self:All(
+        enemies,
+        function(t)
+            if t:HasItem("item_gem") then
                 return false
             end
+            if t:GetAttackTarget() == npc then
+                return false
+            end
+            if t:IsUsingAbility() then
+                local ability = t:GetCurrentActiveAbility()
+                if
+                    binlib.Test(ability:GetBehavior(), ABILITY_BEHAVIOR_UNIT_TARGET) and
+                        t:IsFacingLocation(npc:GetLocation(), 10)
+                 then
+                    return false
+                end
+            end
+            return true
         end
-        return true
-    end) and not self:Any(npc:GetNearbyCreeps(1000, true), function(t)
-        return t:GetUnitName() == "npc_dota_necronomicon_warrior_3"
-    end)
+    ) and
+        not self:Any(
+            npc:GetNearbyCreeps(1000, true),
+            function(t)
+                return t:GetUnitName() == "npc_dota_necronomicon_warrior_3"
+            end
+        )
 end
 
 M.ShouldNotBeAttacked = function(self, npc)
-    return self:CannotBeAttacked(npc) or self:Any(self.IgnoreDamageModifiers, function(t) return npc:HasModifier(t) end) or self:Any(self.IgnorePhysicalDamageModifiers, function(t) return npc:HasModifier(t) end)
+    return self:CannotBeAttacked(npc) or
+        self:Any(
+            self.IgnoreDamageModifiers,
+            function(t)
+                return npc:HasModifier(t)
+            end
+        ) or
+        self:Any(
+            self.IgnorePhysicalDamageModifiers,
+            function(t)
+                return npc:HasModifier(t)
+            end
+        )
 end
 
 M.PhysicalCanCastFunction = function(npc)
@@ -2023,7 +2255,8 @@ M.PhysicalCanCastFunction = function(npc)
 end
 
 M.IsPhysicalOutputDisabled = function(self, npc)
-    return npc:IsDisarmed() or npc:IsBlind() and not npc:GetAvailableItem("item_monkey_king_bar") or self:IsEthereal(npc)
+    return npc:IsDisarmed() or npc:IsBlind() and not npc:GetAvailableItem("item_monkey_king_bar") or
+        self:IsEthereal(npc)
 end
 
 M.GetHealthPercent = function(self, npc)
@@ -2031,7 +2264,7 @@ M.GetHealthPercent = function(self, npc)
 end
 
 function M:GetPhysicalHealth(t)
-    return t:GetHealth() * (1+0.06*t:GetArmor()) / (1 - t:GetEvasion())
+    return t:GetHealth() * (1 + 0.06 * t:GetArmor()) / (1 - t:GetEvasion())
 end
 
 function M:GetBuildingPhysicalHealth(t)
@@ -2056,7 +2289,7 @@ end
 
 function M:GetTargetIfGood(npc)
     local target = npc:GetTarget()
-    if target~=nil and target:IsHero() and self:MayNotBeIllusion(npc, target) then
+    if target ~= nil and target:IsHero() and self:MayNotBeIllusion(npc, target) then
         return target
     end
 end
@@ -2071,36 +2304,51 @@ end
 -- end
 
 function M:IndexOfBasicDispellablePositiveModifier(npc)
-    return self:Aggregate(nil, self.basicDispellWorthPositiveModifiers, function(seed, modifier, index)
-        if seed then
-            return seed
+    return self:Aggregate(
+        nil,
+        self.basicDispellWorthPositiveModifiers,
+        function(seed, modifier, index)
+            if seed then
+                return seed
+            end
+            local b = npc:HasModifier(modifier)
+            if b then
+                return index
+            else
+                return nil
+            end
         end
-        local b = npc:HasModifier(modifier)
-        if b then
-            return index
-        else
-            return nil
-        end
-    end) or -1
+    ) or -1
 end
 
 function M:HasBasicDispellablePositiveModifier(npc)
-    return self:Any(self.basicDispellWorthPositiveModifiers, function(t) return t:HasModifier(t) end)
+    return self:Any(
+        self.basicDispellWorthPositiveModifiers,
+        function(t)
+            return t:HasModifier(t)
+        end
+    )
 end
 
 function M:DontInterruptAlly(npc)
-    return self:HasAnyModifier(npc, self.positiveForceMovementModifiers) or self:HasAnyModifier(npc, self.timeSensitivePositiveModifiers) or self:IsDuelCaster(npc)
+    return self:HasAnyModifier(npc, self.positiveForceMovementModifiers) or
+        self:HasAnyModifier(npc, self.timeSensitivePositiveModifiers) or
+        self:IsDuelCaster(npc)
 end
 
-M.MidLaneTowers = { TOWER_MID_1, TOWER_MID_2, TOWER_MID_3 }
-M.BotLaneTowers = { TOWER_BOT_1, TOWER_BOT_2, TOWER_BOT_3 }
-M.TopLaneTowers = { TOWER_TOP_1, TOWER_TOP_2, TOWER_TOP_3 }
+M.MidLaneTowers = {TOWER_MID_1, TOWER_MID_2, TOWER_MID_3}
+M.BotLaneTowers = {TOWER_BOT_1, TOWER_BOT_2, TOWER_BOT_3}
+M.TopLaneTowers = {TOWER_TOP_1, TOWER_TOP_2, TOWER_TOP_3}
 
 function M:GetLaningTower(npc)
     local team = npc:GetTeam()
     local lane = npc:GetAssignedLane()
-    local function ToTower(t) return GetTower(team, t) end
-    local function TowerExists(t) return t:GetHealth() > 0 end
+    local function ToTower(t)
+        return GetTower(team, t)
+    end
+    local function TowerExists(t)
+        return t:GetHealth() > 0
+    end
     if lane == LANE_BOT then
         local a = self:Map(self.BotLaneTowers, ToTower)
         return self:First(a, TowerExists)
@@ -2117,36 +2365,36 @@ M.DebugTable = function(self, tb)
     local msg = "{ "
     local DebugRec
     DebugRec = function(tc)
-        for k,v in pairs(tc) do
+        for k, v in pairs(tc) do
             if type(v) == "number" or type(v) == "string" then
-                msg = msg..k.." = "..v..", "
+                msg = msg .. k .. " = " .. v .. ", "
             elseif type(v) == "boolean" then
-                msg = msg..k.." = "..tostring(v)..", "
+                msg = msg .. k .. " = " .. tostring(v) .. ", "
             elseif type(v) == "table" then
-                msg = msg..k.." = ".."{ "
+                msg = msg .. k .. " = " .. "{ "
                 DebugRec(v)
-                msg = msg.."}, "
+                msg = msg .. "}, "
             end
         end
     end
     DebugRec(tb)
-    msg = msg.." }"
+    msg = msg .. " }"
     print(msg)
 end
 
 M.DebugLongTable = function(self, tb)
-    for k,v in pairs(tb) do
+    for k, v in pairs(tb) do
         if type(v) == "table" then
-            print(tostring(k).." = ")
+            print(tostring(k) .. " = ")
             self:DebugTable(v)
         else
-            print(tostring(k).." = "..tostring(v))
+            print(tostring(k) .. " = " .. tostring(v))
         end
     end
 end
 
 M.DebugArray = function(self, tb)
-    for k,v in ipairs(tb) do
+    for k, v in ipairs(tb) do
         if type(v) == "table" then
             self:DebugTable(v)
         else
@@ -2157,20 +2405,26 @@ end
 
 M.PrintAbilities = function(self, npcBot)
     local abilityNames = "{\n"
-    for i = 0,23 do
+    for i = 0, 23 do
         local ability = npcBot:GetAbilityInSlot(i)
         if ability ~= nil and ability:GetName() ~= "generic_hidden" then
-            abilityNames = abilityNames.."\t\""..ability:GetName().."\",\n"
+            abilityNames = abilityNames .. '\t"' .. ability:GetName() .. '",\n'
         end
     end
-    abilityNames = abilityNames.."}"
+    abilityNames = abilityNames .. "}"
     print(npcBot:GetUnitName())
     print(abilityNames)
 end
 
 -- ability function
 
-function M:NormalCanCast(target, isPureDamageWithoutDisable, damageType, pierceMagicImmune, targetMustBeSeen, mustBeTargettable)
+function M:NormalCanCast(
+    target,
+    isPureDamageWithoutDisable,
+    damageType,
+    pierceMagicImmune,
+    targetMustBeSeen,
+    mustBeTargettable)
     damageType = damageType or DAMAGE_TYPE_MAGICAL
     if pierceMagicImmune == nil then
         if damageType == DAMAGE_TYPE_MAGICAL then
@@ -2197,13 +2451,26 @@ function M:NormalCanCast(target, isPureDamageWithoutDisable, damageType, pierceM
     if targetMustBeSeen and not target:CanBeSeen() then
         return false
     end
-    if isPureDamageWithoutDisable and (damageType == DAMAGE_TYPE_PHYSICAL and self:ShouldNotBeAttacked(target) or damageType == DAMAGE_TYPE_MAGICAL and (target:IsMagicImmune() or self:Contains(self.IgnoreMagicalDamageModifiers, function(t) target:HasModifier(t) end))) then
+    if
+        isPureDamageWithoutDisable and
+            (damageType == DAMAGE_TYPE_PHYSICAL and self:ShouldNotBeAttacked(target) or
+                damageType == DAMAGE_TYPE_MAGICAL and
+                    (target:IsMagicImmune() or
+                        self:Contains(
+                            self.IgnoreMagicalDamageModifiers,
+                            function(t)
+                                target:HasModifier(t)
+                            end
+                        )))
+     then
         return false
     end
     return true
 end
 
-M.NormalCanCastFunction = function(target) return M:NormalCanCast(target) end
+M.NormalCanCastFunction = function(target)
+    return M:NormalCanCast(target)
+end
 
 function M:SpellCanCast(target, pierceMagicImmune, targetMustBeSeen, mustBeTargettable)
     if targetMustBeSeen == nil then
@@ -2224,7 +2491,9 @@ function M:SpellCanCast(target, pierceMagicImmune, targetMustBeSeen, mustBeTarge
     return true
 end
 
-M.SpellCanCastFunction = function(target) return M:SpellCanCast(target) end
+M.SpellCanCastFunction = function(target)
+    return M:SpellCanCast(target)
+end
 
 function M:AllyCanCast(target, pierceMagicImmune)
     if pierceMagicImmune == nil then
@@ -2233,10 +2502,11 @@ function M:AllyCanCast(target, pierceMagicImmune)
     return not target:IsInvulnerable() and not self:CannotBeTargetted(target)
 end
 
-M.AllyCanCastFunction = function(target) return M:AllyCanCast(target) end
+M.AllyCanCastFunction = function(target)
+    return M:AllyCanCast(target)
+end
 
 function M:NeutralCanCast(target)
-
 end
 
 function M:EnemyAllyCanCast(target, isPureDamageWithoutDisable, damageType, pierceMagicImmune, targetMustBeSeen)
@@ -2258,12 +2528,13 @@ M.IsTalent = function(self, ability)
     if type(ability) ~= "string" then
         ability = ability:GetName()
     end
-    return ability ~= "special_bonus_attributes" and #ability >= #self.TalentNamePrefix and string.sub(ability, 1, #self.TalentNamePrefix) == self.TalentNamePrefix
+    return ability ~= "special_bonus_attributes" and #ability >= #self.TalentNamePrefix and
+        string.sub(ability, 1, #self.TalentNamePrefix) == self.TalentNamePrefix
 end
 
 M.GetAbilities = function(self, npcBot)
     local g = NewTable()
-    for i = 0,25 do
+    for i = 0, 25 do
         local ability = npcBot:GetAbilityInSlot(i)
         if ability ~= nil and ability:GetName() ~= "generic_hidden" then
             table.insert(g, ability)
@@ -2273,11 +2544,21 @@ M.GetAbilities = function(self, npcBot)
 end
 
 M.GetAbilityNames = function(self, npcBot)
-    return self:Map(self:GetAbilities(npcBot), function(t) return t:GetName() end)
+    return self:Map(
+        self:GetAbilities(npcBot),
+        function(t)
+            return t:GetName()
+        end
+    )
 end
 
 M.GetTalents = function(self, npcBot)
-    return self:Filter(self:GetAbilities(npcBot), function(t) return self:IsTalent(t) end)
+    return self:Filter(
+        self:GetAbilities(npcBot),
+        function(t)
+            return self:IsTalent(t)
+        end
+    )
 end
 
 M.GetAbilityLevelUpIndex = function(self, npcBot)
@@ -2302,24 +2583,47 @@ M.FillInAbilities = function(self, npcBot, abilityTable)
             abilityTable[i] = self.SpecialBonusAttributes
         end
         if not self:Contains(abilities, abilityTable[i]) and abilityTable[i] ~= "talent" then
-            print("Bot script "..npcBot:GetUnitName().." contains incorrect ability name: "..abilityTable[i])
+            print("Bot script " .. npcBot:GetUnitName() .. " contains incorrect ability name: " .. abilityTable[i])
             abilityTable[i] = self.IncorrectAbilityName
         end
     end
     if #abilityTable == 30 then
         npcBot.abilityTable = abilityTable
-        abilityTable.incorrectAbilityLevelUpNumber = self:Count(abilityTable, function(ability, index)
-            return index < npcBot:GetLevel() - npcBot:GetAbilityPoints() + 1 and (ability == nil or not ability:CanAbilityBeUpgraded() or ability:GetName() == self.IncorrectAbilityName)
-        end)
+        abilityTable.incorrectAbilityLevelUpNumber =
+            self:Count(
+            abilityTable,
+            function(ability, index)
+                return index < npcBot:GetLevel() - npcBot:GetAbilityPoints() + 1 and
+                    (ability == nil or not ability:CanAbilityBeUpgraded() or
+                        ability:GetName() == self.IncorrectAbilityName)
+            end
+        )
         return
     end
 
-    local talents = self:Map(self:GetTalents(npcBot), function(t) return t:GetName()  end)
-    local levelUpTalents = self:Filter(abilityTable, function(t) return self:IsTalent(t) end)
+    local talents =
+        self:Map(
+        self:GetTalents(npcBot),
+        function(t)
+            return t:GetName()
+        end
+    )
+    local levelUpTalents =
+        self:Filter(
+        abilityTable,
+        function(t)
+            return self:IsTalent(t)
+        end
+    )
     local g = self:Concat(abilityTable, self:RemoveAll(talents, levelUpTalents))
-    g.incorrectAbilityLevelUpNumber = self:Count(g, function(ability, index)
-        return index < npcBot:GetLevel() - npcBot:GetAbilityPoints() + 1 and (ability == nil or not ability:CanAbilityBeUpgraded() or ability:GetName() == self.IncorrectAbilityName)
-    end)
+    g.incorrectAbilityLevelUpNumber =
+        self:Count(
+        g,
+        function(ability, index)
+            return index < npcBot:GetLevel() - npcBot:GetAbilityPoints() + 1 and
+                (ability == nil or not ability:CanAbilityBeUpgraded() or ability:GetName() == self.IncorrectAbilityName)
+        end
+    )
     npcBot.abilityTable = g
 end
 
@@ -2332,7 +2636,10 @@ M.ExecuteAbilityLevelUp = function(self, npcBot)
         abilityTable.justLevelUpAbility = false
     end
     abilityTable.abilityPoints = npcBot:GetAbilityPoints()
-    if npcBot:GetAbilityPoints() < 1 + abilityTable.incorrectAbilityLevelUpNumber or GetGameState() ~= GAME_STATE_PRE_GAME and GetGameState() ~= GAME_STATE_GAME_IN_PROGRESS then
+    if
+        npcBot:GetAbilityPoints() < 1 + abilityTable.incorrectAbilityLevelUpNumber or
+            GetGameState() ~= GAME_STATE_PRE_GAME and GetGameState() ~= GAME_STATE_GAME_IN_PROGRESS
+     then
         return
     end
     local abilityName = abilityTable[self:GetAbilityLevelUpIndex(npcBot)]
@@ -2346,29 +2653,38 @@ end
 -- geometry
 
 M.IsVector = function(self, object)
-    return type(object)=="userdata" and type(object.x)=="number" and type(object.y)=="number" and type(object.z)=="number"
+    return type(object) == "userdata" and type(object.x) == "number" and type(object.y) == "number" and
+        type(object.z) == "number"
 end
 M.ToStringVector = function(self, object)
-    return string.format("(%d,%d,%d)",object.x,object.y,object.z)
+    return string.format("(%d,%d,%d)", object.x, object.y, object.z)
 end
 
 M.GetLine = function(self, a, b)
     if a.x == b.x then
-        return { a = 1, b = 0, c = -a.x }
+        return {
+            a = 1,
+            b = 0,
+            c = -a.x
+        }
     end
-    local k = (a.y-b.y)/(a.x-b.x)
-    local bb = a.y-k*a.x
-    return { a = k, b = -1, c = bb }
+    local k = (a.y - b.y) / (a.x - b.x)
+    local bb = a.y - k * a.x
+    return {
+        a = k,
+        b = -1,
+        c = bb
+    }
 end
 
 M.GetPointToLineDistance = function(self, point, line)
-    local up = math.abs(line.a*point.x+line.b*point.y+line.c)
-    local down = math.sqrt(line.a*line.a+line.b*line.b)
-    return up/down
+    local up = math.abs(line.a * point.x + line.b * point.y + line.c)
+    local down = math.sqrt(line.a * line.a + line.b * line.b)
+    return up / down
 end
 
 M.GetPointToPointDistance = function(self, a, b)
-    return ((a.x-b.x)^2+(a.y-b.y)^2)^0.5
+    return ((a.x - b.x) ^ 2 + (a.y - b.y) ^ 2) ^ 0.5
 end
 
 -- Get the location on the line determined by startPoint and endPoint, with distance from startPoint to the target location
@@ -2379,19 +2695,19 @@ M.GetPointFromLineByDistance = function(self, startPoint, endPoint, distance)
 end
 
 M.GetCos = function(self, b, c, a)
-    return (b^2+c*2-a*2)/2/b/c
+    return (b ^ 2 + c * 2 - a * 2) / 2 / b / c
 end
 M.GetLocationToLocationDistance = function(self, a, b)
-    return ((a.x-b.x)^2+(a.y-b.y)^2)^0.5
+    return ((a.x - b.x) ^ 2 + (a.y - b.y) ^ 2) ^ 0.5
 end
 
 function M:GetDegree(loc1, loc2)
-    local y = loc2.y-loc1.y
-    local x = loc2.x-loc1.x
+    local y = loc2.y - loc1.y
+    local x = loc2.x - loc1.x
     return math.atan2(y, x) * 180 / math.pi
 end
 -- Find the location to use a aoe at a single target with the least distance the hero needs to walk before casting
---M.FindAOELocationAtSingleTarget = function(self, npcBot, target, radius, castRange, castPoint)
+-- M.FindAOELocationAtSingleTarget = function(self, npcBot, target, radius, castRange, castPoint)
 --    if self:CanMove(target) then
 --        radius = radius * 0.8
 --    end
@@ -2427,7 +2743,7 @@ end
 --        g = waypoints[#waypoints]
 --    end)
 --    return g
---end
+-- end
 M.FindAOELocationAtSingleTarget = function(self, npcBot, target, radius, castRange, castPoint)
     radius = radius - 80
     local distance = GetUnitToUnitDistance(npcBot, target)
@@ -2444,7 +2760,7 @@ M.MinValue = function(self, coefficients, min, max)
     local function Differential(coefficients)
         local g = {}
         for index, coefficient in pairs(coefficients) do
-            g[index-1] = coefficient*index
+            g[index - 1] = coefficient * index
         end
         return g
     end
@@ -2458,8 +2774,8 @@ M.MinValue = function(self, coefficients, min, max)
 
     local differential = Differential(coefficients)
     if differential[1] ~= nil and differential[1] ~= 0 then
-        local zeroPoint = -differential[0]/differential[1]
-        if Y(coefficients, zeroPoint+0.1)>0 then
+        local zeroPoint = -differential[0] / differential[1]
+        if Y(coefficients, zeroPoint + 0.1) > 0 then
             if zeroPoint > max then
                 return Y(coefficients, max)
             elseif zeroPoint < min then
@@ -2492,13 +2808,13 @@ M.MaxValue = function(self, coefficients, min, max)
 end
 
 M.GetCollapseInfo = function(self, obj1, obj2, timeLimit)
-    local x1 = obj1.location.x-obj2.location.x
-    local x2 = obj1.velocity.x-obj2.velocity.x
-    local coefficient0 = x1^2
-    local coefficient1 = 2*x1*x2
-    local coefficient3 = x2^2
-    x1 = obj1.location.y-obj2.location.y
-    x2 = obj2.velocity.y-obj2.velocity.y
+    local x1 = obj1.location.x - obj2.location.x
+    local x2 = obj1.velocity.x - obj2.velocity.x
+    local coefficient0 = x1 ^ 2
+    local coefficient1 = 2 * x1 * x2
+    local coefficient3 = x2 ^ 2
+    x1 = obj1.location.y - obj2.location.y
+    x2 = obj2.velocity.y - obj2.velocity.y
     coefficient0 = coefficient0
 end
 
@@ -2516,13 +2832,13 @@ M.PreventHealAtHealSuppressTarget = function(self, npcBot, oldConsiderFunction, 
     end
 end
 
-M.PURCHASE_ITEM_OUT_OF_STOCK=82
-M.PURCHASE_ITEM_INVALID_ITEM_NAME=33
-M.PURCHASE_ITEM_DISALLOWED_ITEM=78
-M.PURCHASE_ITEM_INSUFFICIENT_GOLD=63
-M.PURCHASE_ITEM_NOT_AT_SECRET_SHOP=62
-M.PURCHASE_ITEM_NOT_AT_HOME_SHOP=67
-M.PURCHASE_ITEM_SUCCESS=-1
+M.PURCHASE_ITEM_OUT_OF_STOCK = 82
+M.PURCHASE_ITEM_INVALID_ITEM_NAME = 33
+M.PURCHASE_ITEM_DISALLOWED_ITEM = 78
+M.PURCHASE_ITEM_INSUFFICIENT_GOLD = 63
+M.PURCHASE_ITEM_NOT_AT_SECRET_SHOP = 62
+M.PURCHASE_ITEM_NOT_AT_HOME_SHOP = 67
+M.PURCHASE_ITEM_SUCCESS = -1
 
 -- specified ability is not actually an ability (2)
 -- invalid order(3) unrecognised order name
@@ -2546,32 +2862,24 @@ M.PURCHASE_ITEM_SUCCESS=-1
 -- hero does not have enough ability points to upgrade ability (13)
 -- ability is hidden (60)
 
-
 M.IgnoreDamageModifiers = {
     "modifier_abaddon_borrowed_time",
     "modifier_item_aeon_disk_buff",
     "modifier_winter_wyvern_winters_curse",
     "modifier_winter_wyvern_winters_curse_aura",
-    "modifier_skeleton_king_reincarnation_scepter_active",
+    "modifier_skeleton_king_reincarnation_scepter_active"
 }
 
-M.CannotKillModifiers = {
-    "modifier_dazzle_shadow_grave",
-    "modifier_troll_warlord_battle_trance",
-}
+M.CannotKillModifiers = {"modifier_dazzle_shadow_grave", "modifier_troll_warlord_battle_trance"}
 
 M.CannotBeTargettedModifiers = {
     "modifier_slark_shadow_dance",
     "modifier_item_book_of_shadows",
-    "modifier_dark_willow_shadow_realm_buff",
+    "modifier_dark_willow_shadow_realm_buff"
 }
 
-M.IgnorePhysicalDamageModifiers = {
-    "modifier_winter_wyvern_cold_embrace",
-}
-M.IgnoreMagicalDamageModifiers = {
-    "modifier_oracle_fates_edict",
-}
+M.IgnorePhysicalDamageModifiers = {"modifier_winter_wyvern_cold_embrace"}
+M.IgnoreMagicalDamageModifiers = {"modifier_oracle_fates_edict"}
 
 M.LastForAtLeastSeconds = function(self, predicate, time, infoTable)
     if infoTable.lastTrueTime == nil then
@@ -2589,15 +2897,27 @@ M.LastForAtLeastSeconds = function(self, predicate, time, infoTable)
     end
 end
 
-M.GoodIllusionHero = {
-    "antimage","spectre","terrorblade","naga_siren",
-}
+M.GoodIllusionHero = {"antimage", "spectre", "terrorblade", "naga_siren"}
 M.ModerateIllusionHero = {
-    "abaddon","axe","chaos_knight","arc_warden","juggernaut","luna","medusa","morphling","phantom_lancer","sniper","wraith_king","phantom_assassin",
+    "abaddon",
+    "axe",
+    "chaos_knight",
+    "arc_warden",
+    "juggernaut",
+    "luna",
+    "medusa",
+    "morphling",
+    "phantom_lancer",
+    "sniper",
+    "wraith_king",
+    "phantom_assassin"
 }
 M.GetIllusionBattlePower = function(self, npc)
     local name = self:GetHeroShortName(npc:GetUnitName())
-    if npc:HasModifier("modifier_arc_warden_tempest_double") or npc:HasModifier("modifier_skeleton_king_reincarnation_active") then
+    if
+        npc:HasModifier("modifier_arc_warden_tempest_double") or
+            npc:HasModifier("modifier_skeleton_king_reincarnation_active")
+     then
         return 0.8
     end
     if npc:HasModifier("modifier_vengefulspirit_hybrid_special") then
@@ -2611,29 +2931,47 @@ M.GetIllusionBattlePower = function(self, npc)
     elseif t:IsRanged() then
         t = t + t:GetAttackRange() / 600
     end
-    local inventory = self:Map(self:GetInventoryItems(npc), function(t) return t:GetName() end)
+    local inventory =
+        self:Map(
+        self:GetInventoryItems(npc),
+        function(t)
+            return t:GetName()
+        end
+    )
     if self:Contains(inventory, "item_radiance") then
-        t = t+0.07
+        t = t + 0.07
     end
     if self:Contains(inventory, "item_diffusal_blade") then
-        t = t+0.05
+        t = t + 0.05
     end
     if self:Contains(inventory, "item_lesser_crit") then
-        t = t+0.04
+        t = t + 0.04
     end
     if self:Contains(inventory, "item_greater_crit") then
-        t = t+0.08
+        t = t + 0.08
     end
-    if npc:HasModifier("modifier_special_bonus_mana_break") then-- mirana talent[5]
-        t = t+0.04
+    if npc:HasModifier("modifier_special_bonus_mana_break") then -- mirana talent[5]
+        t = t + 0.04
     end
     return t
 end
 
 M.GetNetWorth = function(self, npc, isEnemy)
     if isEnemy then
-        local itemCost = self:Map(self:GetInventoryItems(npc), function(t) return GetItemCost(t:GetName()) end)
-        return self:Aggregate(0, itemCost, function(a, b) return a+b end)
+        local itemCost =
+            self:Map(
+            self:GetInventoryItems(npc),
+            function(t)
+                return GetItemCost(t:GetName())
+            end
+        )
+        return self:Aggregate(
+            0,
+            itemCost,
+            function(a, b)
+                return a + b
+            end
+        )
     else
         return npc:GetNetWorth()
     end
@@ -2652,7 +2990,7 @@ function M:GetBattlePower(npc)
         end
     elseif string.match(name, "npc_dota_lone_druid_bear") then
         local heroLevel = GetHeroLevel(npc:GetPlayerID())
-        power = name[#"npc_dota_lone_druid_bear"+1]*2000-1000
+        power = name[#"npc_dota_lone_druid_bear" + 1] * 2000 - 1000
         power = power + heroLevel * 250
         power = power + npc:GetNetWorth()
     end
@@ -2676,9 +3014,27 @@ end
 
 M.GetHeroGroupBattlePower = function(self, npcBot, heroes, isEnemy)
     local function A(tb)
-        local battlePowerMap = self:Map(tb, function(t) return { t:GetUnitName(), self:GetBattlePower(t) } end)
-        battlePowerMap = self:SortByMaxFirst(battlePowerMap, function(t) return t[2] end)
-        battlePowerMap = self:Map(battlePowerMap, function(t, index) return t[2] * (1.15-0.15*index) end)
+        local battlePowerMap =
+            self:Map(
+            tb,
+            function(t)
+                return {t:GetUnitName(), self:GetBattlePower(t)}
+            end
+        )
+        battlePowerMap =
+            self:SortByMaxFirst(
+            battlePowerMap,
+            function(t)
+                return t[2]
+            end
+        )
+        battlePowerMap =
+            self:Map(
+            battlePowerMap,
+            function(t, index)
+                return t[2] * (1.15 - 0.15 * index)
+            end
+        )
         local g = NewTable()
         for _, v in ipairs(battlePowerMap) do
             g[v[1]] = v[2]
@@ -2706,30 +3062,33 @@ M.GetHeroGroupBattlePower = function(self, npcBot, heroes, isEnemy)
 end
 
 M.Outnumber = function(self, npcBot, friends, enemies)
-    return self:GetHeroGroupBattlePower(npcBot, friends, false) >= self:GetHeroGroupBattlePower(npcBot, enemies, true) * 1.8
+    return self:GetHeroGroupBattlePower(npcBot, friends, false) >=
+        self:GetHeroGroupBattlePower(npcBot, enemies, true) * 1.8
 end
 
-
 M.CannotBeKilledNormally = function(self, target)
-    return target:IsInvulnerable() or self:Any(self.IgnoreDamageModifiers, function(t) target:HasModifier(t) end) or target:HasModifier("modifier_dazzle_shallow_grave")
+    return target:IsInvulnerable() or
+        self:Any(
+            self.IgnoreDamageModifiers,
+            function(t)
+                target:HasModifier(t)
+            end
+        ) or
+        target:HasModifier("modifier_dazzle_shallow_grave")
 end
 
 M.HasScepter = function(self, npc)
-    return npc:HasScepter() or npc:HasModifier("modifier_wisp_tether_scepter") or npc:HasModifier("modifier_item_ultimate_scepter") or npc:HasModifier("modifier_item_ultimate_scepter_consumed_alchemist")
+    return npc:HasScepter() or npc:HasModifier("modifier_wisp_tether_scepter") or
+        npc:HasModifier("modifier_item_ultimate_scepter") or
+        npc:HasModifier("modifier_item_ultimate_scepter_consumed_alchemist")
 end
 
 -- ability record
 
 local locationAOEAbilities = {
-    cone = {
-        "lina_dragon_slave",
-    },
-    circle = {
-        "lina_light_strike_array",
-    },
-    isoscelesTrapezoid = {
-        "kunkka_tidebringer",
-    },
+    cone = {"lina_dragon_slave"},
+    circle = {"lina_light_strike_array"},
+    isoscelesTrapezoid = {"kunkka_tidebringer"}
 }
 
 function M:RecordAbility(npc, index, target, castType, abilities)
@@ -2763,7 +3122,7 @@ end
 local frameNumber = 0
 local dotaTimer
 local function FloatEqual(a, b)
-    return math.abs(a-b)<0.000001
+    return math.abs(a - b) < 0.000001
 end
 
 -- tick
@@ -2782,10 +3141,10 @@ local everySecondsCallRegistry = NewTable()
 
 function M:EveryManySeconds(second, oldFunction)
     local functionName = tostring(oldFunction)
-    everySecondsCallRegistry[functionName.."lastCallTime"] = RandomFloat(0, second)
+    everySecondsCallRegistry[functionName .. "lastCallTime"] = RandomFloat(0, second)
     return function(...)
-        if everySecondsCallRegistry[functionName.."lastCallTime"] <= DotaTime() - second then
-            everySecondsCallRegistry[functionName.."lastCallTime"] = DotaTime()
+        if everySecondsCallRegistry[functionName .. "lastCallTime"] <= DotaTime() - second then
+            everySecondsCallRegistry[functionName .. "lastCallTime"] = DotaTime()
             return oldFunction(...)
         else
             return defaultReturn
@@ -2796,7 +3155,7 @@ end
 local singleForTeamRegistry = NewTable()
 
 function M:SingleForTeam(oldFunction)
-    local functionName = tostring(oldFunction)..GetTeam()
+    local functionName = tostring(oldFunction) .. GetTeam()
     return function(...)
         if singleForTeamRegistry[functionName] ~= frameNumber then
             singleForTeamRegistry[functionName] = frameNumber
@@ -2824,7 +3183,10 @@ end
 local groupAnnounceTimes1 = 0
 function M:AnnounceGroups1(npcBot)
     if groupAnnounceTimes1 == 0 then
-        npcBot:ActionImmediate_Chat("Thanks for choosing RMM AI. Join our new discord group at https://discord.gg/Agd632pvhA to put suggestions or devloping issues!", true)
+        npcBot:ActionImmediate_Chat(
+            "Thanks for choosing RMM AI. Join our new discord group at https://discord.gg/Agd632pvhA to put suggestions or devloping issues!",
+            true
+        )
         groupAnnounceTimes1 = 1
     end
 end
@@ -2847,7 +3209,7 @@ local coroutineExempt = NewTable()
 function M:TickFromDota()
     local time = DotaTime()
     local function ResumeCoroutine(thread)
-        local coroutineResult = { coroutine.resume(thread[1], time - dotaTimer) }
+        local coroutineResult = {coroutine.resume(thread[1], time - dotaTimer)}
         if not coroutineResult[1] then
             error(coroutineResult[2])
         end
@@ -2860,20 +3222,28 @@ function M:TickFromDota()
 
     if not FloatEqual(time, dotaTimer) then
         frameNumber = frameNumber + 1
-        self:ForEach(slowFunctionRegistries, function(t) t(time - dotaTimer) end)
+        self:ForEach(
+            slowFunctionRegistries,
+            function(t)
+                t(time - dotaTimer)
+            end
+        )
         local threadIndex = 1
         while threadIndex <= #coroutineRegistry do
             local t = coroutineRegistry[threadIndex]
             local exemptIndex
             local exempt
-            self:ForEach(coroutineExempt, function(exemptPair, index)
-                if exemptPair[1] == t then
-                    if exemptPair[2] == frameNumber then
-                        exempt = true
+            self:ForEach(
+                coroutineExempt,
+                function(exemptPair, index)
+                    if exemptPair[1] == t then
+                        if exemptPair[2] == frameNumber then
+                            exempt = true
+                        end
+                        exemptIndex = index
                     end
-                    exemptIndex = index
                 end
-            end)
+            )
             if exemptIndex then
                 table.remove(coroutineExempt, exemptIndex)
             end
@@ -2908,7 +3278,7 @@ function M:ResumeUntilReturn(func)
     local g = NewTable()
     local thread = coroutine.create(func)
     while true do
-        local values = { coroutine.resume(thread) }
+        local values = {coroutine.resume(thread)}
         if values[1] then
             table.remove(values, 1)
             table.insert(g, values)
@@ -2938,7 +3308,12 @@ function M:WaitForSeconds(seconds)
 end
 
 function M:StopCoroutine(thread)
-    self:Remove_Modify(coroutineExempt, function(t) return t[1] == thread end)
+    self:Remove_Modify(
+        coroutineExempt,
+        function(t)
+            return t[1] == thread
+        end
+    )
     self:Remove_Modify(coroutineRegistry, thread)
 end
 
@@ -2947,7 +3322,7 @@ end
 
 local function GetDataFromAbility(ability, valueName)
     local a = ability:GetSpecialValueInt(valueName)
-    return a==0 and ability:GetSpecialValueFloat(valueName) or a
+    return a == 0 and ability:GetSpecialValueFloat(valueName) or a
 end
 
 local function Append__Index(tb, __index)
@@ -2961,7 +3336,7 @@ local function Append__Index(tb, __index)
         m.__index = __index
     elseif type(oldIndex) == "function" then
         m.__index = function(ability, i)
-            local oldResult = { oldIndex(ability, i) }
+            local oldResult = {oldIndex(ability, i)}
             if oldResult[1] == nil then
                 return __index(ability, i)
             else
@@ -2971,7 +3346,7 @@ local function Append__Index(tb, __index)
     elseif type(oldIndex) == "table" then
         if oldIndex == m then
             m.__index = function(g, h)
-                local newResult = { __index(g, h) }
+                local newResult = {__index(g, h)}
                 if newResult[1] == nil then
                     return oldIndex[h]
                 else
@@ -2986,7 +3361,7 @@ end
 Append__Index(CDOTABaseAbility_BotScript, GetDataFromAbility)
 
 function M:pcall(func, ...)
-    local result = { func(...) }
+    local result = {func(...)}
     if result[1] then
         table.remove(result, 1)
         return self:Unpack(result)
