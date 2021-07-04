@@ -619,7 +619,7 @@ function AllPickLogic()
 		selectedHeroes[hero] = true
 	end
 
-	if (debugMode == false) then
+	if (not debugMode) then
 		for i, id in pairs(GetTeamPlayers(team)) do
 			if
 				(IsPlayerInHeroSelectionControl(id) and IsPlayerBot(id) and
