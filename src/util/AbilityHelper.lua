@@ -11,6 +11,7 @@ M.const = {
 
 function M.checkAbilityBuild(abilityTree)
     local npcBot = GetBot()
+
     if #abilityTree > 26 - npcBot:GetLevel() then
         local level = npcBot:GetLevel()
         for _ = 1, level do

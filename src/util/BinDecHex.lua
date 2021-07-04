@@ -48,7 +48,8 @@
 
 /* Thanks to Bernard Clabots for string.gfind to make forward compatible to Lua 5.2 */
 
---]] module(..., package.seeall);
+--]]
+module(..., package.seeall)
 
 string.gfind = string.gfind or string.gmatch
 
@@ -110,7 +111,6 @@ local dec2hex = {
 	["15"] = "F"
 	}
 --]]
-
 -- These functions are big-endian and take up to 32 bits
 
 -- Hex2Bin
@@ -121,7 +121,6 @@ local dec2hex = {
 -- Dec2Bin
 
 function Hex2Bin(s)
-
     -- s	-> hexadecimal string
 
     local ret = ""
@@ -131,14 +130,12 @@ function Hex2Bin(s)
         i = string.lower(i)
 
         ret = ret .. hex2bin[i]
-
     end
 
     return ret
 end
 
 function Bin2Hex(s)
-
     -- s 	-> binary string
 
     local l = 0
@@ -162,11 +159,9 @@ function Bin2Hex(s)
     end
 
     return h
-
 end
 
 function Bin2Dec(s)
-
     -- s	-> binary string
 
     local num = 0
@@ -183,11 +178,9 @@ function Bin2Dec(s)
     end
 
     return string.format("%u", num)
-
 end
 
 function Dec2Bin(s, num)
-
     -- s	-> Base10 string
     -- num  -> string length to extend to
 
@@ -208,27 +201,22 @@ function Dec2Bin(s, num)
     end
 
     return s
-
 end
 
 function Hex2Dec(s)
-
     -- s	-> hexadecimal string
 
     local s = Hex2Bin(s)
 
     return Bin2Dec(s)
-
 end
 
 function Dec2Hex(s)
-
     -- s	-> Base10 string
 
     s = string.format("%x", s)
 
     return s
-
 end
 
 -- These functions are big-endian and will extend to 32 bits
@@ -240,7 +228,6 @@ end
 -- BMNot
 
 function BMAnd(v, m)
-
     -- v	-> hex string to be masked
     -- m	-> hex string mask
 
@@ -274,16 +261,13 @@ function BMAnd(v, m)
             end
         else
             s = s .. "0"
-
         end
     end
 
     return Bin2Hex(s)
-
 end
 
 function BMNAnd(v, m)
-
     -- v	-> hex string to be masked
     -- m	-> hex string mask
 
@@ -317,16 +301,13 @@ function BMNAnd(v, m)
             end
         else
             s = s .. "1"
-
         end
     end
 
     return Bin2Hex(s)
-
 end
 
 function BMOr(v, m)
-
     -- v	-> hex string to be masked
     -- m	-> hex string mask
 
@@ -362,11 +343,9 @@ function BMOr(v, m)
     end
 
     return Bin2Hex(s)
-
 end
 
 function BMXOr(v, m)
-
     -- v	-> hex string to be masked
     -- m	-> hex string mask
 
@@ -411,11 +390,9 @@ function BMXOr(v, m)
     end
 
     return Bin2Hex(s)
-
 end
 
 function BMNot(v, m)
-
     -- v	-> hex string to be masked
     -- m	-> hex string mask
 
@@ -452,12 +429,10 @@ function BMNot(v, m)
         else
             -- leave untouched
             s = s .. cv
-
         end
     end
 
     return Bin2Hex(s)
-
 end
 
 -- these functions shift right and left, adding zeros to lost or gained bits
@@ -467,7 +442,6 @@ end
 -- BShLeft(v, nb)
 
 function BShRight(v, nb)
-
     -- v	-> hexstring value to be shifted
     -- nb	-> number of bits to shift to the right
 
@@ -486,11 +460,9 @@ function BShRight(v, nb)
     end
 
     return Bin2Hex(s)
-
 end
 
 function BShLeft(v, nb)
-
     -- v	-> hexstring value to be shifted
     -- nb	-> number of bits to shift to the right
 
@@ -509,25 +481,30 @@ function BShLeft(v, nb)
     end
 
     return Bin2Hex(s)
-
 end
 
 local binlib = {}
-local orFunc
-orFunc = function(a, b, ...)
+
+-- or func
+local function orFunc(a, b, ...)
     local params = ...
+
     if params == nil then
         return BMOr(Dec2Hex(a), Dec2Hex(b))
     else
         return orFunc(BMOr(Dec2Hex(a), Dec2Hex(b)), ...)
     end
 end
+
 binlib.Or = orFunc
+
 local function BMTest(a, b)
     return tonumber(BMAnd(a, b)) ~= 0
 end
+
 binlib.Test = function(a, b, ...)
     local params = ...
+
     if params == nil then
         return BMTest(Dec2Hex(a), Dec2Hex(b))
     else

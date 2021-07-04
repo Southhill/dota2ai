@@ -1,4 +1,4 @@
-local textM = {}
+local TextM = {}
 
 textM.dota2team = {
     [1] = {
@@ -219,6 +219,6 @@ textM.dota2team = {
     }
 }
 
-textM.sponsorship = {"RMMAI", "TEAM_RTYTHM"}
+textM.sponsorship = {"TEAM_RTYTHM"}
 
-return textM
+return TextM

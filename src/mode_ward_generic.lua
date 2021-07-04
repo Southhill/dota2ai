@@ -44,7 +44,7 @@ local vNonStuck = Vector(-2610.000000, 538.000000, 0.000000)
 
 local chat = false
 local height = -1
-function GetDesire() -- --
+function GetDesire() -- -- -- local pg = wardUtils.GetHumanPing();
 	-- "morphling_replicate"
 	-- "morphling_morph_replicate"
 
@@ -90,8 +90,7 @@ function GetDesire() -- --
 		if(it ~= nil) then
 			print("Slot "..tostring(i)..":"..it:GetName());
 		end
-	end]] -- local pg = wardUtils.GetHumanPing();
-	-- if pg ~= nil and pg.time > 0 and GameTime() - pg.time < 0.25 then
+	end]] -- if pg ~= nil and pg.time > 0 and GameTime() - pg.time < 0.25 then
 	-- print(tostring(pg.location)..":Vis:"..tostring(IsLocationVisible(pg.location))..":Pas:"..tostring(IsLocationPassable(pg.location)).."HLvl:"..tostring(GetHeightLevel(pg.location)));
 	-- end
 
@@ -131,7 +130,7 @@ function GetDesire() -- --
 		if pinged then
 			return RemapValClamped(GetUnitToUnitDistance(bot, wt), 1000, 0, BOT_MODE_DESIRE_HIGH, BOT_MODE_DESIRE_VERYHIGH)
 		end
-		 --
+		--
 		--[[if bot.lastPlayerChat ~= nil and string.find(bot.lastPlayerChat.text, "ward") then
 			if GetTeamForPlayer(bot.lastPlayerChat.pid) == bot:GetTeam() then
 				pinged = false;

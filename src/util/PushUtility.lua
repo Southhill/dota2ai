@@ -1,4 +1,5 @@
 _G._savedEnv = getfenv()
+
 module("PushUtility", package.seeall)
 
 local role = require(GetScriptDirectory() .. "/util/RoleUtility")
