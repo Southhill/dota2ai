@@ -3,7 +3,7 @@
 --	Author: adamqqq		Email:adamqqq@163.com
 ----------------------------------------------------------------------------
 -- v1.7 template by AaronSong321
-local utility = require(GetScriptDirectory() .. "/utility")
+local utility = require(GetScriptDirectory() .. "/util/Utility")
 require(GetScriptDirectory() .. "/ability_item_usage_generic")
 local AbilityExtensions = require(GetScriptDirectory() .. "/util/AbilityAbstraction")
 

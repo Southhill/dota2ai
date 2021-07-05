@@ -5,7 +5,7 @@
 --------------------------------------
 -- General Initialization
 --------------------------------------
-local utility = require(GetScriptDirectory() .. "/utility")
+local utility = require(GetScriptDirectory() .. "/util/Utility")
 require(GetScriptDirectory() .. "/ability_item_usage_generic")
 local AbilityExtensions = require(GetScriptDirectory() .. "/util/AbilityAbstraction")
 
@@ -124,8 +124,8 @@ Consider[1] = function()
 				end
 			end
 		end
-	end
-	 --
+	end -- If we're seriously retreating, see if we can land a stun on someone who's damaged us recently
+	--
 
 	--------------------------------------
 	-- Mode based usage
@@ -140,8 +140,9 @@ Consider[1] = function()
 				return BOT_ACTION_DESIRE_HIGH
 			end
 		end
-	end]] -- If we're seriously retreating, see if we can land a stun on someone who's damaged us recently
-	if (npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH) then
+	end]] if
+		(npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH)
+	 then
 		if (npcBot:WasRecentlyDamagedByAnyHero(2.0)) then
 			return BOT_ACTION_DESIRE_HIGH
 		end
@@ -156,8 +157,8 @@ Consider[1] = function()
 				end
 			end
 		end
-	end
-	 --
+	end -- If we're pushing or defending a lane
+	--
 
 	--[[Last hit
 	if ( npcBot:GetActiveMode() == BOT_MODE_LANING ) 
@@ -172,8 +173,7 @@ Consider[1] = function()
 				end
 			end		
 		end
-	end]] -- If we're pushing or defending a lane
-	if
+	end]] if
 		(npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_TOP or npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_MID or
 			npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_BOT or
 			npcBot:GetActiveMode() == BOT_MODE_FARM)

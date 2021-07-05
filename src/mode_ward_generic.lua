@@ -9,7 +9,7 @@ if
 	return
 end
 
-local utility = require(GetScriptDirectory() .. "/utility")
+local utility = require(GetScriptDirectory() .. "/util/Utility")
 local wardUtils = require(GetScriptDirectory() .. "/util/WardUtility")
 local role = require(GetScriptDirectory() .. "/util/RoleUtility")
 local bot = GetBot()
@@ -44,7 +44,7 @@ local vNonStuck = Vector(-2610.000000, 538.000000, 0.000000)
 
 local chat = false
 local height = -1
-function GetDesire() -- -- -- local pg = wardUtils.GetHumanPing();
+function GetDesire() -- -- -- local pg = wardUtils.GetHumanPing(); -- if pg ~= nil and pg.time > 0 and GameTime() - pg.time < 0.25 then -- print(tostring(pg.location)..":Vis:"..tostring(IsLocationVisible(pg.location))..":Pas:"..tostring(IsLocationPassable(pg.location)).."HLvl:"..tostring(GetHeightLevel(pg.location)));
 	-- "morphling_replicate"
 	-- "morphling_morph_replicate"
 
@@ -90,9 +90,7 @@ function GetDesire() -- -- -- local pg = wardUtils.GetHumanPing();
 		if(it ~= nil) then
 			print("Slot "..tostring(i)..":"..it:GetName());
 		end
-	end]] -- if pg ~= nil and pg.time > 0 and GameTime() - pg.time < 0.25 then
-	-- print(tostring(pg.location)..":Vis:"..tostring(IsLocationVisible(pg.location))..":Pas:"..tostring(IsLocationPassable(pg.location)).."HLvl:"..tostring(GetHeightLevel(pg.location)));
-	-- end
+	end]] -- end
 
 	--[[if bot.lastPlayerChat ~= nil and string.find(bot.lastPlayerChat.text, "ward") then
 		bot:ActionImmediate_Chat("Catch this in mode_ward_generic", false);

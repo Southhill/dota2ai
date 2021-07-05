@@ -1,16 +1,14 @@
-local utility = require( GetScriptDirectory().."/utility" ) 
-require(GetScriptDirectory() ..  "/ability_item_usage_generic")
-local AbilityExtensions = require(GetScriptDirectory().."/util/AbilityAbstraction")
+local utility = require(GetScriptDirectory() .. "/util/Utility")
+require(GetScriptDirectory() .. "/ability_item_usage_generic")
+local AbilityExtensions = require(GetScriptDirectory() .. "/util/AbilityAbstraction")
 
-
-local debugmode=false
+local debugmode = false
 local npcBot = GetBot()
-local Talents ={}
-local Abilities ={}
-local AbilitiesReal ={}
+local Talents = {}
+local Abilities = {}
+local AbilitiesReal = {}
 
-ability_item_usage_generic.InitAbility(Abilities,AbilitiesReal,Talents)
-
+ability_item_usage_generic.InitAbility(Abilities, AbilitiesReal, Talents)
 
 local AbilityToLevelUp = {
     Abilities[1],
@@ -37,14 +35,22 @@ local AbilityToLevelUp = {
     "nil",
     "nil",
     "nil",
-    "talent",
+    "talent"
 }
 
 local TalentTree = {
-    function() return Talents[2]  end,
-    function() return Talents[3]  end,
-    function() return Talents[5]  end,
-    function() return Talents[7]  end,
+    function()
+        return Talents[2]
+    end,
+    function()
+        return Talents[3]
+    end,
+    function()
+        return Talents[5]
+    end,
+    function()
+        return Talents[7]
+    end
 }
 
 local Consider = {}
@@ -67,13 +73,17 @@ Consider[1] = function()
     local manaPercentage = AbilityExtensions:GetManaPercent(npcBot)
     local ability = AbilitiesReal[1]
     if not ability:IsFullyCastable() then
-        return 0 
+        return 0
     end
     if npcBot:GetActiveMode() == BOT_MODE_LANING then
         local enemyCreeps = npcBot:GetNearbyCreeps(1200, true)
-        local rangedCreep = AbilityExtensions:First(enemyCreeps, function(t) 
-            return t:GetAttackRange() >= 500
-        end)
+        local rangedCreep =
+            AbilityExtensions:First(
+            enemyCreeps,
+            function(t)
+                return t:GetAttackRange() >= 500
+            end
+        )
         local enemy = AbilityExtensions:First(npcBot:GetNearbyHeroes(1200, true, BOT_MODE_NONE))
         if rangedCreep ~= nil and enemy ~= nil then
             if ReadyForLastHit(npcBot, rangedCreep) and manaPercentage >= 0.6 then
@@ -87,8 +97,15 @@ Consider[1] = function()
         end
 
         if enemy ~= nil then
-            local allCreeps = AbilityExtensions:Concat(npcBot:GetNearbyCreeps(900, true), npcBot:GetNearbyCreeps(900, false))
-            allCreeps = AbilityExtensions:Filter(allCreeps, function(t) return t:GetHealth() <= enemy:GetAttackDamage() * 1.2 end)
+            local allCreeps =
+                AbilityExtensions:Concat(npcBot:GetNearbyCreeps(900, true), npcBot:GetNearbyCreeps(900, false))
+            allCreeps =
+                AbilityExtensions:Filter(
+                allCreeps,
+                function(t)
+                    return t:GetHealth() <= enemy:GetAttackDamage() * 1.2
+                end
+            )
             if #allCreeps >= 2 and manaPercentage >= 0.4 then
                 return BOT_MODE_DESIRE_MODERATE, enemy
             end
@@ -104,21 +121,20 @@ Consider[1] = function()
 end
 
 function AbilityLevelUpThink()
-    ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp,TalentTree)
+    ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
 end
 
 AbilityExtensions:AutoModifyConsiderFunction(npcBot, Consider, AbilitiesReal)
 
 function AbilityUsageThink()
-	if ( npcBot:IsUsingAbility() or npcBot:IsChanneling() or npcBot:IsSilenced() )
-	then 
-		return
-	end
-	
-	cast=ability_item_usage_generic.ConsiderAbility(AbilitiesReal,Consider)
-	ability_item_usage_generic.UseAbility(AbilitiesReal,cast)
+    if (npcBot:IsUsingAbility() or npcBot:IsChanneling() or npcBot:IsSilenced()) then
+        return
+    end
+
+    cast = ability_item_usage_generic.ConsiderAbility(AbilitiesReal, Consider)
+    ability_item_usage_generic.UseAbility(AbilitiesReal, cast)
 end
 
-function CourierUsageThink() 
-	ability_item_usage_generic.CourierUsageThink()
+function CourierUsageThink()
+    ability_item_usage_generic.CourierUsageThink()
 end

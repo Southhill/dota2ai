@@ -5,8 +5,8 @@
 --------------------------------------
 -- General Initialization
 --------------------------------------
-local utility = require( GetScriptDirectory().."/utility" )
-local AbilityHelper = dofile(GetScriptDirectory().."/util/AbilityHelper")
+local utility = require(GetScriptDirectory() .. "/util/Utility")
+local AbilityHelper = dofile(GetScriptDirectory() .. "/util/AbilityHelper")
 require(GetScriptDirectory() .. "/ability_item_usage_generic")
 local AbilityExtensions = require(GetScriptDirectory() .. "/util/AbilityAbstraction")
 
@@ -69,9 +69,8 @@ function AbilityLevelUpThink()
 end
 
 --utility.PrintAbilityName(abilities)
-local abilityName =  { "lich_frost_nova","lich_frost_shield","lich_sinister_gaze","lich_ice_spire","lich_chain_frost"}
+local abilityName = {"lich_frost_nova", "lich_frost_shield", "lich_sinister_gaze", "lich_ice_spire", "lich_chain_frost"}
 local abilityIndexes = utility.ReverseTable(abilityName)
-
 
 --------------------------------------
 -- Ability Usage Thinking
@@ -92,7 +91,7 @@ local CanCast = {
 	AbilityHelper.normalCanCast,
 	AbilityHelper.normalCanCast,
 	AbilityHelper.normalCanCast,
-    AbilityHelper.normalCanCast,
+	AbilityHelper.normalCanCast,
 	AbilityHelper.ultimateCanCast
 }
 local isDisabled = AbilityHelper.isDisabled
@@ -310,7 +309,7 @@ consider[2] = function()
 	--			break
 	--		end
 	--	end
-    --
+	--
 	--	local roshanTarget = npcTarget:GetAttackTarget()
 	--	if (isManaEnough and AbilityHelper.isValidTarget(roshanTarget)) then
 	--		return BOT_ACTION_DESIRE_HIGH, roshanTarget
@@ -471,72 +470,64 @@ end
 
 -- copied from terrorblade_reflection
 
-consider[4]=function()
+consider[4] = function()
+	local abilityNumber = 4
+	--------------------------------------
+	-- Generic Variable Setting
+	--------------------------------------
+	local ability = abilityHandles[abilityNumber]
 
-    local abilityNumber=4
-    --------------------------------------
-    -- Generic Variable Setting
-    --------------------------------------
-    local ability=abilityHandles[abilityNumber];
+	if not ability:IsFullyCastable() then
+		return BOT_ACTION_DESIRE_NONE, 0
+	end
 
-    if not ability:IsFullyCastable() then
-        return BOT_ACTION_DESIRE_NONE, 0;
-    end
+	local CastRange = ability:GetCastRange()
+	local Damage = ability:GetAbilityDamage()
+	local Radius = ability:GetAOERadius()
+	local CastPoint = ability:GetCastPoint()
 
-    local CastRange = ability:GetCastRange();
-    local Damage = ability:GetAbilityDamage();
-    local Radius = ability:GetAOERadius()
-    local CastPoint = ability:GetCastPoint();
+	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
+	local enemys = npcBot:GetNearbyHeroes(CastRange + 300, true, BOT_MODE_NONE)
+	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
+	local creeps = npcBot:GetNearbyCreeps(CastRange + 300, true)
+	local WeakestCreep, CreepHealth = utility.GetWeakestUnit(creeps)
 
-    local allys = npcBot:GetNearbyHeroes( 1200, false, BOT_MODE_NONE );
-    local enemys = npcBot:GetNearbyHeroes(CastRange+300,true,BOT_MODE_NONE)
-    local WeakestEnemy,HeroHealth=utility.GetWeakestUnit(enemys)
-    local creeps = npcBot:GetNearbyCreeps(CastRange+300,true)
-    local WeakestCreep,CreepHealth=utility.GetWeakestUnit(creeps)
+	--------------------------------------
+	-- Mode based usage
+	--------------------------------------
 
-    --------------------------------------
-    -- Mode based usage
-    --------------------------------------
+	-- If we're seriously retreating, see if we can land a stun on someone who's damaged us recently
+	if (npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH) then
+		for _, npcEnemy in pairs(enemys) do
+			if (npcBot:WasRecentlyDamagedByHero(npcEnemy, 2.0)) then
+				if (CanCast[abilityNumber](npcEnemy)) then
+					return BOT_ACTION_DESIRE_LOW, npcEnemy:GetExtrapolatedLocation(CastPoint)
+				end
+			end
+		end
+	end
 
-    -- If we're seriously retreating, see if we can land a stun on someone who's damaged us recently
-    if ( npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH )
-    then
-        for _,npcEnemy in pairs( enemys )
-        do
-            if ( npcBot:WasRecentlyDamagedByHero( npcEnemy, 2.0 ) )
-            then
-                if ( CanCast[abilityNumber]( npcEnemy ) )
-                then
-                    return BOT_ACTION_DESIRE_LOW, npcEnemy:GetExtrapolatedLocation(CastPoint);
-                end
-            end
-        end
-    end
+	-- If we're going after someone
+	if
+		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
+			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
+			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
+	 then
+		local locationAoE = npcBot:FindAoELocation(true, true, npcBot:GetLocation(), CastRange, Radius, 0, 0)
+		if (locationAoE.count >= 3) then
+			return BOT_ACTION_DESIRE_LOW + 0.05, locationAoE.targetloc
+		end
 
-    -- If we're going after someone
-    if ( npcBot:GetActiveMode() == BOT_MODE_ROAM or
-            npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
-            npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
-            npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-    then
-        local locationAoE = npcBot:FindAoELocation( true, true, npcBot:GetLocation(), CastRange, Radius, 0, 0 );
-        if ( locationAoE.count >= 3 ) then
-            return BOT_ACTION_DESIRE_LOW+0.05, locationAoE.targetloc;
-        end
+		local npcEnemy = npcBot:GetTarget()
 
-        local npcEnemy = npcBot:GetTarget()
+		if (npcEnemy ~= nil) then
+			if (CanCast[abilityNumber](npcEnemy)) then
+				return BOT_ACTION_DESIRE_LOW, npcEnemy:GetExtrapolatedLocation(CastPoint)
+			end
+		end
+	end
 
-        if ( npcEnemy ~= nil )
-        then
-            if ( CanCast[abilityNumber]( npcEnemy ) )
-            then
-                return BOT_ACTION_DESIRE_LOW, npcEnemy:GetExtrapolatedLocation(CastPoint);
-            end
-        end
-    end
-
-    return BOT_ACTION_DESIRE_NONE, 0
-
+	return BOT_ACTION_DESIRE_NONE, 0
 end
 
 consider[5] = function()
@@ -621,9 +612,7 @@ consider[5] = function()
 	return BOT_ACTION_DESIRE_NONE, 0
 end
 
-
 AbilityExtensions:AutoModifyConsiderFunction(npcBot, consider, abilityHandles)
-
 
 function AbilityUsageThink()
 	-- Check if we're already using an ability

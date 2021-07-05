@@ -3,9 +3,9 @@
 --	Author: adamqqq		Email:adamqqq@163.com
 ----------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------
-local utility = require( GetScriptDirectory().."/utility" ) 
+local utility = require(GetScriptDirectory() .. "/util/Utility")
 function GetDesire()
-    return 0
+	return 0
 	--local npcBot = GetBot();
 	--
 	--local desire = 0.0;
@@ -23,18 +23,16 @@ function GetDesire()
 	--		desire = (2500-d)/2500*0.3+0.3;					--根据离边路商店的距离返回欲望值
 	--	end
 	--end
-    --
+	--
 	--return desire
-
 end
 
 function Think()
-	
 	--local npcBot = GetBot();
 	--
 	--local shopLoc1 = GetShopLocation( GetTeam(), SHOP_SIDE );
 	--local shopLoc2 = GetShopLocation( GetTeam(), SHOP_SIDE2 );
-    --
+	--
 	--if ( GetUnitToLocationDistance(npcBot, shopLoc1) <= GetUnitToLocationDistance(npcBot, shopLoc2) ) then	--选择前往距离自己更近的商店
 	--	npcBot:Action_MoveToLocation( shopLoc1 );
 	--else

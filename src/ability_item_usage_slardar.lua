@@ -5,7 +5,7 @@
 --------------------------------------
 -- General Initialization
 --------------------------------------
-local utility = require(GetScriptDirectory() .. "/utility")
+local utility = require(GetScriptDirectory() .. "/util/Utility")
 require(GetScriptDirectory() .. "/ability_item_usage_generic")
 local AbilityExtensions = require(GetScriptDirectory() .. "/util/AbilityAbstraction")
 

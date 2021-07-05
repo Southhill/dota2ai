@@ -1,7 +1,7 @@
 local BotsInit = require("game/botsinit")
 local M = BotsInit.CreateGeneric()
 
-require(GetScriptDirectory() .. "/utility")
+require(GetScriptDirectory() .. "/util/Utility")
 
 local AbilityExtensions = require(GetScriptDirectory() .. "/util/AbilityAbstraction")
 local RoleUtility = require(GetScriptDirectory() .. "/util/RoleUtility")

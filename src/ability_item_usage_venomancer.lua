@@ -5,7 +5,7 @@
 --------------------------------------
 -- General Initialization 剧毒术士
 --------------------------------------
-local utility = require(GetScriptDirectory() .. "/utility")
+local utility = require(GetScriptDirectory() .. "/util/Utility")
 local config = require(GetScriptDirectory() .. "/const/config")
 require(GetScriptDirectory() .. "/ability_item_usage_generic")
 local AbilityExtensions = require(GetScriptDirectory() .. "/util/AbilityAbstraction")
