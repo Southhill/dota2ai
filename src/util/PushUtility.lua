@@ -1,3 +1,8 @@
+----------------------------------------------------------------------------
+--	Ranked Matchmaking AI
+--	Author: adamqqq		Email:adamqqq@163.com
+--	推进工具模块 —— 判断兵线、推进欲望、安全位置等
+----------------------------------------------------------------------------
 _G._savedEnv = getfenv()
 
 module("PushUtility", package.seeall)
@@ -5,11 +10,11 @@ module("PushUtility", package.seeall)
 local role = require(GetScriptDirectory() .. "/util/RoleUtility")
 local AbilityExtensions = require(GetScriptDirectory() .. "/util/AbilityAbstraction")
 
+-- 获取英雄当前所在的分路（距离哪条兵线前沿最近）
 function GetLane(nTeam, hHero)
 	local vBot = GetLaneFrontLocation(nTeam, LANE_BOT, 0)
 	local vTop = GetLaneFrontLocation(nTeam, LANE_TOP, 0)
 	local vMid = GetLaneFrontLocation(nTeam, LANE_MID, 0)
-	--print(GetUnitToLocationDistance(hHero, vMid))
 	if GetUnitToLocationDistance(hHero, vBot) < 2500 then
 		return LANE_BOT
 	end
@@ -22,6 +27,7 @@ function GetLane(nTeam, hHero)
 	return LANE_NONE
 end
 
+-- 判断某条线路是否需要清理兵线（敌方小兵多于友方小兵）
 function IsThisLaneNeedToClean(npcBot, lane)
 	local front = GetLaneFrontLocation(GetTeam(), lane, 0)
 	local AllyTower = GetNearestBuilding(GetTeam(), front)
@@ -41,26 +47,30 @@ function IsThisLaneNeedToClean(npcBot, lane)
 		end
 	end
 
-	local CountDelta = creepsCount - creepsAllyCount
+	local CountDelta = creepsCount - creepsAllyCount  -- 敌方小兵数量优势
 	local DistanceFactor = DistanceToFront / 1500
 
+	-- 距离兵线前沿6000以内且敌方小兵更多时，需要清理
 	if (DistanceToFront <= 6000 and DistanceFactor <= CountDelta) then
-		--print(npcBot:GetUnitName().." need to clean lane- "..lane)
 		return true
 	end
 
 	return false
 end
 
+-- 计算英雄对某条线路的推进欲望值
+-- 综合考虑等级、状态、角色、距离、TP/飞鞋等因素
 function GetUnitPushLaneDesire(npcBot, lane)
 	local team = GetTeam()
-	local teamPush = GetPushLaneDesire(lane)
+	local teamPush = GetPushLaneDesire(lane)  -- 团队对该线路的推进欲望
 
+	-- 等级因素：6级以下不推进
 	local levelFactor = 1
 	if npcBot:GetLevel() < 6 then
 		levelFactor = 0
 	end
 
+	-- 如果自己所在线路需要清理，则不去其他线路
 	local mylane = GetLane(team, npcBot)
 	if (mylane ~= LANE_NONE) then
 		local ThisLaneNeedToClean = IsThisLaneNeedToClean(npcBot, mylane)
@@ -69,11 +79,13 @@ function GetUnitPushLaneDesire(npcBot, lane)
 		end
 	end
 
+	-- 状态因素（血量+蓝量）
 	local healthRate = npcBot:GetHealth() / npcBot:GetMaxHealth()
 	local manaRate = npcBot:GetMana() / npcBot:GetMaxMana()
 	local stateFactor = healthRate * 0.7 + manaRate * 0.3
-	local roleFactor = 0
 
+	-- 角色因素（推进核 > 辅助 > 大哥）
+	local roleFactor = 0
 	if role.IsPusher(npcBot:GetUnitName()) == true then
 		roleFactor = roleFactor + 0.2
 	elseif role.IsSupport(npcBot:GetUnitName()) == true then
@@ -82,21 +94,19 @@ function GetUnitPushLaneDesire(npcBot, lane)
 		roleFactor = roleFactor
 	end
 
+	-- 距离因素（使用TP/飞鞋可大幅提升推进欲望）
 	local front = GetLaneFrontLocation(GetTeam(), lane, 0)
 	local DistanceToFront = GetUnitToLocationDistance(npcBot, front)
 	local nearBuilding = GetNearestBuilding(team, front)
 	local distBuilding = GetUnitToLocationDistance(nearBuilding, front)
 	local distFactor = 0
 	local tp = IsItemAvailable("item_tpscroll")
-	if tp then
-		tp = tp:IsFullyCastable()
-	end
+	if tp then tp = tp:IsFullyCastable() end
 	local travel = IsItemAvailable("item_travel_boots")
-	if travel then
-		travel = travel:IsFullyCastable()
-	end
+	if travel then travel = travel:IsFullyCastable() end
+
 	if DistanceToFront <= 1000 or travel then
-		distFactor = 1
+		distFactor = 1  -- 已经在前线或有飞鞋
 	elseif DistanceToFront - distBuilding >= 3000 and tp then
 		if distBuilding <= 1000 then
 			distFactor = 0.7
@@ -106,7 +116,7 @@ function GetUnitPushLaneDesire(npcBot, lane)
 			distFactor = -(distBuilding - 6000) * 0.7 / 5000
 		end
 	elseif DistanceToFront >= 10000 then
-		distFactor = 0
+		distFactor = 0  -- 太远了，不去
 	else
 		distFactor = -(DistanceToFront - 10000) / 9000
 	end
@@ -117,7 +127,8 @@ function GetUnitPushLaneDesire(npcBot, lane)
 	return desire
 end
 
-function isNoCreeps(npcBot, lane) --判断兵线位置在不在塔前，不要越塔
+-- 判断兵线位置是否在己方塔前（防止越塔）
+function isNoCreeps(npcBot, lane)
 	local front = GetLaneFrontLocation(GetTeam(), lane, 0)
 	local AllyTower = GetNearestBuilding(GetTeam(), front)
 	local EnemyTower = GetNearestBuilding(GetOpposingTeam(), front)

@@ -1,67 +1,65 @@
+----------------------------------------------------------------------------
+--	Ranked Matchmaking AI
+--	Author: adamqqq		Email:adamqqq@163.com
+--	通用打钱模式 —— 控制 Bot 的打钱行为（刷野/清线）
+----------------------------------------------------------------------------
 local campUtils = require(GetScriptDirectory() ..  "/util/CampUtility")
 local bot = GetBot()
-local minute = 0;
-local sec = 0;
-local preferedCamp = nil;
-local AvailableCamp = {};
-local LaneCreeps = {};
-local numCamp = 18;
-local farmState = 0;
+local minute = 0;            -- 当前游戏分钟数
+local sec = 0;               -- 当前游戏秒数
+local preferedCamp = nil;    -- 偏好的野怪营地
+local AvailableCamp = {};    -- 可用的野怪营地列表
+local LaneCreeps = {};       -- 线上小兵信息
+local numCamp = 18;          -- 野怪营地数量上限
+local farmState = 0;         -- 打钱状态
 local teamPlayers = nil;
-local lanes = {LANE_TOP, LANE_MID, LANE_BOT};
+local lanes = {LANE_TOP, LANE_MID, LANE_BOT};  -- 三条分路
 local cause = "";
-local cogsTarget = nil;
-local t3Destroyed = false;
---local shrineTarget = nil;
+local cogsTarget = nil;      -- 发条齿轮目标
+local t3Destroyed = false;   -- 高地塔是否被摧毁
 local cLoc = nil;
 local farmLane = false;
 
 local tPing = 0;
 local tChat = 0;
-
 local testTime = 0;
 
-function GetDesire()	
-	
-	--campUtils.PrintCamps()
+-- 获取打钱模式的欲望值
+function GetDesire()
 
-	--[[if DotaTime() > testTime + 20.0 then
-		campUtils.PingCamp(1, 3, TEAM_RADIANT, bot);
-		testTime = DotaTime();
-	end]]--
-
+	-- 虚空假面（时间结界）特殊处理
 	if bot:GetUnitName() == "npc_dota_hero_faceless_voids" and bot:IsAlive() then
 		cLoc = GetSaveLocToFarmLane();
 		if cLoc ~= nil  then
-			--bot:ActionImmediate_Ping(cLoc.x, cLoc.y, true);
-			--tPing = DotaTime();
 			farmLane = true;
 			return BOT_MODE_DESIRE_ABSOLUTE;
 		else
 			farmLane = false;
 		end
 	end
-	
+
 	local num_cogs = 0;
-	
+
+	-- 基地附近有敌方单位时，停止打钱，回去防守
 	if IsUnitAroundLocation(GetAncient(GetTeam()):GetLocation(), 3000) then
 		return BOT_MODE_DESIRE_NONE;
 	end
-	
+
 	if teamPlayers == nil then teamPlayers = GetTeamPlayers(GetTeam()) end
-	
+
 	local EnemyHeroes = bot:GetNearbyHeroes(1600, true, BOT_MODE_NONE);
-	
+
 	minute = math.floor(DotaTime() / 60)
 	sec = DotaTime() % 60
-	
-	if #AvailableCamp < numCamp and ( ( DotaTime() > 30 and DotaTime() < 60 and sec > 30 and sec < 31 ) 
-	   or ( DotaTime() > 30 and  sec > 0 and sec < 1 ) ) 
+
+	-- 定期刷新野怪营地信息
+	if #AvailableCamp < numCamp and ( ( DotaTime() > 30 and DotaTime() < 60 and sec > 30 and sec < 31 )
+	   or ( DotaTime() > 30 and  sec > 0 and sec < 1 ) )
 	then
 		AvailableCamp, numCamp = campUtils.RefreshCamp(bot);
 		--print(tostring(GetTeam())..tostring(#AvailableCamp))
 	end
-	
+
 	if bot:GetUnitName() == "npc_dota_hero_rattletrap" then
 		if ( bot:GetActiveMode() == BOT_MODE_RETREAT and bot:WasRecentlyDamagedByAnyHero(3.0) ) or #EnemyHeroes == 0 or cause == "cogs" then
 			local units = GetUnitList(UNIT_LIST_ALLIED_OTHER);
@@ -103,22 +101,22 @@ function GetDesire()
 					return BOT_MODE_DESIRE_ABSOLUTE;
 				end
 			end
-		end	
-		
+		end
+
 	end
-	
+
 	if #EnemyHeroes > 0 then
 		return BOT_MODE_DESIRE_NONE;
-	end		
-	
-	if not bot:IsAlive() or bot:IsChanneling() or bot:GetCurrentActionType() == 1 or bot:GetNextItemPurchaseValue() == 0 
-	   or bot:WasRecentlyDamagedByAnyHero(3.0) or #EnemyHeroes >= 1 
+	end
+
+	if not bot:IsAlive() or bot:IsChanneling() or bot:GetCurrentActionType() == 1 or bot:GetNextItemPurchaseValue() == 0
+	   or bot:WasRecentlyDamagedByAnyHero(3.0) or #EnemyHeroes >= 1
 	   or ( bot:GetActiveMode() == BOT_MODE_RETREAT and bot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH )
 	   or bot.SecretShop
 	then
 		return BOT_MODE_DESIRE_NONE;
 	end
-	
+
 	if t3Destroyed == false then
 		t3Destroyed = IsThereT3Detroyed();
 	--else
@@ -131,8 +129,8 @@ function GetDesire()
 	--		end
 	--	end
 	end
-	
-	if campUtils.IsStrongJungler(bot) and bot:GetLevel() >= 6 and bot:GetLevel() < 30 and not IsHumanPlayerInTeam() and GetGameMode() ~= GAMEMODE_MO 
+
+	if campUtils.IsStrongJungler(bot) and bot:GetLevel() >= 6 and bot:GetLevel() < 30 and not IsHumanPlayerInTeam() and GetGameMode() ~= GAMEMODE_MO
 	then
 		LaneCreeps = bot:GetNearbyLaneCreeps(1600, true);
 		if LaneCreeps ~= nil and #LaneCreeps > 0 then
@@ -140,12 +138,12 @@ function GetDesire()
 		else
 			if preferedCamp == nil then preferedCamp = campUtils.GetClosestNeutralSpwan(bot, AvailableCamp) end
 			if preferedCamp ~= nil then
-				if bot:GetHealth() / bot:GetMaxHealth() <= 0.15 then 
+				if bot:GetHealth() / bot:GetMaxHealth() <= 0.15 then
 					preferedCamp = nil;
 					return BOT_MODE_DESIRE_LOW;
-				elseif farmState == 1 then 
+				elseif farmState == 1 then
 					return BOT_MODE_DESIRE_ABSOLUTE;
-				elseif not campUtils.IsSuitableToFarm(bot) then 
+				elseif not campUtils.IsSuitableToFarm(bot) then
 					preferedCamp = nil;
 					return BOT_MODE_DESIRE_NONE;
 				else
@@ -154,9 +152,9 @@ function GetDesire()
 			end
 		end
 	end
-	
+
 	return 0.0
-	
+
 end
 
 function OnEnd()
@@ -169,10 +167,10 @@ function OnEnd()
 end
 
 function Think()
-	if bot:IsUsingAbility() or bot:IsChanneling() then 
+	if bot:IsUsingAbility() or bot:IsChanneling() then
 		return
 	end
-	
+
 	if farmLane then
 		local laneCreeps = bot:GetNearbyLaneCreeps(1600, true);
 		local target = GetWeakestUnit(laneCreeps);
@@ -194,14 +192,14 @@ function Think()
 			return
 		end
 	end
-	
+
 	if cause == "cogs" then
 		print("Attack Cogs")
 		bot:Action_AttackUnit( cogsTarget, true );
 		cause = "";
 		return
-	end	
-	
+	end
+
 	if LaneCreeps ~= nil and #LaneCreeps > 0 then
 		local farmTarget = campUtils.FindFarmedTarget(LaneCreeps)
 		if farmTarget ~= nil then
@@ -210,7 +208,7 @@ function Think()
 			return
 		end
 	end
-		
+
 	if preferedCamp ~= nil then
 		local cDist = GetUnitToLocationDistance(bot, preferedCamp.cattr.location);
 		local stackMove = campUtils.GetCampMoveToStack(preferedCamp.idx);
@@ -234,36 +232,36 @@ function Think()
 				farmState = 0;
 				AvailableCamp, preferedCamp = campUtils.UpdateAvailableCamp(bot, preferedCamp, AvailableCamp);
 			end
-		end	
+		end
 	end
-	
+
 end
 
 function IsHumanPlayerInTeam()
-	for _,id in pairs(GetTeamPlayers(GetTeam())) 
-	do 
-		if not IsPlayerBot(id) 
-		then 
+	for _,id in pairs(GetTeamPlayers(GetTeam()))
+	do
+		if not IsPlayerBot(id)
+		then
 			return true;
 		end
-	end 
+	end
 	return false;
 end
 
 function IsThereT3Detroyed()
-	
+
 	local T3s = {
 		TOWER_TOP_3,
 		TOWER_MID_3,
 		TOWER_BOT_3
 	}
-	
+
 	for _,t in pairs(T3s) do
 		local tower = GetTower(GetOpposingTeam(), t);
 		if tower == nil or not tower:IsAlive() then
 			return true;
 		end
-	end	
+	end
 	return false;
 end
 
@@ -339,7 +337,7 @@ function GetWeakestUnit(units)
 		local hp = unit:GetHealth();
 		if hp < lowestHP then
 			lowestHP = hp;
-			lowestUnit = unit;	
+			lowestUnit = unit;
 		end
 	end
 	return lowestUnit;

@@ -1,9 +1,10 @@
 ----------------------------------------------------------------------------
 --	Ranked Matchmaking AI v1.6 New Structure
 --	Author: adamqqq		Email:adamqqq@163.com
+--	开发测试脚本 —— 用于测试通用技能/物品使用的模板
 ----------------------------------------------------------------------------
 --------------------------------------
--- General Initialization
+-- 通用初始化
 --------------------------------------
 require(GetScriptDirectory() .. "/ability_item_usage_generic")
 local AbilityHelper = dofile(GetScriptDirectory() .. "/util/AbilityHelper")

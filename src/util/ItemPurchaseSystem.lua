@@ -147,66 +147,69 @@ function M.ItemPurchase(ItemsToBuy)
         M.WeNeedTpscroll()
     end
 
+    -- 如果没有要买的物品，重置购买目标并返回
     if (#ItemsToBuy == 0) then
         npcBot:SetNextItemPurchaseValue(0)
         return
     end
 
+    -- 获取下一个要购买的物品
     local sNextItem = ItemsToBuy[1]
     npcBot:SetNextItemPurchaseValue(GetItemCost(sNextItem))
 
+    -- 出售不需要的装备腾出格子
     M.SellExtraItem(ItemsToBuy)
 
     function getCurrentHealthRate()
         return npcBot:GetHealth() / npcBot:GetMaxHealth()
     end
 
+    -- 在泉水附近或血量低时退出神秘商店模式
     if npcBot:DistanceFromFountain() <= 2500 or npcBot:GetHealth() / npcBot:GetMaxHealth() <= 0.35 then
         npcBot.secretShopMode = false
     end
 
+    -- 如果下一个物品不来自神秘商店，退出神秘商店模式
     if IsItemPurchasedFromSecretShop(sNextItem) == false then
         npcBot.secretShopMode = false
     end
 
+    -- 钱够时尝试购买
     if (npcBot:GetGold() >= GetItemCost(sNextItem)) then
+        -- 如果下一个物品来自神秘商店，进入神秘商店模式
         if npcBot.secretShopMode ~= true then
             if (IsItemPurchasedFromSecretShop(sNextItem) and sNextItem ~= "item_bottle") then
                 npcBot.secretShopMode = true
             end
         end
 
-        local PurchaseResult = -2 --???????????????????
-        if (npcBot.secretShopMode == true) then --???????????????????????????????
+        local PurchaseResult = -2  -- 购买结果初始化为 -2（未尝试）
+        if (npcBot.secretShopMode == true) then  -- 神秘商店模式
+            -- 自己在神秘商店附近则自己购买
             if (npcBot:DistanceFromSecretShop() <= 250) then
                 PurchaseResult = npcBot:ActionImmediate_PurchaseItem(sNextItem)
             end
 
+            -- 否则让信使购买
             local courier = GetCourier(0)
-
-            --[[if(courier==nil)
-			then
-				local ItemCount=M.GetItemSlotsCount2(npcBot)
-				if(ItemCount<6)
-				then
-					M.BuyCourier()		
-				end
-			else]]
             local ItemCount = M.GetItemSlotsCount2(courier)
             if (courier:DistanceFromSecretShop() <= 250 and ItemCount < 9) then
                 PurchaseResult = GetCourier(0):ActionImmediate_PurchaseItem(sNextItem)
             end
         else
+            -- 普通商店模式：直接购买
             PurchaseResult = npcBot:ActionImmediate_PurchaseItem(sNextItem)
         end
 
+        -- 处理购买结果
         if (PurchaseResult == PURCHASE_ITEM_SUCCESS) then
             npcBot.secretShopMode = false
-            table.remove(ItemsToBuy, 1)
+            table.remove(ItemsToBuy, 1)  -- 移除已购买的物品
         elseif PurchaseResult ~= -2 then
-            print("purchase item failed: " .. ItemsToBuy[1] .. ", fail code: " .. PurchaseResult)
+            print("购买物品失败: " .. ItemsToBuy[1] .. ", 错误码: " .. PurchaseResult)
         end
 
+        -- 缺货时卖掉消耗品腾出金钱
         if (PurchaseResult == PURCHASE_ITEM_OUT_OF_STOCK) then
             M.SellSpecifiedItem("item_dust")
             M.SellSpecifiedItem("item_faerie_fire")
@@ -214,21 +217,21 @@ function M.ItemPurchase(ItemsToBuy)
             M.SellSpecifiedItem("item_clarity")
             M.SellSpecifiedItem("item_flask")
         end
+        -- 无效物品名或禁用物品
         if (PurchaseResult == PURCHASE_ITEM_INVALID_ITEM_NAME or PurchaseResult == PURCHASE_ITEM_DISALLOWED_ITEM) then
-            print("invalid item purchase or disallowed purchase: " .. ItemsToBuy[1])
+            print("无效物品购买或禁用物品: " .. ItemsToBuy[1])
             table.remove(ItemsToBuy, 1)
         end
+        -- 金钱不足时退出神秘商店模式
         if (PurchaseResult == PURCHASE_ITEM_INSUFFICIENT_GOLD) then
             npcBot.secretShopMode = false
         end
+        -- 不在神秘商店时切换模式
         if (PurchaseResult == PURCHASE_ITEM_NOT_AT_SECRET_SHOP) then
             npcBot.secretShopMode = true
         end
         if (PurchaseResult == PURCHASE_ITEM_NOT_AT_HOME_SHOP) then
             npcBot.secretShopMode = false
-        end
-        if (PurchaseResult >= -1) then
-        --print(npcBot:GetPlayerID().."[ItemPurchase] purchaseResult is"..PurchaseResult)
         end
     else
         npcBot.secretShopMode = false
@@ -259,6 +262,7 @@ function M.BuyCourier()
 	end]]
 end
 
+-- 检查是否有飞鞋，有则卖掉多余的 TP 卷轴
 function M.NoNeedTpscrollForTravelBoots()
     local npcBot = GetBot()
 
@@ -277,6 +281,7 @@ function M.NoNeedTpscrollForTravelBoots()
         end
     end
 
+    -- 有飞鞋时卖掉 TP 卷轴
     if (item_travel_boots_1 ~= nil or item_travel_boots_2 ~= nil) then
         for i = 0, 14 do
             local sCurItem = npcBot:GetItemInSlot(i)
@@ -291,6 +296,7 @@ function M.NoNeedTpscrollForTravelBoots()
     return item_travel_boots
 end
 
+-- 确保英雄有 TP 卷轴（没有飞鞋时自动购买）
 function M.WeNeedTpscroll()
     local npcBot = GetBot()
 
@@ -298,7 +304,7 @@ function M.WeNeedTpscroll()
     local item_travel_boots_1 = item_travel_boots[1]
     local item_travel_boots_2 = item_travel_boots[2]
 
-    -- Count current number of TP scrolls
+    -- 统计当前 TP 数量（含备用背包）
     local iScrollCount = 0
     for i = 9, 16 do
         local sCurItem = npcBot:GetItemInSlot(i)
@@ -307,19 +313,21 @@ function M.WeNeedTpscroll()
         end
     end
 
+    -- 3 分钟内不买 TP
     if DotaTime() <= 3 * 60 then
         return
     end
-    -- If we are at the sideshop or fountain with no TPs, then buy one or two
+
+    -- 泉水或商店附近且 TP 不足时购买
     if
         ((iScrollCount <= 2 and DotaTime() >= 5 * 60) or iScrollCount == 0) and item_travel_boots_1 == nil and
             item_travel_boots_2 == nil
      then
         if npcBot:DistanceFromFountain() <= 200 then
             if (DotaTime() > 2 * 60 and DotaTime() < 20 * 60) then
-                npcBot:ActionImmediate_PurchaseItem("item_tpscroll")
+                npcBot:ActionImmediate_PurchaseItem("item_tpscroll")          -- 买1个
             elseif (DotaTime() >= 20 * 60) then
-                npcBot:ActionImmediate_PurchaseItem("item_tpscroll")
+                npcBot:ActionImmediate_PurchaseItem("item_tpscroll")          -- 买2个
                 npcBot:ActionImmediate_PurchaseItem("item_tpscroll")
             end
         else
@@ -328,6 +336,7 @@ function M.WeNeedTpscroll()
     end
 end
 
+-- 出售指定的物品（格子 > 5 且在商店附近时执行）
 function M.SellSpecifiedItem(item_name)
     local npcBot = GetBot()
     local itemCount = 0
@@ -343,6 +352,7 @@ function M.SellSpecifiedItem(item_name)
         end
     end
 
+    -- 格子满且商店附近时出售
     if
         (item ~= nil and itemCount > 5 and
             (npcBot:DistanceFromFountain() <= 600 or npcBot:DistanceFromSideShop() <= 200 or
@@ -352,6 +362,7 @@ function M.SellSpecifiedItem(item_name)
     end
 end
 
+-- 统计单位的物品栏格数（含背包，0-8）
 function M.GetItemSlotsCount2(npcBot)
     local itemCount = 0
     for i = 0, 8 do
@@ -360,14 +371,13 @@ function M.GetItemSlotsCount2(npcBot)
             itemCount = itemCount + 1
         end
     end
-
     return itemCount
 end
 
+-- 统计当前英雄的物品栏格数
 function M.GetItemSlotsCount()
     local npcBot = GetBot()
     local itemCount = 0
-
     for i = 0, 8 do
         local sCurItem = npcBot:GetItemInSlot(i)
         if (sCurItem ~= nil) then

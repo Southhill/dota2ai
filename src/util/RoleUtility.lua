@@ -1,7 +1,6 @@
 ----------------------------------------------------------------------------------------------------
 -- BOT EXPERIMENT Author:Arizona Fauzie Link:http://steamcommunity.com/sharedfiles/filedetails/?id=837040016
-----------------------------------------------------------------------------------------------------
--- generic database
+-- 角色工具模块 —— 定义每个英雄的角色定位（核心、辅助、推进等）
 ----------------------------------------------------------------------------------------------------
 
 local X = {}
@@ -10,16 +9,16 @@ local Tools = require(GetScriptDirectory() .. "/util/Tools")
 local Enum = require(GetScriptDirectory() .. "/const/enum")
 
 ----------------------------------------------------------------------------------------------------
-
--- ["carry"] will become more useful later in the game if they gain a significant gold advantage.
--- ["durable"] has the ability to last longer in teamfights.
--- ["support"] can focus less on amassing gold and items, and more on using their abilities to gain an advantage for the team.
--- ["escape"] has the ability to quickly avoid death.
--- ["nuker"] can quickly kill enemy heroes using high damage spells with low cooldowns.
--- ["pusher"] can quickly siege and destroy towers and barracks at all points of the game.
--- ["disabler"] has a guaranteed disable for one or more of their spells.
--- ["initiator"] good at starting a teamfight.
--- ["jungler"] can farm effectively from neutral creeps inside the jungle early in the game.
+-- 角色说明：
+-- ["carry"]（核心）：后期通过经济优势变得有用
+-- ["durable"]（耐久）：在团战中存活更久
+-- ["support"]（辅助）：不依赖经济，用技能为团队创造优势
+-- ["escape"]（逃生）：能快速避免死亡
+-- ["nuker"]（爆发）：用高伤害短CD技能击杀敌方英雄
+-- ["pusher"]（推进）：能快速摧毁防御塔和兵营
+-- ["disabler"]（控制）：有稳定控制技能
+-- ["initiator"]（先手）：擅长开启团战
+-- ["jungler"]（打野）：前期能有效打野发育
 
 X["hero_roles"] = {
 	["npc_dota_hero_abaddon"] = {

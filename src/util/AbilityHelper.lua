@@ -1,17 +1,22 @@
+----------------------------------------------------------------------------
+--	Ranked Matchmaking AI
+--	技能辅助模块 —— 提供通用的技能使用辅助函数
+----------------------------------------------------------------------------
 local BotsInit = require("game/botsinit")
 
 local M = BotsInit.CreateGeneric()
 
+-- 常量定义
 M.const = {
-    MAX_SEARCH_DISTANCE = 1600,
-    MAX_ALLY_SEARCH_DISTANCE = 1200,
-    EXTRA_SEARCH_DISTANCE = 300,
-    WARNING_DISTANCE = 600
+    MAX_SEARCH_DISTANCE = 1600,           -- 最大搜索距离
+    MAX_ALLY_SEARCH_DISTANCE = 1200,      -- 最大友方搜索距离
+    EXTRA_SEARCH_DISTANCE = 300,          -- 额外搜索距离
+    WARNING_DISTANCE = 600                -- 警戒距离
 }
 
+-- 检查技能加点表是否需要裁剪（当等级较低时移除多余的加点项）
 function M.checkAbilityBuild(abilityTree)
     local npcBot = GetBot()
-
     if #abilityTree > 26 - npcBot:GetLevel() then
         local level = npcBot:GetLevel()
         for _ = 1, level do
@@ -20,10 +25,12 @@ function M.checkAbilityBuild(abilityTree)
     end
 end
 
+-- 判断目标是否为肉山（Roshan）
 function M.isRoshan(npcTarget)
     return npcTarget ~= nil and npcTarget:IsAlive() and string.find(npcTarget:GetUnitName(), "roshan")
 end
 
+-- 判断目标是否处于被控制状态
 function M.isDisabled(npcTarget)
     if npcTarget:IsRooted() or npcTarget:IsStunned() or npcTarget:IsHexed() then
         return true
@@ -32,20 +39,19 @@ function M.isDisabled(npcTarget)
     end
 end
 
+-- 判断目标是否为有效的敌方英雄目标
 function M.isValidTarget(npcTarget)
     return npcTarget ~= nil and npcTarget:IsAlive() and npcTarget:IsHero()
 end
 
+-- 检查目标是否有禁止施法的减益效果（如寒冬诅咒、回光返照等）
 function M.hasForbiddenModifier(npcTarget)
     local modifier = {
-        "modifier_winter_wyvern_winters_curse",
-        "modifier_winter_wyvern_winters_curse_aura",
-        "modifier_abaddon_borrowed_time",
-        "modifier_obsidian_destroyer_astral_imprisonment_prison" -- "modifier_modifier_dazzle_shallow_grave",
-        -- "modifier_modifier_oracle_false_promise",
-        -- "modifier_oracle_fates_edict"
+        "modifier_winter_wyvern_winters_curse",           -- 寒冬诅咒
+        "modifier_winter_wyvern_winters_curse_aura",      -- 寒冬诅咒光环
+        "modifier_abaddon_borrowed_time",                 -- 回光返照
+        "modifier_obsidian_destroyer_astral_imprisonment_prison" -- 星体禁锢
     }
-
     for _, mod in pairs(modifier) do
         if npcTarget:HasModifier(mod) then
             return true
@@ -54,9 +60,9 @@ function M.hasForbiddenModifier(npcTarget)
     return false
 end
 
+-- 检查目标是否有林肯法球/法术反射状态
 function M.hasSphere(npcTarget)
     local modifier = {"modifier_item_sphere", "modifier_item_sphere_target"}
-
     for _, mod in pairs(modifier) do
         if npcTarget:HasModifier(mod) then
             return true
@@ -65,10 +71,10 @@ function M.hasSphere(npcTarget)
     return false
 end
 
+-- 判断目标是否为可疑的幻象
 function M.isSuspiciousIllusion(npcTarget)
-    -- TO DO Need to detect enemy hero's illusions better
     local bot = GetBot()
-    -- Detect allies's illusions
+    -- 检测已知的幻象 modifier
     if
         npcTarget:IsIllusion() or npcTarget:HasModifier("modifier_illusion") or
             npcTarget:HasModifier("modifier_phantom_lancer_doppelwalk_illusion") or
@@ -78,7 +84,7 @@ function M.isSuspiciousIllusion(npcTarget)
      then
         return true
     else
-        -- Detect replicate and wall of replica illusions
+        -- 检测复制体和倒影
         if GetGameMode() ~= GAMEMODE_MO then
             if npcTarget:GetTeam() ~= bot:GetTeam() then
                 local TeamMember = GetTeamPlayers(GetTeam())
@@ -94,6 +100,7 @@ function M.isSuspiciousIllusion(npcTarget)
     end
 end
 
+-- 常规施法判定（可见、非无敌、非幻象、无禁止效果、非魔免）
 function M.normalCanCast(npcTarget)
     return npcTarget:CanBeSeen() and not npcTarget:IsInvulnerable() and not M.isSuspiciousIllusion(npcTarget) and
         not M.hasForbiddenModifier(npcTarget) and

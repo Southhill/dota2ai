@@ -1,11 +1,13 @@
 ----------------------------------------------------------------------------------------------------
 -- Author:Arizona Fauzie  BOT EXPERIMENT Link:http://steamcommunity.com/sharedfiles/filedetails/?id=837040016
+-- 插眼工具模块 —— 管理侦查守卫的放置位置
 ----------------------------------------------------------------------------------------------------
 local X = {}
 
-local visionRad = 1600
+local visionRad = 1600  -- 守卫视野范围
 
----RADIANT WARDING SPOT
+--- 天辉方插眼点位 ---
+-- 防御塔被摧毁后的替代眼位
 local RADIANT_T3TOPFALL = Vector(-6600.000000, -3072.000000, 0.000000)
 local RADIANT_T3MIDFALL = Vector(-4314.000000, -3887.000000, 0.000000)
 local RADIANT_T3BOTFALL = Vector(-3586.000000, -6131.000000, 0.000000)
@@ -18,15 +20,18 @@ local RADIANT_T1TOPFALL = Vector(-5369.000000, 2303.000000, 0.000000)
 local RADIANT_T1MIDFALL = Vector(766.000000, -2304.000000, 0.000000)
 local RADIANT_T1BOTFALL = Vector(5030.000000, -3705.000000, 0.000000)
 
+-- 关键路口眼位
 local RADIANT_MANDATE1 = Vector(-1571.000000, 215.000000, 0.000000)
 local RADIANT_MANDATE2 = Vector(2865.000000, -2785.000000, 0.000000)
 
+-- 进攻眼位
 local RADIANT_AGGRESSIVETOP = Vector(-1302.000000, 4828.000000, 0.000000)
 local RADIANT_AGGRESSIVEMID1 = Vector(735.000000, 2689.000000, 0.000000)
 local RADIANT_AGGRESSIVEMID2 = Vector(3222.000000, -68.000000, 0.000000)
 local RADIANT_AGGRESSIVEBOT = Vector(5112.000000, 766.000000, 0.000000)
 
----DIRE WARDING SPOT
+--- 夜魇方插眼点位 ---
+-- 防御塔被摧毁后的替代眼位
 local DIRE_T3TOPFALL = Vector(3087.000000, 5690.000000, 0.000000)
 local DIRE_T3MIDFALL = Vector(4024.000000, 3445.000000, 0.000000)
 local DIRE_T3BOTFALL = Vector(6354.000000, 2606.000000, 0.000000)
@@ -47,72 +52,45 @@ local DIRE_AGGRESSIVEMID1 = Vector(-3441.000000, -1583.000000, 0.000000)
 local DIRE_AGGRESSIVEMID2 = Vector(-889.000000, -3998.000000, 0.000000)
 local DIRE_AGGRESSIVEBOT = Vector(497.000000, -5378.000000, 0.000000)
 
+-- 所有防御塔的枚举列表（用于监测哪些塔已倒）
 local Towers = {
-	TOWER_TOP_1,
-	TOWER_MID_1,
-	TOWER_BOT_1,
-	TOWER_TOP_2,
-	TOWER_MID_2,
-	TOWER_BOT_2,
-	TOWER_TOP_3,
-	TOWER_MID_3,
-	TOWER_BOT_3
+	TOWER_TOP_1, TOWER_MID_1, TOWER_BOT_1,
+	TOWER_TOP_2, TOWER_MID_2, TOWER_BOT_2,
+	TOWER_TOP_3, TOWER_MID_3, TOWER_BOT_3
 }
 
+-- 天辉方塔倒后的替补眼位
 local WardSpotTowerFallRadiant = {
-	RADIANT_T1TOPFALL,
-	RADIANT_T1MIDFALL,
-	RADIANT_T1BOTFALL,
-	RADIANT_T2TOPFALL,
-	RADIANT_T2MIDFALL,
-	RADIANT_T2BOTFALL,
-	RADIANT_T3TOPFALL,
-	RADIANT_T3MIDFALL,
-	RADIANT_T3BOTFALL
+	RADIANT_T1TOPFALL, RADIANT_T1MIDFALL, RADIANT_T1BOTFALL,
+	RADIANT_T2TOPFALL, RADIANT_T2MIDFALL, RADIANT_T2BOTFALL,
+	RADIANT_T3TOPFALL, RADIANT_T3MIDFALL, RADIANT_T3BOTFALL
 }
 
+-- 夜魇方塔倒后的替补眼位
 local WardSpotTowerFallDire = {
-	DIRE_T1TOPFALL,
-	DIRE_T1MIDFALL,
-	DIRE_T1BOTFALL,
-	DIRE_T2TOPFALL,
-	DIRE_T2MIDFALL,
-	DIRE_T2BOTFALL,
-	DIRE_T3TOPFALL,
-	DIRE_T3MIDFALL,
-	DIRE_T3BOTFALL
+	DIRE_T1TOPFALL, DIRE_T1MIDFALL, DIRE_T1BOTFALL,
+	DIRE_T2TOPFALL, DIRE_T2MIDFALL, DIRE_T2BOTFALL,
+	DIRE_T3TOPFALL, DIRE_T3MIDFALL, DIRE_T3BOTFALL
 }
 
+-- 计算两个向量的距离（使用 x,y 坐标）
 function X.GetDistance(s, t)
 	return math.sqrt((s[1] - t[1]) * (s[1] - t[1]) + (s[2] - t[2]) * (s[2] - t[2]))
 end
 
+-- 获取关键路口眼位（河道/野区入口）
 function X.GetMandatorySpot()
-	local MandatorySpotRadiant = {
-		RADIANT_MANDATE1,
-		RADIANT_MANDATE2
-	}
-
-	local MandatorySpotDire = {
-		DIRE_MANDATE1,
-		DIRE_MANDATE2
-	}
-
+	local MandatorySpotRadiant = { RADIANT_MANDATE1, RADIANT_MANDATE2 }
+	local MandatorySpotDire = { DIRE_MANDATE1, DIRE_MANDATE2 }
 	return GetTeam() == TEAM_RADIANT and MandatorySpotRadiant or MandatorySpotDire
-
-	-- if GetTeam() == TEAM_RADIANT then
-	-- 	return MandatorySpotRadiant
-	-- else
-	-- 	return MandatorySpotDire
-	-- end
 end
 
+-- 获取防御塔被摧毁后需要补的眼位
 function X.GetWardSpotWhenTowerFall()
 	local wardSpot = {}
-
 	for i = 1, #Towers do
 		local t = GetTower(GetTeam(), Towers[i])
-		if t == nil then
+		if t == nil then  -- 该塔已倒
 			if GetTeam() == TEAM_RADIANT then
 				table.insert(wardSpot, WardSpotTowerFallRadiant[i])
 			else
@@ -120,24 +98,13 @@ function X.GetWardSpotWhenTowerFall()
 			end
 		end
 	end
-
 	return wardSpot
 end
 
+-- 获取进攻眼位（用于压制敌方野区）
 function X.GetAggressiveSpot()
-	local AggressiveDire = {
-		DIRE_AGGRESSIVETOP,
-		DIRE_AGGRESSIVEMID1,
-		DIRE_AGGRESSIVEMID2,
-		DIRE_AGGRESSIVEBOT
-	}
-
-	local AggressiveRadiant = {
-		RADIANT_AGGRESSIVETOP,
-		RADIANT_AGGRESSIVEMID1,
-		RADIANT_AGGRESSIVEMID2,
-		RADIANT_AGGRESSIVEBOT
-	}
+	local AggressiveDire = { DIRE_AGGRESSIVETOP, DIRE_AGGRESSIVEMID1, DIRE_AGGRESSIVEMID2, DIRE_AGGRESSIVEBOT }
+	local AggressiveRadiant = { RADIANT_AGGRESSIVETOP, RADIANT_AGGRESSIVEMID1, RADIANT_AGGRESSIVEMID2, RADIANT_AGGRESSIVEBOT }
 	if GetTeam() == TEAM_RADIANT then
 		return AggressiveRadiant
 	else
@@ -145,6 +112,7 @@ function X.GetAggressiveSpot()
 	end
 end
 
+-- 获取 Bot 身上的侦查守卫
 function X.GetItemWard(bot)
 	for i = 0, 8 do
 		local item = bot:GetItemInSlot(i)

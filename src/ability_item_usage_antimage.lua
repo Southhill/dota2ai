@@ -1,123 +1,105 @@
 ----------------------------------------------------------------------------
 --	Ranked Matchmaking AI v1.1 NewStructure
 --	Author: adamqqq		Email:adamqqq@163.com
+--	敌法师 (Anti-Mage) 技能与物品使用脚本
 ----------------------------------------------------------------------------
 --------------------------------------
--- General Initialization
+-- 通用初始化
 --------------------------------------
 local utility = require(GetScriptDirectory() .. "/util/Utility")
 require(GetScriptDirectory() .. "/ability_item_usage_generic")
 local AbilityExtensions = require(GetScriptDirectory() .. "/util/AbilityAbstraction")
 
--- for k,v in pairs(GetUnitList(UNIT_LIST_ALLIED_WARDS)) do
--- 	print("unit: "..v:GetUnitName()..", "..AbilityExtensions:ToStringVector(v:GetLocation()))
--- end
--- for k,v in pairs(GetUnitList(UNIT_LIST_ENEMY_WARDS)) do
--- 	print("unit: "..v:GetUnitName()..", "..AbilityExtensions:ToStringVector(v:GetLocation()))
--- end
--- for k,v in pairs(GetUnitList(UNIT_LIST_ENEMY_HEROES)) do
--- 	print("unit: "..v:GetUnitName()..", "..AbilityExtensions:ToStringVector(v:GetLocation()))
--- end
-
 local debugmode = false
 local npcBot = GetBot()
-local Talents = {}
-local Abilities = {}
-local AbilitiesReal = {}
+local Talents = {}       -- 天赋列表
+local Abilities = {}     -- 技能名称列表
+local AbilitiesReal = {} -- 技能对象列表
 
+-- 初始化技能和天赋
 ability_item_usage_generic.InitAbility(Abilities, AbilitiesReal, Talents)
 
+-- 技能加点顺序表（共30级）
+-- 主1技能（法力燃烧），副2技能（闪烁），3技能（法术护盾），5技能（大招）
 local AbilityToLevelUp = {
-	Abilities[1],
-	Abilities[2],
-	Abilities[1],
-	Abilities[3],
-	Abilities[2],
-	Abilities[5],
-	Abilities[2],
-	Abilities[2],
-	Abilities[1],
-	"talent",
-	Abilities[1],
-	Abilities[5],
-	Abilities[3],
-	Abilities[3],
-	"talent",
-	Abilities[3],
-	"nil",
-	Abilities[5],
-	"nil",
-	"talent",
-	"nil",
-	"nil",
-	"nil",
-	"nil",
-	"talent"
+	Abilities[1],  -- 1级: 法力燃烧
+	Abilities[2],  -- 2级: 闪烁
+	Abilities[1],  -- 3级: 法力燃烧
+	Abilities[3],  -- 4级: 法术护盾
+	Abilities[2],  -- 5级: 闪烁
+	Abilities[5],  -- 6级: 大招
+	Abilities[2],  -- 7级: 闪烁
+	Abilities[2],  -- 8级: 闪烁
+	Abilities[1],  -- 9级: 法力燃烧
+	"talent",      -- 10级: 天赋
+	Abilities[1],  -- 11级: 法力燃烧
+	Abilities[5],  -- 12级: 大招
+	Abilities[3],  -- 13级: 法术护盾
+	Abilities[3],  -- 14级: 法术护盾
+	"talent",      -- 15级: 天赋
+	Abilities[3],  -- 16级: 法术护盾
+	"nil",         -- 17级: 属性奖励
+	Abilities[5],  -- 18级: 大招
+	"nil",         -- 19级: 属性奖励
+	"talent",      -- 20级: 天赋
+	"nil",         -- 21级: 属性奖励
+	"nil",         -- 22级: 属性奖励
+	"nil",         -- 23级: 属性奖励
+	"nil",         -- 24级: 属性奖励
+	"talent"       -- 25级: 天赋
 }
 
+-- 天赋选择树（按照顺序：10/15/20/25级左右天赋）
 local TalentTree = {
-	function()
-		return Talents[1]
-	end,
-	function()
-		return Talents[4]
-	end,
-	function()
-		return Talents[6]
-	end,
-	function()
-		return Talents[8]
-	end,
-	function()
-		return Talents[2]
-	end,
-	function()
-		return Talents[3]
-	end,
-	function()
-		return Talents[5]
-	end,
-	function()
-		return Talents[7]
-	end
+	function() return Talents[1] end,  -- 10级左天赋
+	function() return Talents[4] end,  -- 15级右天赋
+	function() return Talents[6] end,  -- 20级右天赋
+	function() return Talents[8] end,  -- 25级右天赋
+	function() return Talents[2] end,  -- 10级右天赋
+	function() return Talents[3] end,  -- 15级左天赋
+	function() return Talents[5] end,  -- 20级左天赋
+	function() return Talents[7] end,  -- 25级左天赋
 }
 
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
+-- 技能加点主入口
 function AbilityLevelUpThink()
 	ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
--- Ability Usage Thinking
+-- 技能使用逻辑
 --------------------------------------
 local cast = {}
-cast.Desire = {}
-cast.Target = {}
-cast.Type = {}
-local Consider = {}
+cast.Desire = {}   -- 施放欲望值
+cast.Target = {}   -- 施放目标
+cast.Type = {}     -- 施放类型
+local Consider = {}-- 各技能的考虑函数
 local CanCast = {utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.UCanCast, utility.NCanCast}
 local enemyDisabled = utility.enemyDisabled
 
+-- 计算连招总伤害
 function GetComboDamage()
 	return ability_item_usage_generic.GetComboDamage(AbilitiesReal)
 end
 
+-- 计算连招总蓝耗
 function GetComboMana()
 	return ability_item_usage_generic.GetComboMana(AbilitiesReal)
 end
 
+-- 计算闪烁攻击的最佳落点（预测敌方移动方向）
 local function GetBlinkAttackLocation(enemy)
 	local attackDistance = enemy:GetBoundingRadius() + npcBot:GetBoundingRadius()
 	if AbilityExtensions:HasPhasedMovement(enemy) or AbilityExtensions:HasUnobstructedMovement(enemy) then
 		attackDistance = npcBot:GetAttackRange()
 	end
+	-- 预测敌人下一步位置
 	local enemyNextStep =
 		enemy:GetLocation() + Vector(math.cos(enemy:GetFacing()), math.sin(enemy:GetFacing())) * attackDistance
 	local distanceFromNextStep = GetUnitToLocationDistance(npcBot, enemyNextStep)
 	local blinkRadius = AbilitiesReal[2]:GetSpecialValueInt("blink_range")
-	if AbilityExtensions:HasPhasedMovement(enemy) or AbilityExtensions:HasUnobstructedMovement(enemy) then
-	end
 	if blinkRadius <= distanceFromNextStep then
 		return AbilityExtensions:GetPointFromLineByDistance(npcBot:GetLocation(), enemy:GetLocation(), blinkRadius)
 	else
@@ -125,10 +107,12 @@ local function GetBlinkAttackLocation(enemy)
 	end
 end
 
+-- 判断闪烁到目标附近是否太危险
 local function TooDangerousToBlinkNear(npc)
 	local enoughHealth =
 		AbilityExtensions:GetHealthPercent(npcBot) >= AbilityExtensions:GetHealthPercent(npc) + 0.2 and
 		npcBot:GetHealth() >= npc:GetHealth() * 0.8
+	-- 极度危险的情况（石化凝视、时间结界、猴子大招、无敌）
 	local isVeryDangerous =
 		npc:HasModifier("modifier_medusa_stone_gaze") or npc:HasModifier("modifier_faceless_void_chronosphere_selfbuff") or
 		npc:HasModifier("modifier_monkey_king_fur_army_soldier_in_position") or
@@ -136,6 +120,7 @@ local function TooDangerousToBlinkNear(npc)
 	if isVeryDangerous then
 		return true
 	end
+	-- 危险的情况（蝙蝠燃油、冰龙飞行、魔免）
 	local isDangerous =
 		npc:HasModifier("modifier_batrider_firefly") or npc:HasModifier("modifier_winter_wyvern_arctic_burn_flight") or
 		npc:IsMagicImmune()
@@ -145,13 +130,15 @@ local function TooDangerousToBlinkNear(npc)
 	return false
 end
 
+-- 技能2（闪烁）的考虑函数
 Consider[2] = function()
 	local abilityNumber = 2
 	--------------------------------------
-	-- Generic Variable Setting
+	-- 通用变量设置
 	--------------------------------------
 	local ability = AbilitiesReal[abilityNumber]
 
+	-- 技能不可用或被禁用地形传送
 	if not ability:IsFullyCastable() or AbilityExtensions:CannotTeleport(npcBot) then
 		return BOT_ACTION_DESIRE_NONE, 0
 	end
@@ -162,7 +149,7 @@ Consider[2] = function()
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	local trees = npcBot:GetNearbyTrees(300)
 
-	--try to kill enemy hero
+	-- 非撤退模式下尝试击杀敌方英雄
 	if (npcBot:GetActiveMode() ~= BOT_MODE_RETREAT) then
 		if (WeakestEnemy ~= nil) then
 			local enemys2 = WeakestEnemy:GetNearbyHeroes(900, true, BOT_MODE_NONE)
@@ -181,15 +168,15 @@ Consider[2] = function()
 		end
 	end
 	--------------------------------------
-	-- Mode based usage
+	-- 基于模式的闪烁使用
 	--------------------------------------
-	-- If we get stuck
+	-- 卡住时闪烁逃生
 	if utility.IsStuck(npcBot) then
 		local loc = utility.GetEscapeLoc()
 		return BOT_ACTION_DESIRE_HIGH, utility.GetUnitsTowardsLocation(npcBot, loc, CastRange)
 	end
 
-	-- If we're seriously retreating, see if we can land a stun on someone who's damaged us recently
+	-- 撤退时闪烁回基地
 	if
 		(npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot:DistanceFromFountain() >= 2000 and
 			(ManaPercentage >= 0.6 or npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH or HealthPercentage <= 0.6))
@@ -197,7 +184,7 @@ Consider[2] = function()
 		return BOT_ACTION_DESIRE_HIGH, utility.GetUnitsTowardsLocation(npcBot, GetAncient(GetTeam()), CastRange)
 	end
 
-	-- If we're going after someone
+	-- 追击敌人时闪烁靠近
 	if
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or

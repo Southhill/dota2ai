@@ -1,14 +1,16 @@
 ----------------------------------------------------------------------------
 --	Ranked Matchmaking AI v1.3 New Structure
 --	Author: adamqqq		Email:adamqqq@163.com
+--	英雄选择模块 —— 管理 AI 的英雄池、智能选人、分路分配
 ----------------------------------------------------------------------------
---Special thanks to DblTap for his commit of "Updated hero selection to try to build a team with one hero in each position".
---DblTap: http://steamcommunity.com/profiles/76561197967823929/ Github Link：https://github.com/adamqqqplay/dota2ai/pull/3
+-- 特别感谢 DblTap 提交的"根据位置构建团队阵容"功能
+-- DblTap: http://steamcommunity.com/profiles/76561197967823929/
+-- Github: https://github.com/adamqqqplay/dota2ai/pull/3
 local role = require(GetScriptDirectory() .. "/util/RoleUtility")
 local bnUtil = require(GetScriptDirectory() .. "/util/BotNameUtility")
 local config = require(GetScriptDirectory() .. "/const/config")
 
---recording all dota2 heroes
+-- Dota2 所有英雄的内部名称列表（英雄池）
 local hero_pool = {
 	"npc_dota_hero_abaddon",
 	"npc_dota_hero_abyssal_underlord",
@@ -1462,7 +1464,7 @@ function FillLaneAssignmentTable()
 	local TeamMember = GetTeamPlayers(GetTeam())
 	for i = 1, #TeamMember do
 		--[[if GetTeamMember(i) ~= nil and GetTeamMember(i):IsHero() then
-			local unit_name =  GetTeamMember(i):GetUnitName(); 
+			local unit_name =  GetTeamMember(i):GetUnitName();
 			if PairsHeroNameNRole[unit_name] == "support" and not supportAlreadyAssigned then
 				HeroLanes[i] = LANE_TOP;
 				supportAlreadyAssigned = true;
@@ -1481,7 +1483,7 @@ function FillLaneAssignmentTable()
 					HeroLanes[i] = LANE_BOT;
 				else
 					HeroLanes[i] = LANE_TOP;
-				end	
+				end
 			end
 		end]]
 		if GetTeamMember(i) ~= nil and GetTeamMember(i):IsHero() then
