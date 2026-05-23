@@ -100,7 +100,7 @@ dota2ai/
 1. **Clone or download** this repository to your Dota 2 bot scripts folder:
    - Windows: `Steam/steamapps/common/dota 2 beta/game/dota/scripts/vscripts/`
 2. **Launch Dota 2** and start a local lobby with bots.
-3. Select **"Ranked Matchmaking AI"** (RMMAI) in the bot selection dropdown.
+3. Select **"Agent2026"** in the bot selection dropdown.
 4. **Enjoy!** The bots will automatically pick heroes, buy items, and play with improved AI.
 
 > 💡 **Tip:** You can control bot hero selection and lane assignment via in-game chat. See the [Chat Commands](#-chat-commands) section below.

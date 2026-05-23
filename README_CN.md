@@ -97,7 +97,7 @@ dota2ai/
 1. **下载或克隆** 本仓库到 Dota 2 的 Bot 脚本文件夹：
    - Windows: `Steam/steamapps/common/dota 2 beta/game/dota/scripts/vscripts/`
 2. **启动 Dota 2**，创建一个本地房间。
-3. 在 Bot 选择下拉菜单中选择 **"Ranked Matchmaking AI" (RMMAI)**。
+3. 在 Bot 选择下拉菜单中选择 **"Agent2026"**。
 4. **开始游戏！** AI 会自动选择英雄、购买装备，并以改进后的智能进行游戏。
 
 > 💡 **提示：** 你可以在游戏内通过聊天频道控制 AI 的选人和分路。详见下方的 [聊天指令](#-聊天指令) 章节。
