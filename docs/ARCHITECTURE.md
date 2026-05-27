@@ -121,17 +121,17 @@
 
 每个模式文件实现 `GetDesire()` 和 `Think()` 两个核心函数：
 
-| 模式文件 | 功能 |
-|---------|------|
-| `mode_laning_generic.lua` | 对线期行为 |
-| `mode_farm_generic.lua` | 打钱/刷野行为 |
-| `mode_push_tower_*.lua` | 三路推进/防守 |
-| `mode_retreat_*.lua` | 撤退逻辑 |
-| `mode_team_roam_generic.lua` | 团队游走抓人 |
-| `mode_rune_generic.lua` | 神符拾取 |
-| `mode_ward_generic.lua` | 插眼巡逻 |
-| `mode_side_shop_generic.lua` | 边路商店购物 |
-| `mode_secret_shop_generic.lua` | 神秘商店购物 |
+| 模式文件                       | 功能          |
+| ------------------------------ | ------------- |
+| `mode_laning_generic.lua`      | 对线期行为    |
+| `mode_farm_generic.lua`        | 打钱/刷野行为 |
+| `mode_push_tower_*.lua`        | 三路推进/防守 |
+| `mode_retreat_*.lua`           | 撤退逻辑      |
+| `mode_team_roam_generic.lua`   | 团队游走抓人  |
+| `mode_rune_generic.lua`        | 神符拾取      |
+| `mode_ward_generic.lua`        | 插眼巡逻      |
+| `mode_side_shop_generic.lua`   | 边路商店购物  |
+| `mode_secret_shop_generic.lua` | 神秘商店购物  |
 
 **核心机制**: 每个模式返回一个 **欲望值 (Desire)**，Dota2 引擎比较所有模式返回的欲望值，选择最高者作为当前行为。
 
@@ -186,23 +186,23 @@
 - 根据防御塔状态选择眼位
 
 #### 其他工具
-| 工具 | 功能 |
-|------|------|
-| `CampUtility.lua` | 野怪营地管理（刷新时间、拉野点坐标） |
-| `RoleUtility.lua` | 英雄角色评分（carry/support/nuker 等 9 个维度） |
-| `BotNameUtility.lua` | 从 TI 职业战队数据生成 Bot 名称 |
-| `MinionUtility.lua` | 召唤物控制（死灵书、野怪、幻象） |
-| `NewMinionUtil.lua` | 新召唤物系统（熊灵、豪猪、战鹰等） |
-| `ChatSystem.lua` | 版本公告/聊天消息 |
-| `BinDecHex.lua` | 二进制/十六进制转换（MIT 协议） |
+| 工具                 | 功能                                            |
+| -------------------- | ----------------------------------------------- |
+| `CampUtility.lua`    | 野怪营地管理（刷新时间、拉野点坐标）            |
+| `RoleUtility.lua`    | 英雄角色评分（carry/support/nuker 等 9 个维度） |
+| `BotNameUtility.lua` | 从 TI 职业战队数据生成 Bot 名称                 |
+| `MinionUtility.lua`  | 召唤物控制（死灵书、野怪、幻象）                |
+| `NewMinionUtil.lua`  | 新召唤物系统（熊灵、豪猪、战鹰等）              |
+| `ChatSystem.lua`     | 版本公告/聊天消息                               |
+| `BinDecHex.lua`      | 二进制/十六进制转换（MIT 协议）                 |
 
 ### 3.5 常量与配置层
 
-| 文件 | 功能 |
-|------|------|
+| 文件               | 功能                         |
+| ------------------ | ---------------------------- |
 | `const/config.lua` | 全局配置（debugMode 开关等） |
-| `const/enum.lua` | 枚举数据（隐身英雄列表等） |
-| `const/text.lua` | TI 职业战队/选手名称数据库 |
+| `const/enum.lua`   | 枚举数据（隐身英雄列表等）   |
+| `const/text.lua`   | TI 职业战队/选手名称数据库   |
 
 ---
 
@@ -261,7 +261,31 @@ AbilityExtensions
 
 使用自定义元表 `magicTable` 使所有表都自动继承这些方法。
 
-### 4.4 错误恢复机制
+### 4.4 Dota2 7.41c 兼容性适配
+
+项目于 2026年5月完成了 Dota2 7.41c 的兼容性适配，主要变更：
+
+#### 已废弃 API 替换
+
+| 已移除的 API                             | 替换方案                                                               | 影响范围                 |
+| ---------------------------------------- | ---------------------------------------------------------------------- | ------------------------ |
+| `module()` / `getfenv()`                 | 手动创建模块表 + 函数前缀 (`模块名 = {}` + `function 模块名.函数名()`) | 3 个核心模块文件         |
+| `dofile()`                               | `require()` (Dota2 沙箱禁用)                                           | 100+ 文件                |
+| `BotsInit.CreateGeneric()` + `setfenv()` | `local M = {}`                                                         | 7 个 util 文件           |
+| `RandomFloat()`                          | `math.random()`                                                        | `AbilityAbstraction.lua` |
+
+#### 新增安全包装函数
+
+- `utility.GetNearbyVisibleHeroes()` — 自动过滤不可见单位，避免 `GetHealth()`/`GetMana()` 等调用触发引擎警告
+- `GetWeakestUnit()` / `GetStrongestUnit()` — 增加了 `CanBeSeen()` 检查
+
+#### 模块加载安全问题修复
+
+修复了多个文件在模块加载时直接调用 `GetBot()` 导致 nil 引用崩溃的问题，加了 nil 安全检查。
+
+---
+
+### 4.5 错误恢复机制
 
 技能加点系统具有健壮的错误恢复：
 - `incorrectAbilityLevelUpNumber` — 记录加点偏移量

@@ -18,14 +18,36 @@ dota2ai/
 │   │   ├── enum.lua
 │   │   └── text.lua
 │   └── util/                   # 工具模块
-│       ├── Utility.lua
+│       ├── Utility.lua         # (含 GetNearbyVisibleHeroes)
 │       ├── CourierSystem.lua
 │       ├── ItemPurchaseSystem.lua
 │       └── ...
 ├── dev/                        # 开发测试脚本
 ├── changelog/                  # 更新日志
 └── docs/                       # 文档
+    ├── ARCHITECTURE.md         # 架构说明
+    ├── BEGINNER_GUIDE.md       # 新手开发指南
+    ├── DEVELOP.md              # Dota2 VScript 开发参考
+    ├── LOCAL_DEV_GUIDE.md      # 本地开发指南
+    └── UPGRADE_GUIDE.md        # Dota2 7.41c 升级计划
 ```
+
+## Dota2 7.41c 重要变更
+
+此项目已针对 Dota2 7.41c 的 Lua 引擎变更进行了兼容性修复。关键注意事项：
+
+### 不使用的 API
+- ❌ **`module()` / `getfenv()`** — 已移除，使用表前缀模式替代
+- ❌ **`dofile()`** — 已禁用，使用 `require()` 替代
+- ❌ **`setfenv()`** — 已移除，使用 `local M = {}` 模式
+- ❌ **`RandomFloat()` / `RandomInt()`** — 已移除，使用 `math.random()` 替代
+- ❌ **`BotsInit.CreateGeneric()`** — 已移除，使用 `local M = {}` 替代
+
+### 编码规范
+- 所有模块使用 `local M = {}` + `function M.FuncName()` 模式
+- 加载其他模块请使用 `local mod = require(GetScriptDirectory() .. "/path/to/mod")`
+- 对不可见的敌方单位调用属性方法（`GetHealth()`、`GetMana()` 等）会触发引擎警告
+- 使用 `utility.GetNearbyVisibleHeroes()` 替代 `npcBot:GetNearbyHeroes()` 自动过滤不可见单位
 
 ## 部署流程
 
