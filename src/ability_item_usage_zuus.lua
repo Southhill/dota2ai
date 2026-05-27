@@ -96,8 +96,8 @@ Consider[1] = function()
 	local CastRange = ability:GetCastRange()
 	local Damage = ability:GetSpecialValueInt("arc_damage")
 
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(CastRange + 300, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange + 300, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	local creeps = npcBot:GetNearbyLaneCreeps(CastRange + 300, true)
 	local Allcreeps = npcBot:GetNearbyCreeps(CastRange + 300, true)
@@ -215,8 +215,8 @@ Consider[2] = function()
 	local CastRange = ability:GetCastRange()
 	local Damage = ability:GetAbilityDamage()
 
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(CastRange + 300, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange + 300, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	local creeps = npcBot:GetNearbyCreeps(CastRange + 300, true)
 	local WeakestCreep, CreepHealth = utility.GetWeakestUnit(creeps)
@@ -247,7 +247,7 @@ Consider[2] = function()
 	end
 
 	--protect myself
-	local enemys2 = npcBot:GetNearbyHeroes(CastRange, true, BOT_MODE_NONE)
+	local enemys2 = utility.GetNearbyVisibleHeroes(npcBot, CastRange, true, BOT_MODE_NONE)
 	if (npcBot:WasRecentlyDamagedByAnyHero(5)) then
 		for _, enemy in pairs(enemys2) do
 			if
@@ -377,7 +377,7 @@ Consider[4] = function()
 	local CastRange = ability:GetCastRange()
 
 	local CreepHealth = 10000
-	local enemys = npcBot:GetNearbyHeroes(1600, true, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, 1600, true, BOT_MODE_NONE)
 	local WeakestEnemy, CreepHealth = utility.GetWeakestUnit(enemys)
 
 	local tower = nil

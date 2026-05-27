@@ -158,7 +158,7 @@ Consider[2] = function()
         return false
     end
     if AbilityExtensions:IsAttackingEnemies(npcBot) or AbilityExtensions:IsRetreating(npcBot) then
-        local nearbyEnemies = npcBot:GetNearbyHeroes(radius, true, BOT_MODE_NONE)
+        local nearbyEnemies = utility.GetNearbyVisibleHeroes(npcBot, radius, true, BOT_MODE_NONE)
         if #nearbyEnemies ~= 0 then
             return AbilityExtensions:Any(
                 nearbyEnemies,

@@ -100,8 +100,8 @@ Consider[1] = function()
 	local CastRange = ability:GetCastRange()
 	local Damage = ability:GetAbilityDamage()
 
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(CastRange + 300, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange + 300, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	local creeps = npcBot:GetNearbyCreeps(CastRange + 300, true)
 	local WeakestCreep, CreepHealth = utility.GetWeakestUnit(creeps)
@@ -134,7 +134,7 @@ Consider[1] = function()
 	-- Mode based usage
 	--------------------------------------
 	--protect myself
-	local enemys2 = npcBot:GetNearbyHeroes(500, true, BOT_MODE_NONE)
+	local enemys2 = utility.GetNearbyVisibleHeroes(npcBot, 500, true, BOT_MODE_NONE)
 	if (npcBot:WasRecentlyDamagedByAnyHero(5)) then
 		for _, npcEnemy in pairs(enemys2) do
 			if (CanCast[abilityNumber](npcEnemy)) then
@@ -198,8 +198,8 @@ Consider[4] = function()
 	local Damage = 5 * AbilitiesReal[1]:GetAbilityDamage()
 	local Radius = ability:GetAOERadius()
 
-	local allys = npcBot:GetNearbyHeroes(1600, false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(Radius, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1600, false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, Radius, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	local creeps = npcBot:GetNearbyCreeps(Radius, true)
 	local WeakestCreep, CreepHealth = utility.GetWeakestUnit(creeps)

@@ -102,8 +102,8 @@ Consider[1] = function()
 	local Radius = ability:GetAOERadius()
 	local CastPoint = ability:GetCastPoint()
 
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(CastRange + 300, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange + 300, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	local creeps = npcBot:GetNearbyCreeps(CastRange + 300, true)
 	local WeakestCreep, CreepHealth = utility.GetWeakestUnit(creeps)
@@ -190,8 +190,8 @@ Consider[2] = function()
 	local CastPoint = ability:GetCastPoint()
 	local Radius = ability:GetAOERadius()
 
-	local allys = npcBot:GetNearbyHeroes(CastRange + 300, false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(CastRange + 300, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, CastRange + 300, false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange + 300, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	local creeps = npcBot:GetNearbyCreeps(CastRange + 300, true)
 	local WeakestCreep, CreepHealth = utility.GetWeakestUnit(creeps)
@@ -200,7 +200,7 @@ Consider[2] = function()
 	-- Global high-priorty usage
 	--------------------------------------
 	-- If we're in a teamfight, use it on the scariest enemy
-	local tableNearbyAttackingAlliedHeroes = npcBot:GetNearbyHeroes(1000, false, BOT_MODE_ATTACK)
+	local tableNearbyAttackingAlliedHeroes = utility.GetNearbyVisibleHeroes(npcBot, 1000, false, BOT_MODE_ATTACK)
 	if (#tableNearbyAttackingAlliedHeroes >= 2) then
 		local npcMostDangerousEnemy = nil
 		local nMostDangerousDamage = 0
@@ -223,7 +223,7 @@ Consider[2] = function()
 	-- Mode based usage
 	--------------------------------------
 	--protect myself
-	local enemys2 = npcBot:GetNearbyHeroes(Radius, true, BOT_MODE_NONE)
+	local enemys2 = utility.GetNearbyVisibleHeroes(npcBot, Radius, true, BOT_MODE_NONE)
 	if (npcBot:WasRecentlyDamagedByAnyHero(5) and #enemys2 ~= nil and #enemys2 > 0) then
 		if (CanCast[abilityNumber](npcBot) and not npcBot:HasModifier("modifier_dark_seer_ion_shell")) then
 			return BOT_ACTION_DESIRE_HIGH, npcBot
@@ -371,7 +371,7 @@ Consider[3] = function()
 	end
 
 	-- Help our ally
-	local allysRetreat = npcBot:GetNearbyHeroes(CastRange + 300, false, BOT_MODE_RETREAT)
+	local allysRetreat = utility.GetNearbyVisibleHeroes(npcBot, CastRange + 300, false, BOT_MODE_RETREAT)
 	for k, ally in pairs(allys) do
 		if (CanCast[abilityNumber](ally) and ally:WasRecentlyDamagedByAnyHero(2.0)) and ShouldSurge(ally) then
 			if (AOESurge:IsTrained() == true) then
@@ -431,8 +431,8 @@ Consider[4] = function()
 	local Radius = ability:GetAOERadius()
 	local CastPoint = ability:GetCastPoint()
 
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(CastRange + 300, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange + 300, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	local creeps = npcBot:GetNearbyCreeps(CastRange + 300, true)
 	local WeakestCreep, CreepHealth = utility.GetWeakestUnit(creeps)

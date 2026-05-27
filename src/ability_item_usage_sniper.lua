@@ -130,8 +130,8 @@ function Consider1()
 	local Radius = ability:GetAOERadius()
 	local CastPoint = ability:GetCastPoint()
 
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(1600, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, 1600, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	local creeps = npcBot:GetNearbyCreeps(1600, true)
 	local WeakestCreep, CreepHealth = utility.GetWeakestUnit(creeps)
@@ -229,8 +229,8 @@ Consider[5] = function()
 	local Damage = ability:GetAbilityDamage()
 	local CastPoint = ability:GetCastPoint()
 
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
-	local enemys2 = npcBot:GetNearbyHeroes(1000, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
+	local enemys2 = utility.GetNearbyVisibleHeroes(npcBot, 1000, true, BOT_MODE_NONE)
 	local enemys3 = GetUnitList(UNIT_LIST_ENEMY_HEROES)
 	local enemys = {}
 	for i, enemy in pairs(enemys3) do

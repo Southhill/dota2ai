@@ -100,8 +100,8 @@ Consider[1] = function()
 	local CastRange = ability:GetCastRange()
 	local Damage = ability:GetAbilityDamage()
 
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(CastRange + 300, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange + 300, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	--------------------------------------
 	-- Global high-priorty usage
@@ -122,7 +122,7 @@ Consider[1] = function()
 	end
 
 	-- If we're in a teamfight, use it on the scariest enemy
-	local tableNearbyAttackingAlliedHeroes = npcBot:GetNearbyHeroes(1000, false, BOT_MODE_ATTACK)
+	local tableNearbyAttackingAlliedHeroes = utility.GetNearbyVisibleHeroes(npcBot, 1000, false, BOT_MODE_ATTACK)
 	if (#tableNearbyAttackingAlliedHeroes >= 2) then
 		local npcMostDangerousEnemy = nil
 		local nMostDangerousDamage = 0
@@ -200,8 +200,8 @@ Consider[2] = function()
 
 	local CastRange = ability:GetSpecialValueInt("blink_range")
 
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(CastRange + 300, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange + 300, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	local trees = npcBot:GetNearbyTrees(250)
 	local towers = npcBot:GetNearbyTowers(1300, true)
@@ -290,9 +290,9 @@ Consider[3] = function()
 	local Radius = ability:GetAOERadius()
 	local CastPoint = ability:GetCastPoint()
 
-	local allys = npcBot:GetNearbyHeroes(Radius, false, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, Radius, false, BOT_MODE_NONE)
 	local WeakestAlly, AllyHealth = utility.GetWeakestUnit(allys)
-	local enemys = npcBot:GetNearbyHeroes(Radius, true, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, Radius, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	local creeps = npcBot:GetNearbyCreeps(Radius, true)
 	local WeakestCreep, CreepHealth = utility.GetWeakestUnit(creeps)
@@ -398,8 +398,8 @@ Consider[4] = function()
 	local Damage = ability:GetAbilityDamage()
 	local Radius = ability:GetAOERadius()
 
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(CastRange + 0, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange + 0, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 
 	--try to kill enemy hero

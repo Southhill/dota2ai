@@ -101,8 +101,8 @@ Consider[1] = function()
 	local Damage = 0
 	local CastPoint = ability:GetCastPoint()
 
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(CastRange + 300, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange + 300, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	local creeps = npcBot:GetNearbyCreeps(CastRange + 300, true)
 	local WeakestCreep, CreepHealth = utility.GetWeakestUnit(creeps)
@@ -114,7 +114,7 @@ Consider[1] = function()
 	-- Mode based usage
 	--------------------------------------
 	--protect myself
-	local enemys2 = npcBot:GetNearbyHeroes(400, true, BOT_MODE_NONE)
+	local enemys2 = utility.GetNearbyVisibleHeroes(npcBot, 400, true, BOT_MODE_NONE)
 	-- If we're seriously retreating, see if we can land a stun on someone who's damaged us recently
 	if
 		((npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH) or #enemys2 > 0)
@@ -164,9 +164,9 @@ end
 
 -- 	local HeroHealth=10000
 -- 	local CreepHealth=10000
--- 	local allys = npcBot:GetNearbyHeroes( CastRange+300, false, BOT_MODE_NONE );
+-- 	local allys = utility.GetNearbyVisibleHeroes(npcBot,  CastRange+300, false, BOT_MODE_NONE );
 -- 	local WeakestAlly,AllyHealth=utility.GetWeakestUnit(allys)
--- 	local enemys = npcBot:GetNearbyHeroes(CastRange+300,true,BOT_MODE_NONE)
+-- 	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange+300,true,BOT_MODE_NONE)
 -- 	local WeakestEnemy,HeroHealth=utility.GetWeakestUnit(enemys)
 -- 	local creeps = npcBot:GetNearbyCreeps(CastRange+300,true)
 -- 	local WeakestCreep,CreepHealth=utility.GetWeakestUnit(creeps)
@@ -249,14 +249,14 @@ end
 
 local goodNeutral = {
 	"npc_dota_neutral_alpha_wolf", -- 头狼
-	"npc_dota_neutral_centaur_khan", -- 半人马征服者
+	"npc_dota_neutral_centaur_khan", -- 半人马征服�?
 	"npc_dota_neutral_dark_troll_warlord", -- 黑暗巨魔召唤法师
-	"npc_dota_neutral_polar_furbolg_ursa_warrior", -- 地狱熊怪粉碎者
+	"npc_dota_neutral_polar_furbolg_ursa_warrior", -- 地狱熊怪粉碎�?
 	--"npc_dota_neutral_forest_troll_high_priest",			-- 丘陵巨魔牧师
-	--"npc_dota_neutral_mud_golem",			-- 泥土傀儡
-	--"npc_dota_neutral_ogre_magi",		-- 食人魔冰霜法师
-	"npc_dota_neutral_satyr_hellcaller", -- 萨特苦难使者
-	"npc_dota_neutral_enraged_wildkin" -- 枭兽撕裂者
+	--"npc_dota_neutral_mud_golem",			-- 泥土傀�?
+	--"npc_dota_neutral_ogre_magi",		-- 食人魔冰霜法�?
+	"npc_dota_neutral_satyr_hellcaller", -- 萨特苦难使�?
+	"npc_dota_neutral_enraged_wildkin" -- 枭兽撕裂�?
 }
 
 local function IsGoodNeutralCreeps(npcCreep)
@@ -284,8 +284,8 @@ Consider[2] = function()
 	local Damage = 0
 	local CastPoint = ability:GetCastPoint()
 
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(CastRange + 300, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange + 300, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	local creeps = npcBot:GetNearbyCreeps(CastRange + 300, true)
 	local WeakestCreep, CreepHealth = utility.GetWeakestUnit(creeps)
@@ -344,8 +344,8 @@ function ConsiderRecall()
 		return BOT_ACTION_DESIRE_NONE, 0
 	end
 
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(1600, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, 1600, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	local creeps = npcBot:GetNearbyCreeps(1600, true)
 	local WeakestCreep, CreepHealth = utility.GetWeakestUnit(creeps)
@@ -498,7 +498,7 @@ Consider[4] = function()
 	)
 	local severelyDamagedAllies = AbilityExtensions:Filter(allys, IsSeverelyDamaged)
 
-	local enemys = npcBot:GetNearbyHeroes(CastRange, true, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	local creeps = npcBot:GetNearbyCreeps(CastRange, true)
 	local WeakestCreep, CreepHealth = utility.GetWeakestUnit(creeps)
@@ -516,7 +516,7 @@ Consider[4] = function()
 	end
 
 	-- If we're in a teamfight, use it on the scariest enemy
-	local tableNearbyAttackingAlliedHeroes = npcBot:GetNearbyHeroes(1000, false, BOT_MODE_ATTACK)
+	local tableNearbyAttackingAlliedHeroes = utility.GetNearbyVisibleHeroes(npcBot, 1000, false, BOT_MODE_ATTACK)
 	if #tableNearbyAttackingAlliedHeroes >= 2 and #enemys > 0 then
 		if
 			AbilityExtensions:Contains(severelyDamagedAllies, npcBot) and #damagedAllies >= 3 or

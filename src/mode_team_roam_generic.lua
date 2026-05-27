@@ -53,7 +53,7 @@ end
 --		return 0
 --	end
 --
---	local enemys = npcBot:GetNearbyHeroes(1600,true,BOT_MODE_NONE)
+--	local enemys = utility.GetNearbyVisibleHeroes(npcBot, 1600,true,BOT_MODE_NONE)
 --
 --	if(npcBot.ShrineTime==nil)
 --	then
@@ -91,7 +91,7 @@ end
 --					SHRINE_JUNGLE_2	}
 --
 --	local npcBot=GetBot()
---	local enemys = npcBot:GetNearbyHeroes(1600,true,BOT_MODE_NONE)
+--	local enemys = utility.GetNearbyVisibleHeroes(npcBot, 1600,true,BOT_MODE_NONE)
 --
 --	if(npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot.GoingToShrine~=true and
 --		(npcBot:GetFactor()<1.2 or npcBot:GetMaxHealth()-npcBot:GetHealth()>=400) and
@@ -151,7 +151,7 @@ end
 --			npcBot.GoingToShrine=true
 --
 --			npcBot.ShrineTime=DotaTime()+max_distance
---			npcBot:ActionImmediate_Chat("I want to use Shrine,let's enjoy together! 我想要使用神泉，快来一起享用",false)
+--			npcBot:ActionImmediate_Chat("I want to use Shrine,let's enjoy together! 我想要使用神泉，快来一起享�?,false)
 --			--npcBot:ActionImmediate_Ping(shrineLocation.x,shrineLocation.y,true)
 --
 --		end
@@ -171,8 +171,8 @@ end
 --	then
 --		if(GetUnitToUnitDistance(npcBot,npcBot.Shrine)<300 and GetShrineCooldown(npcBot.Shrine)<5)
 --		then
---			local allys = npcBot:GetNearbyHeroes( 1600, false, BOT_MODE_NONE );
---			local enemys = npcBot:GetNearbyHeroes(1600,true,BOT_MODE_NONE)
+--			local allys = utility.GetNearbyVisibleHeroes(npcBot,  1600, false, BOT_MODE_NONE );
+--			local enemys = utility.GetNearbyVisibleHeroes(npcBot, 1600,true,BOT_MODE_NONE)
 --			local ready=true
 --
 --			if(#enemys>0)
@@ -508,7 +508,7 @@ function TeamRoamThink()
 
 	if (npcBot.TeamRoamState == "Assemble") then
 		if (npcBot.TeamRoamLeader:GetUnitName() == npcBot:GetUnitName()) then
-			local enemys = npcBot:GetNearbyHeroes(1000, true, BOT_MODE_NONE)
+			local enemys = utility.GetNearbyVisibleHeroes(npcBot, 1000, true, BOT_MODE_NONE)
 			local ready = true
 
 			if (#enemys > 0) then

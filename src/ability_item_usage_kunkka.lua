@@ -124,8 +124,8 @@ Consider[1] = function()
 	local Radius = ability:GetAOERadius()
 	local CastPoint = 2
 
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(CastRange, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	local creeps = npcBot:GetNearbyCreeps(CastRange, true)
 	local WeakestCreep, CreepHealth = utility.GetWeakestUnit(creeps)
@@ -238,8 +238,8 @@ end
 
 -- 	local HeroHealth=10000
 -- 	local CreepHealth=10000
--- 	local allys = npcBot:GetNearbyHeroes( 1200, false, BOT_MODE_NONE );
--- 	local enemys = npcBot:GetNearbyHeroes(CastRange,true,BOT_MODE_NONE)
+-- 	local allys = utility.GetNearbyVisibleHeroes(npcBot,  1200, false, BOT_MODE_NONE );
+-- 	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange,true,BOT_MODE_NONE)
 -- 	local WeakestEnemy,HeroHealth=utility.GetWeakestUnit(enemys)
 
 -- 	if npcBot:GetActiveMode() == BOT_MODE_LANING then
@@ -267,8 +267,8 @@ Consider[3] = function()
 	local CastRange = ability:GetCastRange()
 	local Damage = ability:GetAbilityDamage()
 
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(CastRange, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 
 	-- Check for a channeling enemy
@@ -306,12 +306,12 @@ Consider[3] = function()
 	end
 
 	-- If we're in a teamfight, use it on the scariest enemy
-	local tableNearbyAttackingAlliedHeroes = npcBot:GetNearbyHeroes(1000, false, BOT_MODE_ATTACK)
+	local tableNearbyAttackingAlliedHeroes = utility.GetNearbyVisibleHeroes(npcBot, 1000, false, BOT_MODE_ATTACK)
 	if (#tableNearbyAttackingAlliedHeroes >= 2) then
 		local npcMostDangerousEnemy = nil
 		local nMostDangerousDamage = 0
 
-		local tableNearbyEnemyHeroes = npcBot:GetNearbyHeroes(CastRange, true, BOT_MODE_NONE)
+		local tableNearbyEnemyHeroes = utility.GetNearbyVisibleHeroes(npcBot, CastRange, true, BOT_MODE_NONE)
 		for _, npcEnemy in pairs(tableNearbyEnemyHeroes) do
 			if (CanCast[3](npcEnemy) and not npcEnemy:IsSilenced()) then
 				local Damage = npcEnemy:GetEstimatedDamageToTarget(false, npcBot, 3.0, DAMAGE_TYPE_ALL)
@@ -361,8 +361,8 @@ Consider[6] = function()
 	local Radius = ability:GetAOERadius() - 300
 	local CastPoint = ability:GetCastPoint()
 
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(CastRange, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	local creeps = npcBot:GetNearbyCreeps(CastRange, true)
 	local WeakestCreep, CreepHealth = utility.GetWeakestUnit(creeps)
@@ -394,12 +394,12 @@ Consider[6] = function()
 	-- Mode based usage
 	--------------------------------------
 	-- If we're in a teamfight, use it on the scariest enemy
-	local tableNearbyAttackingAlliedHeroes = npcBot:GetNearbyHeroes(1000, false, BOT_MODE_ATTACK)
+	local tableNearbyAttackingAlliedHeroes = utility.GetNearbyVisibleHeroes(npcBot, 1000, false, BOT_MODE_ATTACK)
 	if (#tableNearbyAttackingAlliedHeroes >= 2) then
 		local npcMostDangerousEnemy = nil
 		local nMostDangerousDamage = 0
 
-		local tableNearbyEnemyHeroes = npcBot:GetNearbyHeroes(CastRange, true, BOT_MODE_NONE)
+		local tableNearbyEnemyHeroes = utility.GetNearbyVisibleHeroes(npcBot, CastRange, true, BOT_MODE_NONE)
 		for _, npcEnemy in pairs(tableNearbyEnemyHeroes) do
 			if (CanCast[abilityNumber](npcEnemy) and not enemyDisabled(npcEnemy)) then
 				local Damage2 = npcEnemy:GetEstimatedDamageToTarget(false, npcBot, 3.0, DAMAGE_TYPE_ALL)

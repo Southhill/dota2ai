@@ -108,8 +108,8 @@ Consider[1] = function()
 	local Damage = ability:GetAbilityDamage()
 	local Radius = ability:GetSpecialValueInt("radius")
 
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(CastRange, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	local creeps = npcBot:GetNearbyCreeps(CastRange, true)
 	local WeakestCreep, CreepHealth = utility.GetWeakestUnit(creeps)
@@ -178,7 +178,7 @@ Consider[1] = function()
 
 	-- If we're seriously retreating, see if we can land a stun on someone who's damaged us recently
 	if (npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH) then
-		local tableNearbyEnemyHeroes = npcBot:GetNearbyHeroes(CastRange + Radius + 200, true, BOT_MODE_NONE)
+		local tableNearbyEnemyHeroes = utility.GetNearbyVisibleHeroes(npcBot, CastRange + Radius + 200, true, BOT_MODE_NONE)
 		for _, npcEnemy in pairs(tableNearbyEnemyHeroes) do
 			if (npcBot:WasRecentlyDamagedByHero(npcEnemy, 2.0)) then
 				if (CanCast[abilityNumber](npcEnemy)) then
@@ -220,8 +220,8 @@ Consider[2] = function()
 	local CastRange = ability:GetCastRange()
 	local Damage = ability:GetAbilityDamage()
 
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(CastRange + 150, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange + 150, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	local creeps = npcBot:GetNearbyCreeps(CastRange + 300, true)
 	local WeakestCreep, CreepHealth = utility.GetWeakestUnit(creeps)
@@ -252,12 +252,12 @@ Consider[2] = function()
 	end
 
 	-- If we're in a teamfight, use it on the scariest enemy
-	local tableNearbyAttackingAlliedHeroes = npcBot:GetNearbyHeroes(1000, false, BOT_MODE_ATTACK)
+	local tableNearbyAttackingAlliedHeroes = utility.GetNearbyVisibleHeroes(npcBot, 1000, false, BOT_MODE_ATTACK)
 	if (#tableNearbyAttackingAlliedHeroes >= 2) then
 		local npcMostDangerousEnemy = nil
 		local nMostDangerousDamage = 0
 
-		local tableNearbyEnemyHeroes = npcBot:GetNearbyHeroes(CastRange, true, BOT_MODE_NONE)
+		local tableNearbyEnemyHeroes = utility.GetNearbyVisibleHeroes(npcBot, CastRange, true, BOT_MODE_NONE)
 		for _, npcEnemy in pairs(tableNearbyEnemyHeroes) do
 			if (CanCast[abilityNumber](npcEnemy) and not enemyDisabled(npcEnemy)) then
 				local Damage2 = npcEnemy:GetEstimatedDamageToTarget(false, npcBot, 3.0, DAMAGE_TYPE_ALL)
@@ -276,7 +276,7 @@ Consider[2] = function()
 	-- Mode based usage
 	--------------------------------------
 	--protect myself
-	local enemys2 = npcBot:GetNearbyHeroes(500, true, BOT_MODE_NONE)
+	local enemys2 = utility.GetNearbyVisibleHeroes(npcBot, 500, true, BOT_MODE_NONE)
 	if (npcBot:WasRecentlyDamagedByAnyHero(5)) then
 		for _, npcEnemy in pairs(enemys2) do
 			if (CanCast[abilityNumber](npcEnemy) and not enemyDisabled(npcEnemy)) then
@@ -328,7 +328,7 @@ Consider[2] = function()
 
 	-- If we're seriously retreating, see if we can land a stun on someone who's damaged us recently
 	if (npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH) then
-		local tableNearbyEnemyHeroes = npcBot:GetNearbyHeroes(CastRange, true, BOT_MODE_NONE)
+		local tableNearbyEnemyHeroes = utility.GetNearbyVisibleHeroes(npcBot, CastRange, true, BOT_MODE_NONE)
 		for _, npcEnemy in pairs(tableNearbyEnemyHeroes) do
 			if (npcBot:WasRecentlyDamagedByHero(npcEnemy, 2.0)) then
 				if (CanCast[abilityNumber](npcEnemy) and not enemyDisabled(npcEnemy)) then
@@ -356,8 +356,8 @@ Consider[4] = function()
 	local Damage = ability:GetAbilityDamage()
 	local Radius = ability:GetAOERadius()
 
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(Radius, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, Radius, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 
 	--------------------------------------
@@ -417,13 +417,13 @@ function AbilityUsageThink()
 				if glimmer and glimmer:IsFullyCastable() then
 					npcBot:ActionImmediate_UseAbilityOnEntity(glimmer, npcBot)
 				end
-				local enemies = npcBot:GetNearbyHeroes(AbilitiesReal[4]:GetAOERadius(), true, BOT_MODE_NONE)
+				local enemies = utility.GetNearbyVisibleHeroes(npcBot, AbilitiesReal[4]:GetAOERadius(), true, BOT_MODE_NONE)
 				if #enemies > 0 or freezingFieldHitSomeoneTimer == nil then
 					freezingFieldHitSomeoneTimer = DotaTime()
 				else
 					if
 						DotaTime() - freezingFieldHitSomeoneTimer >= 1.5 and
-							#npcBot:GetNearbyHeroes(AbilitiesReal[4]:GetAOERadius() + 200, false, BOT_MODE_NONE) > 0
+							#utility.GetNearbyVisibleHeroes(npcBot, AbilitiesReal[4]:GetAOERadius() + 200, false, BOT_MODE_NONE) > 0
 					 then
 						local location = npcBot:GetLocation() + RandomVector(50)
 						npcBot:Action_ClearActions(true)

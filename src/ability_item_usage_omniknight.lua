@@ -138,7 +138,7 @@ function ComputeFactor(UnitGroup)
 end
 
 function GetTargetFactor()
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
 	return ComputeFactor(allys)
 end
 
@@ -177,7 +177,7 @@ Consider[1] = function()
 	local CastPoint = ability:GetCastPoint()
 	local Radius = ability:GetAOERadius()
 
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
 	allys =
 		AbilityExtensions:Filter(
 		npcBot,
@@ -185,7 +185,7 @@ Consider[1] = function()
 			return not t:HasModifier("modifier_ice_blast")
 		end
 	)
-	local enemys = npcBot:GetNearbyHeroes(CastRange + 300, true, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange + 300, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	local creeps = npcBot:GetNearbyCreeps(CastRange + 300, true)
 	local WeakestCreep, CreepHealth = utility.GetWeakestUnit(creeps)
@@ -214,7 +214,7 @@ Consider[1] = function()
 	-- Mode based usage
 	--------------------------------------
 	--heal
-	local enemys3 = npcBot:GetNearbyHeroes(Radius, true, BOT_MODE_NONE)
+	local enemys3 = utility.GetNearbyVisibleHeroes(npcBot, Radius, true, BOT_MODE_NONE)
 	-- If we're seriously retreating
 	if (npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH) then
 		if
@@ -292,7 +292,7 @@ Consider[2] = function()
 	local Damage = ability:GetAbilityDamage()
 	local CastPoint = ability:GetCastPoint()
 
-	local enemys = npcBot:GetNearbyHeroes(CastRange + 300, true, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange + 300, true, BOT_MODE_NONE)
 	local allys = AbilityExtensions:GetNearbyNonIllusionHeroes(npcBot, CastRange + 300, false, BOT_MODE_ATTACK)
 	--------------------------------------
 	-- Global high-priorty usage
@@ -365,7 +365,7 @@ Consider[4] = function()
 	end
 
 	local CastRange = ability:GetCastRange()
-	local enemys = npcBot:GetNearbyHeroes(CastRange + 100, true, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange + 100, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 
 	local function UseAt(target)
@@ -419,8 +419,8 @@ Consider[5] = function()
 	local Damage = 0
 	local Radius = ability:GetAOERadius()
 
-	local allys = npcBot:GetNearbyHeroes(math.max(Radius, 1600), false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(Radius, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, math.max(Radius, 1600), false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, Radius, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 
 	-- If we're in a teamfight, use it on the scariest enemy

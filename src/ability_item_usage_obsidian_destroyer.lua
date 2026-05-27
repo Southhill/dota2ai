@@ -115,8 +115,8 @@ Consider[1] = function()
 	local CastRange = ability:GetCastRange()
 	local Damage = ability:GetSpecialValueInt("damage_bonus") + npcBot:GetAttackDamage()
 
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(CastRange + 100, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange + 100, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	local creeps = npcBot:GetNearbyCreeps(CastRange + 100, true)
 	local creeps2 = npcBot:GetNearbyCreeps(300, true)
@@ -224,7 +224,7 @@ local oldConsider2 = function()
 	local allys = AbilityExtensions:GetNearbyNonIllusionHeroes(npcBot, CastRange + 300, false)
 	local WeakestAlly, AllyHealth = utility.GetWeakestUnit(allys)
 	local allys2 = GetUnitList(UNIT_LIST_ALLIED_HEROES)
-	local enemys = npcBot:GetNearbyHeroes(CastRange + 300, true, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange + 300, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	local creeps = npcBot:GetNearbyCreeps(CastRange + 300, true)
 	local WeakestCreep, CreepHealth = utility.GetWeakestUnit(creeps)
@@ -238,12 +238,12 @@ local oldConsider2 = function()
 	end
 
 	-- If we're in a teamfight, use it on the scariest enemy
-	local tableNearbyAttackingAlliedHeroes = npcBot:GetNearbyHeroes(1000, false, BOT_MODE_ATTACK)
+	local tableNearbyAttackingAlliedHeroes = utility.GetNearbyVisibleHeroes(npcBot, 1000, false, BOT_MODE_ATTACK)
 	if (#tableNearbyAttackingAlliedHeroes >= 2) then
 		local npcMostDangerousEnemy = nil
 		local nMostDangerousDamage = 0
 
-		local tableNearbyEnemyHeroes = npcBot:GetNearbyHeroes(CastRange, true, BOT_MODE_NONE)
+		local tableNearbyEnemyHeroes = utility.GetNearbyVisibleHeroes(npcBot, CastRange, true, BOT_MODE_NONE)
 		for _, npcEnemy in pairs(tableNearbyEnemyHeroes) do
 			if (CanCast[abilityNumber](npcEnemy) and not AbilityExtensions:IsOrGoingToBeSeverelyDisabled(npcEnemy)) then
 				local Damage2 = npcEnemy:GetEstimatedDamageToTarget(false, npcBot, 3.0, DAMAGE_TYPE_ALL)
@@ -291,7 +291,7 @@ local oldConsider2 = function()
 	--------------------------------------
 	-- If we're seriously retreating, see if we can land a stun on someone who's damaged us recently
 	if (npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH) then
-		local tableNearbyEnemyHeroes = npcBot:GetNearbyHeroes(CastRange, true, BOT_MODE_NONE)
+		local tableNearbyEnemyHeroes = utility.GetNearbyVisibleHeroes(npcBot, CastRange, true, BOT_MODE_NONE)
 		for _, npcEnemy in pairs(tableNearbyEnemyHeroes) do
 			if (npcBot:WasRecentlyDamagedByHero(npcEnemy, 2.0)) then
 				if (CanCast[abilityNumber](npcEnemy) and not AbilityExtensions:IsOrGoingToBeSeverelyDisabled(npcEnemy)) then
@@ -370,8 +370,8 @@ end
 --	local CastRange = ability:GetCastRange();
 --	local Damage = ability:GetAbilityDamage();
 --
---	local allys = npcBot:GetNearbyHeroes( CastRange+300, false, BOT_MODE_NONE )
---	local enemys = npcBot:GetNearbyHeroes(CastRange+300,true,BOT_MODE_NONE)
+--	local allys = utility.GetNearbyVisibleHeroes(npcBot,  CastRange+300, false, BOT_MODE_NONE )
+--	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange+300,true,BOT_MODE_NONE)
 --	local WeakestEnemy,HeroHealth=utility.GetWeakestUnit(enemys)
 --	local creeps = npcBot:GetNearbyCreeps(CastRange+300,true)
 --	local WeakestCreep,CreepHealth=utility.GetWeakestUnit(creeps)
@@ -414,7 +414,7 @@ Consider[4] = function()
 	local Radius = ability:GetAOERadius() - 80
 	local CastPoint = ability:GetCastPoint()
 
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
 	local enemys = AbilityExtensions:GetNearbyNonIllusionHeroes(npcBot, CastRange + 300, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	local creeps = npcBot:GetNearbyCreeps(CastRange + 300, true)

@@ -102,8 +102,8 @@ Consider[1] = function()
 	local Damage = ability:GetAbilityDamage()
 	local CastPoint = ability:GetCastPoint()
 
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(CastRange + 300, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange + 300, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	local creeps = npcBot:GetNearbyCreeps(CastRange + 300, true)
 	local WeakestCreep, CreepHealth = utility.GetWeakestUnit(creeps)
@@ -216,8 +216,8 @@ Consider[2] = function()
 	local radius = ability:GetAOERadius()
 	assert(radius ~= nil, "can not get the radius")
 
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(radius, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, radius, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	local creeps = npcBot:GetNearbyCreeps(radius, true)
 	local WeakestCreep, CreepHealth = utility.GetWeakestUnit(creeps)
@@ -234,7 +234,7 @@ Consider[2] = function()
 	-- Mode based usage
 	--------------------------------------
 	-- Protect myself
-	local nearyByEnemys = npcBot:GetNearbyHeroes(600, true, BOT_MODE_NONE)
+	local nearyByEnemys = utility.GetNearbyVisibleHeroes(npcBot, 600, true, BOT_MODE_NONE)
 	if
 		((npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH) or
 			(npcBot:GetActiveMode() == BOT_MODE_ATTACK and #nearyByEnemys >= 2))

@@ -117,8 +117,8 @@ consider[1] = function()
 
 	local serachDistance = Min(castRange + const.EXTRA_SEARCH_DISTANCE, const.MAX_SEARCH_DISTANCE)
 	local isManaEnough = manaPercent > 0.6 or npcBot:GetMana() > comboMana
-	local allys = npcBot:GetNearbyHeroes(const.MAX_ALLY_SEARCH_DISTANCE, false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(serachDistance, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, const.MAX_ALLY_SEARCH_DISTANCE, false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, serachDistance, true, BOT_MODE_NONE)
 	local weakestEnemy, heroHealth = AbilityHelper.getWeakestUnit(enemys)
 	local creeps = npcBot:GetNearbyCreeps(serachDistance, true)
 	local weakestCreep, creepHealth = AbilityHelper.getWeakestUnit(creeps)
@@ -139,7 +139,7 @@ consider[1] = function()
 	-- Mode based usage
 	--------------------------------------
 	-- Protect myself
-	local nearyByEnemys = npcBot:GetNearbyHeroes(const.WARNING_DISTANCE, true, BOT_MODE_NONE)
+	local nearyByEnemys = utility.GetNearbyVisibleHeroes(npcBot, const.WARNING_DISTANCE, true, BOT_MODE_NONE)
 	if ((activeMode == BOT_MODE_RETREAT and activeModeDesire >= BOT_MODE_DESIRE_HIGH) or #nearyByEnemys > 0) then
 		for _, npcEnemy in pairs(enemys) do
 			if (CanCast[abilityIndex](npcEnemy)) then
@@ -255,8 +255,8 @@ consider[2] = function()
 
 	local serachDistance = Min(castRange + const.EXTRA_SEARCH_DISTANCE, const.MAX_SEARCH_DISTANCE)
 	local isManaEnough = manaPercent > 0.6 or npcBot:GetMana() > comboMana
-	local allys = npcBot:GetNearbyHeroes(const.MAX_ALLY_SEARCH_DISTANCE, false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(serachDistance, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, const.MAX_ALLY_SEARCH_DISTANCE, false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, serachDistance, true, BOT_MODE_NONE)
 	local weakestEnemy, heroHealth = AbilityHelper.getWeakestUnit(enemys)
 	local creeps = npcBot:GetNearbyCreeps(serachDistance, true)
 	local weakestCreep, creepHealth = AbilityHelper.getWeakestUnit(creeps)
@@ -293,7 +293,7 @@ consider[2] = function()
 	-- Mode based usage
 	--------------------------------------
 	-- Protect myself
-	local nearyByEnemys = npcBot:GetNearbyHeroes(const.WARNING_DISTANCE, true, BOT_MODE_NONE)
+	local nearyByEnemys = utility.GetNearbyVisibleHeroes(npcBot, const.WARNING_DISTANCE, true, BOT_MODE_NONE)
 	if ((activeMode == BOT_MODE_RETREAT and activeModeDesire >= BOT_MODE_DESIRE_HIGH) or #nearyByEnemys > 0) then
 		if (npcBot:WasRecentlyDamagedByAnyHero(2.0)) then
 			return BOT_ACTION_DESIRE_HIGH, npcBot
@@ -388,8 +388,8 @@ consider[3] = function()
 
 	local serachDistance = Min(castRange + const.EXTRA_SEARCH_DISTANCE, const.MAX_SEARCH_DISTANCE)
 	local isManaEnough = manaPercent > 0.6 or npcBot:GetMana() > comboMana
-	local allys = npcBot:GetNearbyHeroes(const.MAX_ALLY_SEARCH_DISTANCE, false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(serachDistance, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, const.MAX_ALLY_SEARCH_DISTANCE, false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, serachDistance, true, BOT_MODE_NONE)
 	local weakestEnemy, heroHealth = AbilityHelper.getWeakestUnit(enemys)
 	local creeps = npcBot:GetNearbyCreeps(serachDistance, true)
 	local weakestCreep, creepHealth = AbilityHelper.getWeakestUnit(creeps)
@@ -404,7 +404,7 @@ consider[3] = function()
 	end
 
 	-- If we're in a teamfight, use it on the scariest enemy
-	local tableNearbyAttackingAlliedHeroes = npcBot:GetNearbyHeroes(const.MAX_ALLY_SEARCH_DISTANCE, false, BOT_MODE_ATTACK)
+	local tableNearbyAttackingAlliedHeroes = utility.GetNearbyVisibleHeroes(npcBot, const.MAX_ALLY_SEARCH_DISTANCE, false, BOT_MODE_ATTACK)
 	if (#tableNearbyAttackingAlliedHeroes >= 2) then
 		local npcMostDangerousEnemy = nil
 		local mostDangerousDamage = 0
@@ -427,7 +427,7 @@ consider[3] = function()
 	-- Mode based usage
 	--------------------------------------
 	-- Protect myself
-	local nearyByEnemys = npcBot:GetNearbyHeroes(const.WARNING_DISTANCE, true, BOT_MODE_NONE)
+	local nearyByEnemys = utility.GetNearbyVisibleHeroes(npcBot, const.WARNING_DISTANCE, true, BOT_MODE_NONE)
 	if ((activeMode == BOT_MODE_RETREAT and activeModeDesire >= BOT_MODE_DESIRE_HIGH) or #nearyByEnemys > 0) then
 		for _, npcEnemy in pairs(enemys) do
 			if (CanCast[abilityIndex](npcEnemy) and not isDisabled(npcEnemy)) then
@@ -486,8 +486,8 @@ consider[4] = function()
 	local Radius = ability:GetAOERadius()
 	local CastPoint = ability:GetCastPoint()
 
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(CastRange + 300, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange + 300, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	local creeps = npcBot:GetNearbyCreeps(CastRange + 300, true)
 	local WeakestCreep, CreepHealth = utility.GetWeakestUnit(creeps)
@@ -549,8 +549,8 @@ consider[5] = function()
 
 	local serachDistance = Min(castRange + const.EXTRA_SEARCH_DISTANCE, const.MAX_SEARCH_DISTANCE)
 	local isManaEnough = manaPercent > 0.6 or npcBot:GetMana() > comboMana
-	local allys = npcBot:GetNearbyHeroes(const.MAX_ALLY_SEARCH_DISTANCE, false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(serachDistance, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, const.MAX_ALLY_SEARCH_DISTANCE, false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, serachDistance, true, BOT_MODE_NONE)
 	local weakestEnemy, heroHealth = AbilityHelper.getWeakestUnit(enemys)
 	local creeps = npcBot:GetNearbyCreeps(serachDistance, true)
 	local weakestCreep, creepHealth = AbilityHelper.getWeakestUnit(creeps)
@@ -558,7 +558,7 @@ consider[5] = function()
 	-- Global high-priorty usage
 	--------------------------------------
 	-- If we're in a teamfight, use it on the scariest enemy
-	local tableNearbyAttackingAlliedHeroes = npcBot:GetNearbyHeroes(const.MAX_ALLY_SEARCH_DISTANCE, false, BOT_MODE_ATTACK)
+	local tableNearbyAttackingAlliedHeroes = utility.GetNearbyVisibleHeroes(npcBot, const.MAX_ALLY_SEARCH_DISTANCE, false, BOT_MODE_ATTACK)
 	if (#tableNearbyAttackingAlliedHeroes >= 2) then
 		local npcMostDangerousEnemy = nil
 		local mostDangerousDamage = 0
@@ -581,7 +581,7 @@ consider[5] = function()
 	-- Mode based usage
 	--------------------------------------
 	-- Protect myself
-	local nearyByEnemys = npcBot:GetNearbyHeroes(const.WARNING_DISTANCE, true, BOT_MODE_NONE)
+	local nearyByEnemys = utility.GetNearbyVisibleHeroes(npcBot, const.WARNING_DISTANCE, true, BOT_MODE_NONE)
 	if ((activeMode == BOT_MODE_RETREAT and activeModeDesire >= BOT_MODE_DESIRE_HIGH) or #nearyByEnemys > 0) then
 		for _, npcEnemy in pairs(enemys) do
 			if (CanCast[abilityIndex](npcEnemy) and not isDisabled(npcEnemy)) then

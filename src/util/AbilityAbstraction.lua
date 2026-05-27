@@ -1,12 +1,12 @@
 --[[
 	AbilityAbstraction.lua
-	功能抽象库 —— 提供类似 LINQ 的函数式编程工具，
-	以及 Dota2 英雄技能/物品/行为的抽象辅助函数。
+	功能抽象�?—�?提供类似 LINQ 的函数式编程工具�?
+	以及 Dota2 英雄技�?物品/行为的抽象辅助函数�?
 ]] local M = {}
 
 local binlib = require(GetScriptDirectory() .. "/util/BinDecHex")
 
--- ========== LINQ 风格函数式工具 ==========
+-- ========== LINQ 风格函数式工�?==========
 
 local magicTable = {}
 local function NewTable()
@@ -16,7 +16,7 @@ local function NewTable()
 end
 magicTable.__index = magicTable
 
--- 生成一个从 min 到 max、步长为 step 的数字范围表
+-- 生成一个从 min �?max、步长为 step 的数字范围表
 M.Range = function(self, min, max, step)
     if step == nil then
         step = 1
@@ -28,7 +28,7 @@ M.Range = function(self, min, max, step)
     return g
 end
 
--- 判断表中是否包含指定值（可自定义比较函数）
+-- 判断表中是否包含指定值（可自定义比较函数�?
 M.Contains = function(self, tb, value, equals)
     equals = equals or function(a, b)
         return a == b
@@ -41,7 +41,7 @@ M.Contains = function(self, tb, value, equals)
     return false
 end
 
--- 判断表中是否包含指定键（可自定义比较函数）
+-- 判断表中是否包含指定键（可自定义比较函数�?
 M.ContainsKey = function(self, tb, key, equals)
     equals = equals or function(a, b)
         return a == b
@@ -63,7 +63,7 @@ function M:Keys(tb)
     return g
 end
 
--- 过滤表：返回所有满足 filter 条件的元素
+-- 过滤表：返回所有满�?filter 条件的元�?
 M.Filter = function(self, tb, filter)
     local g = NewTable()
     for k, v in ipairs(tb) do
@@ -74,7 +74,7 @@ M.Filter = function(self, tb, filter)
     return g
 end
 
--- 反向过滤：返回所有不满足 filter 条件的元素
+-- 反向过滤：返回所有不满足 filter 条件的元�?
 M.FilterNot = function(self, tb, filter)
     local g = NewTable()
     for k, v in ipairs(tb) do
@@ -85,7 +85,7 @@ M.FilterNot = function(self, tb, filter)
     return g
 end
 
--- 计数：统计满足 filter 条件的元素数量
+-- 计数：统计满�?filter 条件的元素数�?
 M.Count = function(self, tb, filter)
     local g = 0
     for k, v in ipairs(tb) do
@@ -96,8 +96,8 @@ M.Count = function(self, tb, filter)
     return g
 end
 
--- 过滤掉空值/空表
-function M:NonEmpty(self, tb)
+-- 过滤掉空�?空表
+function M:NonEmpty(tb)
     return self:Filter(tb, function(t)
         return t ~= nil and #t ~= 0
     end)
@@ -112,7 +112,7 @@ M.Map = function(self, tb, transform)
     return g
 end
 
--- 字典映射：遍历 pairs，对每个键值对应用转换函数
+-- 字典映射：遍�?pairs，对每个键值对应用转换函数
 function M:MapDic(tb, transform)
     local g = NewTable()
     for k, v in pairs(tb) do
@@ -128,7 +128,7 @@ M.ForEach = function(self, tb, action)
     end
 end
 
--- 任一匹配：是否有至少一个元素满足条件
+-- 任一匹配：是否有至少一个元素满足条�?
 M.Any = function(self, tb, filter)
     for k, v in ipairs(tb) do
         if filter == nil or filter(v, k) then
@@ -148,7 +148,7 @@ M.All = function(self, tb, filter)
     return true
 end
 
--- 聚合：从初始值开始，依次对每个元素应用聚合函数
+-- 聚合：从初始值开始，依次对每个元素应用聚合函�?
 M.Aggregate = function(self, seed, tb, aggregate)
     for k, v in ipairs(tb) do
         seed = aggregate(seed, v, k)
@@ -174,7 +174,7 @@ M.First = function(self, tb, filter)
     end
 end
 
--- 跳过前 number 个元素
+-- 跳过�?number 个元�?
 M.Skip = function(self, tb, number)
     local g = NewTable()
     local i = 0
@@ -187,7 +187,7 @@ M.Skip = function(self, tb, number)
     return g
 end
 
--- 取前 number 个元素
+-- 取前 number 个元�?
 M.Take = function(self, tb, number)
     local g = NewTable()
     local i = 0
@@ -212,7 +212,7 @@ local function deepCopy(self, tb)
             g[k] = v
         else
             if self:Contains(copiedTables, v) then
-                print("深拷贝检测到循环引用！")
+                print("深拷贝检测到循环引用")
                 return {}
             end
             g[k] = deepCopy(self, v)
@@ -222,7 +222,7 @@ local function deepCopy(self, tb)
 end
 M.DeepCopy = deepCopy
 
--- 连接多个表
+-- 连接多个�?
 M.Concat = function(self, a, ...)
     local g = NewTable()
     local rec
@@ -239,7 +239,7 @@ M.Concat = function(self, a, ...)
     return g
 end
 
--- 从表 a 中移除指定值 b 的所有实例
+-- 从表 a 中移除指定�?b 的所有实�?
 M.Remove = function(self, a, b)
     local g = self:ShallowCopy(a)
     for k, v in pairs(a) do
@@ -250,7 +250,7 @@ M.Remove = function(self, a, b)
     return g
 end
 
--- 从表 a 中移除所有出现在表 b 中的值
+-- 从表 a 中移除所有出现在�?b 中的�?
 M.RemoveAll = function(self, a, b)
     local g = NewTable()
     for _, v in pairs(a) do
@@ -261,12 +261,12 @@ M.RemoveAll = function(self, a, b)
     return g
 end
 
--- 前置插入：将表 b 的内容插入到表 a 之前
+-- 前置插入：将�?b 的内容插入到�?a 之前
 M.Prepend = function(self, a, b)
     return self:Concat(b, a)
 end
 
--- 分组：根据 keySelector 对集合进行分组
+-- 分组：根�?keySelector 对集合进行分�?
 M.GroupBy = function(self, collection, keySelector, elementSelector, resultSelector, comparer)
     comparer = comparer or function(a, b)
         return a == b
@@ -294,7 +294,7 @@ M.GroupBy = function(self, collection, keySelector, elementSelector, resultSelec
     return self:Map2(keys, values, resultSelector)
 end
 
--- 分区：根据 filter 将表分为两个部分
+-- 分区：根�?filter 将表分为两个部分
 M.Partition = function(self, tb, filter)
     local a = NewTable()
     local b = NewTable()
@@ -308,7 +308,7 @@ M.Partition = function(self, tb, filter)
     return a, b
 end
 
--- 去重：返回表中不重复的元素
+-- 去重：返回表中不重复的元�?
 M.Distinct = function(self, tb, equals)
     equals = equals or function(a, b)
         return a == b
@@ -322,7 +322,7 @@ M.Distinct = function(self, tb, equals)
     return g
 end
 
--- 反转表顺序
+-- 反转表顺�?
 M.Reverse = function(self, tb)
     local g = NewTable()
     for i = #tb, 1, -1 do
@@ -336,7 +336,7 @@ M.Last = function(self, tb, filter)
     return self:First(self:Reverse(tb), filter)
 end
 
--- 恒等函数：返回自身
+-- 恒等函数：返回自�?
 function M:Identity(t)
     return t
 end
@@ -648,7 +648,7 @@ AddLinqFunctionsToMetatable(magicTable)
 
 -- ========== Bot 行为模式相关函数 ==========
 
--- 将值限制在 [left, right] 范围内（支持反向区间）
+-- 将值限制在 [left, right] 范围内（支持反向区间�?
 local Trim = function(v, left, right)
     if right >= left then
         if v > right then
@@ -679,7 +679,7 @@ M.GetAbilityImportance = function(self, cooldown)
     return Trim(cooldown / 120, 0, 1)
 end
 
--- 判断 Bot 是否处于打钱或推进模式
+-- 判断 Bot 是否处于打钱或推进模�?
 M.IsFarmingOrPushing = function(self, npcBot)
     local mode = npcBot:GetActiveMode()
     return mode == BOT_MODE_FARM or mode == BOT_MODE_PUSH_TOWER_BOT or mode == BOT_MODE_PUSH_TOWER_MID or mode ==
@@ -710,7 +710,7 @@ M.NotRetreating = function(self, npcBot)
     return npcBot:GetActiveMode() ~= BOT_MODE_RETREAT
 end
 
--- 判断是否有足够蓝量使用攻击附带类技能（如电锤、晕锤等）
+-- 判断是否有足够蓝量使用攻击附带类技能（如电锤、晕锤等�?
 M.HasEnoughManaToUseAttackAttachedAbility = function(self, npcBot, ability)
     local percent = self:GetManaPercent(npcBot)
     if percent >= 0.8 and npcBot:GetMana() >= 650 then
@@ -720,7 +720,7 @@ M.HasEnoughManaToUseAttackAttachedAbility = function(self, npcBot, ability)
                ability:GetManaCost() * 0.75
 end
 
--- ========== 函数生成器 ==========
+-- ========== 函数生成�?==========
 
 -- 将返回布尔值的函数转换为开关技能的动作函数
 M.ToggleFunctionToAction = function(self, npcBot, oldConsider, ability)
@@ -737,7 +737,7 @@ M.ToggleFunctionToAction = function(self, npcBot, oldConsider, ability)
     end
 end
 
--- 将返回布尔值的函数转换为自动施法切换函数
+-- 将返回布尔值的函数转换为自动施法切换函�?
 M.ToggleFunctionToAutoCast = function(self, npcBot, oldConsider, ability)
     return function()
         local value, target, castType = oldConsider()
@@ -751,7 +751,7 @@ M.ToggleFunctionToAutoCast = function(self, npcBot, oldConsider, ability)
     end
 end
 
--- 包装原技能考虑函数，防止对幻象使用技能
+-- 包装原技能考虑函数，防止对幻象使用技�?
 M.PreventAbilityAtIllusion = function(self, npcBot, oldConsiderFunction, ability)
     return function()
         local desire, target, targetTypeString = oldConsiderFunction()
@@ -765,7 +765,7 @@ M.PreventAbilityAtIllusion = function(self, npcBot, oldConsiderFunction, ability
     end
 end
 
--- 包装原技能考虑函数，防止在目标有法术格挡/莲花/回音盾时浪费技能
+-- 包装原技能考虑函数，防止在目标有法术格�?莲花/回音盾时浪费技�?
 M.PreventEnemyTargetAbilityUsageAtAbilityBlock = function(self, npcBot, oldConsiderFunction, ability)
     local newConsider = function()
         -- TODO: 考虑基础冷却还是修改后冷却（奥术符、玲珑心）？奥术符时是否要用大招破林肯？
@@ -1330,7 +1330,7 @@ M.GetNearbyHeroes = function(self, npcBot, range, getEnemy, botModeMask)
         getEnemy = true
     end
     botModeMask = botModeMask or BOT_MODE_NONE
-    local heroes = npcBot:GetNearbyHeroes(range, getEnemy, botModeMask)
+    local heroes = utility.GetNearbyVisibleHeroes(npcBot, range, getEnemy, botModeMask)
     return heroes
 end
 
@@ -1340,7 +1340,7 @@ M.GetNearbyNonIllusionHeroes = function(self, npcBot, range, getEnemy, botModeMa
         getEnemy = true
     end
     botModeMask = botModeMask or BOT_MODE_NONE
-    local heroes = npcBot:GetNearbyHeroes(range, getEnemy, botModeMask)
+    local heroes = utility.GetNearbyVisibleHeroes(npcBot, range, getEnemy, botModeMask)
     return self:Filter(heroes, function(t)
         return self:MayNotBeIllusion(npcBot, t)
     end)
@@ -1365,8 +1365,8 @@ function M:GetNearbyAttackableCreeps(npcBot, range, getEnemy)
 end
 
 M.GetNearbyAllUnits = function(self, npcBot, range)
-    local h1 = npcBot:GetNearbyHeroes(range, true, BOT_MODE_NONE)
-    local h2 = self:Remove(npcBot:GetNearbyHeroes(range, false, BOT_MODE_NONE), npcBot)
+    local h1 = utility.GetNearbyVisibleHeroes(npcBot, range, true, BOT_MODE_NONE)
+    local h2 = self:Remove(utility.GetNearbyVisibleHeroes(npcBot, range, false, BOT_MODE_NONE), npcBot)
     local h3 = npcBot:GetNearbyCreeps(range, true)
     local h4 = npcBot:GetNearbyCreeps(range, false)
     return self:Concat(h1, h2, h3, h4)
@@ -1820,7 +1820,7 @@ M.IsEthereal = function(self, npc)
     return self:HasAnyModifier(npc, self.EtherealModifiers)
 end
 
-function M:NotBlasted(self, npc)
+function M:NotBlasted(npc)
     return not npc:HasModifier("modifier_ice_blast")
 end
 

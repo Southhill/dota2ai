@@ -84,7 +84,7 @@ Consider[1] = function()
                 return t:GetAttackRange() >= 500
             end
         )
-        local enemy = AbilityExtensions:First(npcBot:GetNearbyHeroes(1200, true, BOT_MODE_NONE))
+        local enemy = AbilityExtensions:First(utility.GetNearbyVisibleHeroes(npcBot, 1200, true, BOT_MODE_NONE))
         if rangedCreep ~= nil and enemy ~= nil then
             if ReadyForLastHit(npcBot, rangedCreep) and manaPercentage >= 0.6 then
                 if enemy:GetAttackTarget() == rangedCreep then
@@ -116,7 +116,7 @@ Consider[1] = function()
         end
     end
     if AbilityExtensions:IsAttackingEnemy(npcBot) then
-        local enemies = npcBot:GetNearbyHeroes(900, true, BOT_MODE_NONE)
+        local enemies = utility.GetNearbyVisibleHeroes(npcBot, 900, true, BOT_MODE_NONE)
     end
 end
 

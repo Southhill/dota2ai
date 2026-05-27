@@ -394,7 +394,7 @@ function ConsiderAttacking(hMinionUnit)
         return BOT_ACTION_DESIRE_MODERATE, target;
     end
 
-    local enemies = npcBot:GetNearbyHeroes(1300, true, BOT_MODE_NONE);
+    local enemies = utility.GetNearbyVisibleHeroes(npcBot, 1300, true, BOT_MODE_NONE);
     if not npcBot:IsAlive() or (npcBot:GetActiveMode() == BOT_MODE_RETREAT and #enemies == 0) then
         local followTarget = nil;
         local closest = nil;

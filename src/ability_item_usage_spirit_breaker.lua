@@ -104,9 +104,9 @@ Consider[1] = function()
 	local Damage = 0
 	--print(ability:GetName().." :Damage is "..Damage)
 
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
 	local allys2 = GetUnitList(UNIT_LIST_ALLIED_HEROES)
-	local enemys = npcBot:GetNearbyHeroes(CastRange + 300, true, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange + 300, true, BOT_MODE_NONE)
 	local enemys2 = GetUnitList(UNIT_LIST_ENEMY_HEROES)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	local enemysAll = GetUnitList(UNIT_LIST_ENEMY_HEROES)
@@ -251,7 +251,7 @@ Consider[2] = function()
 	local CastRange = ability:GetCastRange()
 	local Damage = ability:GetAbilityDamage()
 
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
 	--------------------------------------
 	-- Mode based usage
 	--------------------------------------
@@ -298,8 +298,8 @@ Consider[4] = function()
 	local CastRange = ability:GetCastRange()
 	local Damage = ability:GetAbilityDamage()
 
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(CastRange + 300, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange + 300, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	--------------------------------------
 	-- Global high-priorty usage

@@ -297,7 +297,7 @@ function PushUtility.UnitPushLaneThink(npcBot, lane)
 
 	--print(getShortName(npcBot).."\tCreepAttackTower: "..tostring(CreepAttackTower).." Safe:"..tostring(Safe).." noCreeps:"..tostring(noCreeps))
 
-	local enemys = npcBot:GetNearbyHeroes(1200, true, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, 1200, true, BOT_MODE_NONE)
 
 	local target = getMyTarget(npcBot, lane, TargetLocation)
 
@@ -376,8 +376,8 @@ end
 
 function PushUtility.GetSafeLocation(npcBot, BasicLocation, gamma)
 	local EnemyTeam = GetOpposingTeam()
-	local Allys = npcBot:GetNearbyHeroes(1600, false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(1600, true, BOT_MODE_NONE)
+	local Allys = utility.GetNearbyVisibleHeroes(npcBot, 1600, false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, 1600, true, BOT_MODE_NONE)
 	local MyAttackRange = npcBot:GetAttackRange()
 
 	local RangeConstant = 175

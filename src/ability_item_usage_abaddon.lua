@@ -127,14 +127,14 @@ Consider[1] = function()
 	local Damage = ability:GetAbilityDamage()
 	local SelfDamage = ability:GetSpecialValueInt("self_damage")
 
-	local allys = npcBot:GetNearbyHeroes(CastRange + 150, false, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, CastRange + 150, false, BOT_MODE_NONE)
 	for _, hero in pairs(allys) do
 		if (hero == npcBot) then
 			table.remove(allys, _)
 		end
 	end
 	local WeakestAlly, AllyHealth = utility.GetWeakestUnit(allys)
-	local enemys = npcBot:GetNearbyHeroes(CastRange + 150, true, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange + 150, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	local creeps = npcBot:GetNearbyCreeps(CastRange + 300, true)
 	local WeakestCreep, CreepHealth = utility.GetWeakestUnit(creeps)
@@ -386,9 +386,9 @@ Consider[2] = function()
 	local CastRange = ability:GetCastRange()
 	local Damage = ability:GetAbilityDamage()
 
-	local allys = npcBot:GetNearbyHeroes(CastRange + 300, false, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, CastRange + 300, false, BOT_MODE_NONE)
 	local WeakestAlly, AllyHealth = utility.GetWeakestUnit(allys)
-	local enemys = npcBot:GetNearbyHeroes(CastRange + 300, true, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange + 300, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	local creeps = npcBot:GetNearbyCreeps(CastRange + 300, true)
 	local WeakestCreep, CreepHealth = utility.GetWeakestUnit(creeps)

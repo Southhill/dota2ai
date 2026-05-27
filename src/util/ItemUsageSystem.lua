@@ -189,7 +189,7 @@ local function ShouldTP()
     local mode = npcBot:GetActiveMode()
     local modDesire = npcBot:GetActiveModeDesire()
     local botLoc = npcBot:GetLocation()
-    local enemies = npcBot:GetNearbyHeroes(1600, true, BOT_MODE_NONE)
+    local enemies = utility.GetNearbyVisibleHeroes(npcBot, 1600, true, BOT_MODE_NONE)
     if mode == BOT_MODE_LANING and #enemies == 0 then
         local assignedLane = npcBot:GetAssignedLane()
         if assignedLane == LANE_TOP then
@@ -276,7 +276,7 @@ function M.UnImplementedItemUsage()
         return
     end
     local notBlasted = not npcBot:HasModifier("modifier_ice_blast")
-    local tableNearbyEnemyHeroes = npcBot:GetNearbyHeroes(800, true, BOT_MODE_NONE)
+    local tableNearbyEnemyHeroes = utility.GetNearbyVisibleHeroes(npcBot, 800, true, BOT_MODE_NONE)
     local nearByTowers = npcBot:GetNearbyTowers(1000, true)
 
     local npcTarget = npcBot:GetTarget()
@@ -364,7 +364,7 @@ function M.UnImplementedItemUsage()
             end
         elseif DotaTime() > 0 and npcBot:GetActiveMode() == BOT_MODE_LANING and role.CanBeSupport(npcBot:GetUnitName()) and
             tCharge > 1 and DotaTime() > giveTime + 2.0 then
-            local allies = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
+            local allies = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
             for _, ally in pairs(allies) do
                 local tangoSlot = ally:FindItemSlot("item_tango")
                 if ally:GetUnitName() ~= npcBot:GetUnitName() and not ally:IsIllusion() and tangoSlot == -1 and
@@ -423,7 +423,7 @@ function M.UnImplementedItemUsage()
     local ifl = IsItemAvailable("item_flask")
     if ifl ~= nil and ifl:IsFullyCastable() and npcBot:DistanceFromFountain() > 1000 then
         if DotaTime() > 0 then
-            local tableNearbyEnemyHeroes2 = npcBot:GetNearbyHeroes(650, true, BOT_MODE_NONE)
+            local tableNearbyEnemyHeroes2 = utility.GetNearbyVisibleHeroes(npcBot, 650, true, BOT_MODE_NONE)
             if (npcBot:GetHealth() / npcBot:GetMaxHealth()) < 0.35 and #tableNearbyEnemyHeroes2 == 0 then
                 npcBot:Action_UseAbilityOnEntity(ifl, npcBot)
                 return
@@ -434,7 +434,7 @@ function M.UnImplementedItemUsage()
     local icl = IsItemAvailable("item_clarity")
     if icl ~= nil and icl:IsFullyCastable() and npcBot:DistanceFromFountain() > 1000 then
         if DotaTime() > 0 then
-            local tableNearbyEnemyHeroes2 = npcBot:GetNearbyHeroes(550, true, BOT_MODE_NONE)
+            local tableNearbyEnemyHeroes2 = utility.GetNearbyVisibleHeroes(npcBot, 550, true, BOT_MODE_NONE)
             if (npcBot:GetMana() / npcBot:GetMaxMana()) < 0.35 and #tableNearbyEnemyHeroes2 == 0 then
                 npcBot:Action_UseAbilityOnEntity(icl, npcBot)
                 return
@@ -445,7 +445,7 @@ function M.UnImplementedItemUsage()
     local itemQuellingBlade = IsItemAvailable("item_quelling_blade") or IsItemAvailable("item_bfury")
     if itemQuellingBlade ~= nil and itemQuellingBlade:IsFullyCastable() then
         local trees = npcBot:GetNearbyTrees(250)
-        if #trees >= 8 and AbilityExtensions:Contains(npcBot:GetNearbyHeroes(900, true, BOT_MODE_NONE), function(t)
+        if #trees >= 8 and AbilityExtensions:Contains(utility.GetNearbyVisibleHeroes(npcBot, 900, true, BOT_MODE_NONE), function(t)
             return t:GetUnitName() == "npc_dota_hero_furion"
         end) then
             npcBot:Action_UseAbilityOnTree(itemQuellingBlade, trees[1])
@@ -586,7 +586,7 @@ function M.UnImplementedItemUsage()
             end
         elseif AbilityExtensions:IsAttackingEnemies(npcBot) or AbilityExtensions:IsRetreating(npcBot) then
             if not IsUsingArmlet then
-                if #npcBot:GetNearbyHeroes(1599, true, BOT_MODE_NONE) > 0 or npcBot:WasRecentlyDamagedByAnyHero(2.5) then
+                if #utility.GetNearbyVisibleHeroes(npcBot, 1599, true, BOT_MODE_NONE) > 0 or npcBot:WasRecentlyDamagedByAnyHero(2.5) then
                     npcBot:Action_UseAbility(itemArmlet)
                     itemArmlet.lastOpenTime = DotaTime()
                     return
@@ -640,7 +640,7 @@ function M.UnImplementedItemUsage()
     end
 
     if sc ~= nil and sc:IsFullyCastable() then
-        local Allies = npcBot:GetNearbyHeroes(1000, false, BOT_MODE_NONE)
+        local Allies = utility.GetNearbyVisibleHeroes(npcBot, 1000, false, BOT_MODE_NONE)
         for _, Ally in pairs(Allies) do
             if (Ally:GetHealth() / Ally:GetMaxHealth() < 0.35 and tableNearbyEnemyHeroes ~= nil and
                 #tableNearbyEnemyHeroes > 0 and CanCastOnTarget(Ally)) or (IsDisabled(Ally) and CanCastOnTarget(Ally)) then
@@ -687,7 +687,7 @@ function M.UnImplementedItemUsage()
     end
 
     if lotus ~= nil and lotus:IsFullyCastable() then
-        local Allies = npcBot:GetNearbyHeroes(1000, false, BOT_MODE_NONE)
+        local Allies = utility.GetNearbyVisibleHeroes(npcBot, 1000, false, BOT_MODE_NONE)
         for _, Ally in pairs(Allies) do
             if (Ally:GetHealth() / Ally:GetMaxHealth() < 0.35 and tableNearbyEnemyHeroes ~= nil and
                 #tableNearbyEnemyHeroes > 0) or IsDisabled(Ally) then
@@ -774,7 +774,7 @@ function M.UnImplementedItemUsage()
     end
 
     if glimer ~= nil and glimer:IsFullyCastable() then
-        local Allies = npcBot:GetNearbyHeroes(1000, false, BOT_MODE_NONE)
+        local Allies = utility.GetNearbyVisibleHeroes(npcBot, 1000, false, BOT_MODE_NONE)
         for _, Ally in pairs(Allies) do
             if (Ally:GetHealth() / Ally:GetMaxHealth() < 0.35 and tableNearbyEnemyHeroes ~= nil and
                 #tableNearbyEnemyHeroes > 0 and CanCastOnTarget(Ally)) or (IsDisabled(Ally) and CanCastOnTarget(Ally)) then
@@ -790,7 +790,7 @@ function M.UnImplementedItemUsage()
     end
     local guardian = IsItemAvailable("item_guardian_greaves")
     if guardian ~= nil and guardian:IsFullyCastable() then
-        local allys = npcBot:GetNearbyHeroes(1000, false, BOT_MODE_NONE)
+        local allys = utility.GetNearbyVisibleHeroes(npcBot, 1000, false, BOT_MODE_NONE)
         allys = AbilityExtensions:Filter(allys, NotSuitableForGuardianGreaves)
         for _, ally in pairs(allys) do
             if ally:GetHealth() / ally:GetMaxHealth() < 0.35 and tableNearbyEnemyHeroes ~= nil and
@@ -812,7 +812,7 @@ function M.UnImplementedItemUsage()
 
     local ggr = IsItemAvailable("item_guardian_greaves")
     if ggr ~= nil and ggr:IsFullyCastable() then
-        local allys = npcBot:GetNearbyHeroes(900, false, BOT_MODE_NONE)
+        local allys = utility.GetNearbyVisibleHeroes(npcBot, 900, false, BOT_MODE_NONE)
         allys = AbilityExtensions:Filter(allys, NotSuitableForGuardianGreaves)
         local factor = 0
 
@@ -847,7 +847,7 @@ function M.UnImplementedItemUsage()
     local stick = IsItemAvailable("item_magic_stick")
     if stick ~= nil and stick:IsFullyCastable() and stick:GetCurrentCharges() > 0 and notBlasted then
         if DotaTime() > 0 then
-            local tableNearbyEnemyHeroes = npcBot:GetNearbyHeroes(500, true, BOT_MODE_NONE)
+            local tableNearbyEnemyHeroes = utility.GetNearbyVisibleHeroes(npcBot, 500, true, BOT_MODE_NONE)
             if ((npcBot:GetHealth() / npcBot:GetMaxHealth() < 0.4 or npcBot:GetMana() / npcBot:GetMaxMana() < 0.2) and
                 #tableNearbyEnemyHeroes >= 1 and GetItemCharges(npcBot, "item_magic_stick") >= 1) or
                 ((npcBot:GetHealth() / npcBot:GetMaxHealth() < 0.7 and npcBot:GetMana() / npcBot:GetMaxMana() < 0.7) and
@@ -861,7 +861,7 @@ function M.UnImplementedItemUsage()
     local wand = IsItemAvailable("item_magic_wand")
     if wand ~= nil and wand:IsFullyCastable() and wand:GetCurrentCharges() > 0 and notBlasted then
         if DotaTime() > 0 then
-            local tableNearbyEnemyHeroes = npcBot:GetNearbyHeroes(500, true, BOT_MODE_NONE)
+            local tableNearbyEnemyHeroes = utility.GetNearbyVisibleHeroes(npcBot, 500, true, BOT_MODE_NONE)
             if ((npcBot:GetHealth() / npcBot:GetMaxHealth() < 0.4 or npcBot:GetMana() / npcBot:GetMaxMana() < 0.2) and
                 #tableNearbyEnemyHeroes >= 1 and GetItemCharges(npcBot, "item_magic_wand") >= 1) or
                 ((npcBot:GetHealth() / npcBot:GetMaxHealth() < 0.7 and npcBot:GetMana() / npcBot:GetMaxMana() < 0.7) and
@@ -875,7 +875,7 @@ function M.UnImplementedItemUsage()
     local holyLocket = IsItemAvailable("item_holy_locket")
     if holyLocket ~= nil and holyLocket:IsFullyCastable() and notBlasted then
         if DotaTime() > 0 then
-            local tableNearbyEnemyHeroes = npcBot:GetNearbyHeroes(500, true, BOT_MODE_NONE)
+            local tableNearbyEnemyHeroes = utility.GetNearbyVisibleHeroes(npcBot, 500, true, BOT_MODE_NONE)
             if ((npcBot:GetHealth() / npcBot:GetMaxHealth() < 0.4 or npcBot:GetMana() / npcBot:GetMaxMana() < 0.2) and
                 #tableNearbyEnemyHeroes >= 1 and GetItemCharges(npcBot, "item_holy_locket") >= 1) or
                 ((npcBot:GetHealth() / npcBot:GetMaxHealth() < 0.7 and npcBot:GetMana() / npcBot:GetMaxMana() < 0.7) and
@@ -888,7 +888,7 @@ function M.UnImplementedItemUsage()
 
     local bottle = IsItemAvailable("item_bottle")
     if bottle ~= nil and bottle:IsFullyCastable() and notBlasted then
-        local tableNearbyEnemyHeroes = npcBot:GetNearbyHeroes(650, true, BOT_MODE_NONE)
+        local tableNearbyEnemyHeroes = utility.GetNearbyVisibleHeroes(npcBot, 650, true, BOT_MODE_NONE)
         if GetItemCharges(npcBot, "item_bottle") > 0 and not npcBot:HasModifier("modifier_bottle_regeneration") then
             if ((npcBot:GetHealth() / npcBot:GetMaxHealth() < 0.65 and npcBot:GetMana() / npcBot:GetMaxMana() < 0.45) or
                 npcBot:GetHealth() / npcBot:GetMaxHealth() < 0.4 or npcBot:GetMana() / npcBot:GetMaxMana() < 0.2) and
@@ -912,7 +912,7 @@ function M.UnImplementedItemUsage()
 
     local metham = IsItemAvailable("item_meteor_hammer")
     if metham ~= nil and metham:IsFullyCastable() then
-        local tableNearbyAttackingAlliedHeroes = npcBot:GetNearbyHeroes(1000, false, BOT_MODE_ATTACK)
+        local tableNearbyAttackingAlliedHeroes = utility.GetNearbyVisibleHeroes(npcBot, 1000, false, BOT_MODE_ATTACK)
         if (npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_TOP or npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_MID or
             npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_BOT) then
             local towers = npcBot:GetNearbyTowers(800, true)
@@ -948,7 +948,7 @@ function M.UnImplementedItemUsage()
                 return
             end
         else
-            local Allies = npcBot:GetNearbyHeroes(1150, false, BOT_MODE_NONE)
+            local Allies = utility.GetNearbyVisibleHeroes(npcBot, 1150, false, BOT_MODE_NONE)
             for _, Ally in pairs(Allies) do
                 if not Ally:IsIllusion() and Ally:HasModifier("modifier_item_spirit_vessel_heal") == false and
                     CanCastOnTarget(Ally) and Ally:GetHealth() / Ally:GetMaxHealth() < 0.35 and #tableNearbyEnemyHeroes ==

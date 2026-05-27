@@ -25,9 +25,9 @@ function Think()
 			npcBot:Action_MoveToUnit(npcEnemy)
 		end
 	else
-		local enemys = npcBot:GetNearbyHeroes(1200, true, BOT_MODE_NONE)
+		local enemys = utility.GetNearbyVisibleHeroes(npcBot, 1200, true, BOT_MODE_NONE)
 		local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
-		local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
+		local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
 		for i, npcAlly in pairs(allys) do
 			local target = npcAlly:GetTarget()
 			if (target ~= nil) then

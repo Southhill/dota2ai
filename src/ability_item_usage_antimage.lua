@@ -1,10 +1,10 @@
 ----------------------------------------------------------------------------
 --	Ranked Matchmaking AI v1.1 NewStructure
 --	Author: adamqqq		Email:adamqqq@163.com
---	敌法师 (Anti-Mage) 技能与物品使用脚本
+--	敌法�?(Anti-Mage) 技能与物品使用脚本
 ----------------------------------------------------------------------------
 --------------------------------------
--- 通用初始化
+-- 通用初始�?
 --------------------------------------
 local utility = require(GetScriptDirectory() .. "/util/Utility")
 require(GetScriptDirectory() .. "/ability_item_usage_generic")
@@ -13,43 +13,43 @@ local AbilityExtensions = require(GetScriptDirectory() .. "/util/AbilityAbstract
 local debugmode = false
 local npcBot = GetBot()
 local Talents = {}       -- 天赋列表
-local Abilities = {}     -- 技能名称列表
-local AbilitiesReal = {} -- 技能对象列表
+local Abilities = {}     -- 技能名称列�?
+local AbilitiesReal = {} -- 技能对象列�?
 
 -- 初始化技能和天赋
 ability_item_usage_generic.InitAbility(Abilities, AbilitiesReal, Talents)
 
 -- 技能加点顺序表（共30级）
--- 主1技能（法力燃烧），副2技能（闪烁），3技能（法术护盾），5技能（大招）
+-- �?技能（法力燃烧），�?技能（闪烁），3技能（法术护盾），5技能（大招�?
 local AbilityToLevelUp = {
-	Abilities[1],  -- 1级: 法力燃烧
-	Abilities[2],  -- 2级: 闪烁
-	Abilities[1],  -- 3级: 法力燃烧
-	Abilities[3],  -- 4级: 法术护盾
-	Abilities[2],  -- 5级: 闪烁
-	Abilities[5],  -- 6级: 大招
-	Abilities[2],  -- 7级: 闪烁
-	Abilities[2],  -- 8级: 闪烁
-	Abilities[1],  -- 9级: 法力燃烧
-	"talent",      -- 10级: 天赋
-	Abilities[1],  -- 11级: 法力燃烧
-	Abilities[5],  -- 12级: 大招
-	Abilities[3],  -- 13级: 法术护盾
-	Abilities[3],  -- 14级: 法术护盾
-	"talent",      -- 15级: 天赋
-	Abilities[3],  -- 16级: 法术护盾
-	"nil",         -- 17级: 属性奖励
-	Abilities[5],  -- 18级: 大招
-	"nil",         -- 19级: 属性奖励
-	"talent",      -- 20级: 天赋
-	"nil",         -- 21级: 属性奖励
-	"nil",         -- 22级: 属性奖励
-	"nil",         -- 23级: 属性奖励
-	"nil",         -- 24级: 属性奖励
-	"talent"       -- 25级: 天赋
+	Abilities[1],  -- 1�? 法力燃烧
+	Abilities[2],  -- 2�? 闪烁
+	Abilities[1],  -- 3�? 法力燃烧
+	Abilities[3],  -- 4�? 法术护盾
+	Abilities[2],  -- 5�? 闪烁
+	Abilities[5],  -- 6�? 大招
+	Abilities[2],  -- 7�? 闪烁
+	Abilities[2],  -- 8�? 闪烁
+	Abilities[1],  -- 9�? 法力燃烧
+	"talent",      -- 10�? 天赋
+	Abilities[1],  -- 11�? 法力燃烧
+	Abilities[5],  -- 12�? 大招
+	Abilities[3],  -- 13�? 法术护盾
+	Abilities[3],  -- 14�? 法术护盾
+	"talent",      -- 15�? 天赋
+	Abilities[3],  -- 16�? 法术护盾
+	"nil",         -- 17�? 属性奖�?
+	Abilities[5],  -- 18�? 大招
+	"nil",         -- 19�? 属性奖�?
+	"talent",      -- 20�? 天赋
+	"nil",         -- 21�? 属性奖�?
+	"nil",         -- 22�? 属性奖�?
+	"nil",         -- 23�? 属性奖�?
+	"nil",         -- 24�? 属性奖�?
+	"talent"       -- 25�? 天赋
 }
 
--- 天赋选择树（按照顺序：10/15/20/25级左右天赋）
+-- 天赋选择树（按照顺序�?0/15/20/25级左右天赋）
 local TalentTree = {
 	function() return Talents[1] end,  -- 10级左天赋
 	function() return Talents[4] end,  -- 15级右天赋
@@ -72,30 +72,30 @@ end
 -- 技能使用逻辑
 --------------------------------------
 local cast = {}
-cast.Desire = {}   -- 施放欲望值
+cast.Desire = {}   -- 施放欲望�?
 cast.Target = {}   -- 施放目标
 cast.Type = {}     -- 施放类型
 local Consider = {}-- 各技能的考虑函数
 local CanCast = {utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.UCanCast, utility.NCanCast}
 local enemyDisabled = utility.enemyDisabled
 
--- 计算连招总伤害
+-- 计算连招总伤�?
 function GetComboDamage()
 	return ability_item_usage_generic.GetComboDamage(AbilitiesReal)
 end
 
--- 计算连招总蓝耗
+-- 计算连招总蓝�?
 function GetComboMana()
 	return ability_item_usage_generic.GetComboMana(AbilitiesReal)
 end
 
--- 计算闪烁攻击的最佳落点（预测敌方移动方向）
+-- 计算闪烁攻击的最佳落点（预测敌方移动方向�?
 local function GetBlinkAttackLocation(enemy)
 	local attackDistance = enemy:GetBoundingRadius() + npcBot:GetBoundingRadius()
 	if AbilityExtensions:HasPhasedMovement(enemy) or AbilityExtensions:HasUnobstructedMovement(enemy) then
 		attackDistance = npcBot:GetAttackRange()
 	end
-	-- 预测敌人下一步位置
+	-- 预测敌人下一步位�?
 	local enemyNextStep =
 		enemy:GetLocation() + Vector(math.cos(enemy:GetFacing()), math.sin(enemy:GetFacing())) * attackDistance
 	local distanceFromNextStep = GetUnitToLocationDistance(npcBot, enemyNextStep)
@@ -130,7 +130,7 @@ local function TooDangerousToBlinkNear(npc)
 	return false
 end
 
--- 技能2（闪烁）的考虑函数
+-- 技�?（闪烁）的考虑函数
 Consider[2] = function()
 	local abilityNumber = 2
 	--------------------------------------
@@ -138,14 +138,14 @@ Consider[2] = function()
 	--------------------------------------
 	local ability = AbilitiesReal[abilityNumber]
 
-	-- 技能不可用或被禁用地形传送
+	-- 技能不可用或被禁用地形传�?
 	if not ability:IsFullyCastable() or AbilityExtensions:CannotTeleport(npcBot) then
 		return BOT_ACTION_DESIRE_NONE, 0
 	end
 
 	local CastRange = ability:GetSpecialValueInt("blink_range")
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(CastRange + 300, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange + 300, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	local trees = npcBot:GetNearbyTrees(300)
 
@@ -168,7 +168,7 @@ Consider[2] = function()
 		end
 	end
 	--------------------------------------
-	-- 基于模式的闪烁使用
+	-- 基于模式的闪烁使�?
 	--------------------------------------
 	-- 卡住时闪烁逃生
 	if utility.IsStuck(npcBot) then
@@ -184,7 +184,7 @@ Consider[2] = function()
 		return BOT_ACTION_DESIRE_HIGH, utility.GetUnitsTowardsLocation(npcBot, GetAncient(GetTeam()), CastRange)
 	end
 
-	-- 追击敌人时闪烁靠近
+	-- 追击敌人时闪烁靠�?
 	if
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
@@ -240,8 +240,8 @@ Consider[3] = function()
 		return BOT_ACTION_DESIRE_NONE, 0
 	end
 
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(900, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, 900, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	local trees = npcBot:GetNearbyTrees(300)
 
@@ -287,10 +287,10 @@ Consider[4] = function()
 	if not ability:IsFullyCastable() then
 		return 0
 	end
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
 	local enemies =
 		AbilityExtensions:Filter(
-		npcBot:GetNearbyHeroes(1600, true, BOT_MODE_NONE),
+		utility.GetNearbyVisibleHeroes(npcBot, 1600, true, BOT_MODE_NONE),
 		function(t)
 			return GetUnitToUnitDistance(npcBot, t) >= 450
 		end
@@ -319,8 +319,8 @@ Consider[5] = function()
 	local DamagePercent = ability:GetSpecialValueFloat("mana_void_damage_per_mana")
 	local Radius = ability:GetAOERadius()
 
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
-	local enemys = npcBot:GetNearbyHeroes(CastRange + 300, true, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange + 300, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	--------------------------------------
 	-- Global high-priorty usage
@@ -328,7 +328,7 @@ Consider[5] = function()
 	--Try to kill enemy hero
 
 	if npcBot:GetActiveMode() ~= BOT_MODE_RETREAT then
-		local targets = npcBot:GetNearbyHeroes(CastRange + 400, true, BOT_MODE_NONE)
+		local targets = utility.GetNearbyVisibleHeroes(npcBot, CastRange + 400, true, BOT_MODE_NONE)
 		local goodTargets = {}
 		for _, t in pairs(targets) do
 			if AbilityExtensions:MustBeIllusion(npcBot, t) then

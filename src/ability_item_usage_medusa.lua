@@ -93,8 +93,8 @@ Consider[1] = function()
 	end
 
 	local attackRange = npcBot:GetAttackRange()
-	local enemies = npcBot:GetNearbyHeroes(attackRange + 300, true, BOT_MODE_NONE)
-	local enemiesInRange = npcBot:GetNearbyHeroes(attackRange, true, BOT_MODE_NONE)
+	local enemies = utility.GetNearbyVisibleHeroes(npcBot, attackRange + 300, true, BOT_MODE_NONE)
+	local enemiesInRange = utility.GetNearbyVisibleHeroes(npcBot, attackRange, true, BOT_MODE_NONE)
 	local creeps = npcBot:GetNearbyCreeps(attackRange, true)
 	if AbilityExtensions:IsFarmingOrPushing(npcBot) then
 		if #creeps >= 2 and #enemies == 0 then
@@ -129,10 +129,10 @@ Consider[2] = function()
 	local Damage = ability:GetSpecialValueInt("snake_damage")
 	local CastPoint = ability:GetCastPoint()
 
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
 	local enemys =
 		AbilityExtensions:FilterNot(
-		npcBot:GetNearbyHeroes(CastRange + 300, true, BOT_MODE_NONE),
+		utility.GetNearbyVisibleHeroes(npcBot, CastRange + 300, true, BOT_MODE_NONE),
 		function(enemy)
 			return enemy:HasModifier("modifier_medusa_stone_gaze_stone")
 		end
@@ -159,7 +159,7 @@ Consider[2] = function()
 	-- Mode based usage
 	--------------------------------------
 	-- If we're in a teamfight
-	local tableNearbyAttackingAlliedHeroes = npcBot:GetNearbyHeroes(1000, false, BOT_MODE_ATTACK)
+	local tableNearbyAttackingAlliedHeroes = utility.GetNearbyVisibleHeroes(npcBot, 1000, false, BOT_MODE_ATTACK)
 	if (#tableNearbyAttackingAlliedHeroes >= 2) then
 		if (ManaPercentage > 0.65 or npcBot:GetMana() > ComboMana and ability:GetLevel() > 1) then
 			if (#enemys >= 1 and #creeps < 4) or #enemys > 2 then
@@ -254,7 +254,7 @@ Consider[3] = function()
 	local manaPercent = AbilityExtensions:GetManaPercent(npcBot)
 	if
 		healthPercent >= manaPercent + 0.3 and npcBot:GetHealth() >= 500 and healthPercent >= 0.7 and
-			(not npcBot:WasRecentlyDamagedByAnyHero(1.5) or #npcBot:GetNearbyHeroes(300, true, BOT_MODE_NONE) == 0)
+			(not npcBot:WasRecentlyDamagedByAnyHero(1.5) or #utility.GetNearbyVisibleHeroes(npcBot, 300, true, BOT_MODE_NONE) == 0)
 	 then
 		return false
 	end
@@ -278,15 +278,15 @@ Consider[5] = function()
 	local CastRange = ability:GetCastRange()
 	local CastPoint = ability:GetCastPoint()
 
-	local enemys = npcBot:GetNearbyHeroes(CastRange - 300, true, BOT_MODE_NONE)
+	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange - 300, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 
-	local allys = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
+	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
 	--------------------------------------
 	-- Mode based usage
 	--------------------------------------
 	-- If we're seriously retreating, see if we can land a stun on someone who's damaged us recently
-	local enemys2 = npcBot:GetNearbyHeroes(400, true, BOT_MODE_NONE)
+	local enemys2 = utility.GetNearbyVisibleHeroes(npcBot, 400, true, BOT_MODE_NONE)
 	if
 		(npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH or #enemys2 >= 2)
 	 then

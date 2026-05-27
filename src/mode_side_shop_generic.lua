@@ -10,7 +10,7 @@ function GetDesire()
 	--
 	--local desire = 0.0;
 	--
-	--local enemys = npcBot:GetNearbyHeroes(600,true,BOT_MODE_NONE)
+	--local enemys = utility.GetNearbyVisibleHeroes(npcBot, 600,true,BOT_MODE_NONE)
 	--if ( npcBot:IsUsingAbility() or npcBot:IsChanneling() or npcBot:WasRecentlyDamagedByAnyHero(5.0) or #enemys>=1)		--不应打断持续施法
 	--then
 	--	return 0
@@ -20,7 +20,7 @@ function GetDesire()
 	--	local d=npcBot:DistanceFromSideShop()
 	--	if d<2500
 	--	then
-	--		desire = (2500-d)/2500*0.3+0.3;					--根据离边路商店的距离返回欲望值
+	--		desire = (2500-d)/2500*0.3+0.3;					--根据离边路商店的距离返回欲望�?
 	--	end
 	--end
 	--
@@ -33,7 +33,7 @@ function Think()
 	--local shopLoc1 = GetShopLocation( GetTeam(), SHOP_SIDE );
 	--local shopLoc2 = GetShopLocation( GetTeam(), SHOP_SIDE2 );
 	--
-	--if ( GetUnitToLocationDistance(npcBot, shopLoc1) <= GetUnitToLocationDistance(npcBot, shopLoc2) ) then	--选择前往距离自己更近的商店
+	--if ( GetUnitToLocationDistance(npcBot, shopLoc1) <= GetUnitToLocationDistance(npcBot, shopLoc2) ) then	--选择前往距离自己更近的商�?
 	--	npcBot:Action_MoveToLocation( shopLoc1 );
 	--else
 	--	npcBot:Action_MoveToLocation( shopLoc2 );
