@@ -2,7 +2,7 @@
 --	Ranked Matchmaking AI v1.6b
 --	Author: adamqqq		Email:adamqqq@163.com
 ----------------------------------------------------------------------------
-local ItemPurchaseSystem = dofile(GetScriptDirectory() .. "/util/ItemPurchaseSystem")
+local ItemPurchaseSystem = require(GetScriptDirectory() .. "/util/ItemPurchaseSystem")
 
 local ItemsToBuy =
 {
@@ -19,7 +19,7 @@ local ItemsToBuy =
 	"item_monkey_king_bar",
 	"item_ultimate_scepter",
 	"item_sphere", --林肯
-	"item_mjollnir" --大雷锤
+	"item_mjollnir" --大雷�?
 }
 
 ItemPurchaseSystem:CreateItemInformationTable(GetBot(), ItemsToBuy)

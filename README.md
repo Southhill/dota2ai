@@ -9,9 +9,10 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.7.5-blue.svg" alt="Version 1.7.5"/>
+  <img src="https://img.shields.io/badge/version-1.7.5--dev-blue.svg" alt="Version 1.7.5-dev"/>
   <img src="https://img.shields.io/badge/license-GPLv3-green.svg" alt="License GPLv3"/>
   <img src="https://img.shields.io/badge/language-Lua-orange.svg" alt="Language Lua"/>
+  <img src="https://img.shields.io/badge/branch-agent-yellow.svg" alt="Branch agent"/>
 </p>
 
 ---
@@ -86,8 +87,16 @@ dota2ai/
 │       ├── BotNameUtility.lua
 │       ├── Utility.lua             # Core utility functions
 │       └── ...
+├── scripts/                      # Deployment scripts
+│   ├── deploy_agent2026.bat      #   Batch deployment
+│   └── deploy_agent2026.ps1      #   PowerShell deployment (recommended)
 ├── dev/                          # Development/test scripts
 ├── changelog/                    # Version changelog (EN & CN)
+├── docs/                         # Documentation
+│   ├── ARCHITECTURE.md           #   Architecture overview
+│   ├── BEGINNER_GUIDE.md         #   Beginner's guide
+│   ├── LOCAL_DEV_GUIDE.md        #   Local development guide
+│   └── UPGRADE_GUIDE.md          #   Dota2 7.41c upgrade plan
 ├── LICENSE                       # GPLv3
 ├── README.md                     # This file
 └── README_CN.md                  # Chinese README
@@ -107,7 +116,42 @@ dota2ai/
 
 ---
 
-## 💬 Chat Commands
+## �️ Deploy to Dota2
+
+After cloning, deploy the scripts with one command:
+
+**PowerShell (recommended):**
+```powershell
+.\scripts\deploy_agent2026.ps1
+```
+
+**Batch:**
+```cmd
+scripts\deploy_agent2026.bat
+```
+
+This copies all files from `src/` to your Dota2 `vscripts/bots/` folder automatically.
+
+> See [Local Development Guide](./docs/LOCAL_DEV_GUIDE.md) for more details.
+
+---
+
+## 📋 Development Status
+
+The project is currently on the **`agent`** branch, undergoing structural improvements in preparation for a Dota2 7.41c upgrade.
+
+| Status | Area | Description |
+|--------|------|-------------|
+| ✅ | **Hero Scripts** | 100+ heroes with ability & item logic |
+| ✅ | **Game Modes** | Farming, laning, pushing, retreat, rune, warding |
+| ✅ | **Utility Systems** | Courier, items, wards, chat commands |
+ | ✅ | **Deployment** | PowerShell + Batch deploy scripts |
+| 🏗️ | **Docs** | Architecture, beginner guide, dev guide, upgrade plan |
+| 🎯 | **Upgrade Plan** | Detailed guide for 7.29 → 7.41c migration (see [UPGRADE_GUIDE.md](./docs/UPGRADE_GUIDE.md)) |
+
+---
+
+## �💬 Chat Commands
 
 ### Hero Selection
 During the strategy phase, type a hero name in **Team Chat** (for allies) or **All Chat** (for enemies):
@@ -152,9 +196,12 @@ Team Chat: top mid bot bot bot
 
 See [changelog/changelog_en.txt](./changelog/changelog_en.txt) for the full version history.
 
-**Latest version: v1.7.5** (2021.05.17)
-- Fixed warding system
-- Temporarily removed armlet to fix game slowdown
+**Latest version: v1.7.5-dev** (agent branch, updated 2026.05)
+- Restructured project: separated deploy scripts to `scripts/`, added documentation
+- Added `LOCAL_DEV_GUIDE.md` and `UPGRADE_GUIDE.md` (7.29 → 7.41c migration plan)
+- Refactored `hero_selection.lua` — role-aware pick system overhaul
+- Added debug mode, enum constants, code cleanup
+- See [UPGRADE_GUIDE.md](./docs/UPGRADE_GUIDE.md) for the 7.41c roadmap
 
 Key past milestones:
 - **v1.7.0-1.7.5** — Updated to 7.28c-7.29, added Ember Spirit, fixed numerous bugs
@@ -171,7 +218,14 @@ Key past milestones:
 ## 🤝 Contributing
 
 Contributions, issues, and feature requests are welcome!
-Feel free to open an issue on [GitHub](https://github.com/Southhill/dota2ai/issues).
+
+Check out these resources to get started:
+- 📖 [Beginner's Guide](./docs/BEGINNER_GUIDE.md) — Learn how bot scripts work
+- 🏗️ [Architecture Overview](./docs/ARCHITECTURE.md) — Understand the codebase structure
+- 🛠️ [Local Development Guide](./docs/LOCAL_DEV_GUIDE.md) — Set up your dev environment
+- 📈 [Upgrade Guide](./docs/UPGRADE_GUIDE.md) — Help migrate to Dota2 7.41c
+
+Feel free to open an issue or PR on [GitHub](https://github.com/Southhill/dota2ai).
 
 ---
 
@@ -186,6 +240,7 @@ This project is licensed under the **GNU General Public License v3.0** — see t
 - **adamqqq** — Original author and creator
 - **zmcmcc** — Major contributor (v1.4e ~ v1.5g)
 - **AaronSong321** — Updated for 7.28c+ (v1.7.x)
+- **cao / Sunny** — Current maintainer, project restructuring & docs (agent branch)
 - **Arizona Fauzie** — BOT EXPERIMENT author, provided valuable code references
 - **DblTap** — Role-based hero selection system
 - **pilaoda** — Army Bots author, push system references

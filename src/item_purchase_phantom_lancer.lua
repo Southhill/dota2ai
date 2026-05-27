@@ -3,13 +3,13 @@
 --	Author: adamqqq		Email:adamqqq@163.com
 --  Contributor: zmcmcc Email:mengzhang@utexas.edu
 ----------------------------------------------------------------------------
-local ItemPurchaseSystem = dofile(GetScriptDirectory() .. "/util/ItemPurchaseSystem")
+local ItemPurchaseSystem = require(GetScriptDirectory() .. "/util/ItemPurchaseSystem")
 
 local ItemsToBuy =
 {
 	"item_tango",
 	"item_tango",
-	"item_quelling_blade", --补刀斧
+	"item_quelling_blade", --补刀�?
 	"item_wraith_band",
 	"item_magic_wand",
 	"item_wraith_band",

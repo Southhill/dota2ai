@@ -1,12 +1,10 @@
-local BotsInit = require("game/botsinit")
+local M = {}
 local role = require(GetScriptDirectory() .. "/util/RoleUtility")
 local AbilityExtensions = require(GetScriptDirectory() .. "/util/AbilityAbstraction")
 
-local M = BotsInit.CreateGeneric()
-
 local function CanCastOnTarget(npcTarget)
     return npcTarget:CanBeSeen() and not npcTarget:IsMagicImmune() and not npcTarget:IsInvulnerable() and
-        not npcTarget:IsIllusion()
+               not npcTarget:IsIllusion()
 end
 
 local function CanCastOnMagicImmuneTarget(npcTarget)
@@ -14,10 +12,8 @@ local function CanCastOnMagicImmuneTarget(npcTarget)
 end
 
 local function IsDisabled(npcTarget)
-    if
-        npcTarget:IsRooted() or npcTarget:IsStunned() or npcTarget:IsHexed() or npcTarget:IsSilenced() or
-            npcTarget:IsNightmared()
-     then
+    if npcTarget:IsRooted() or npcTarget:IsStunned() or npcTarget:IsHexed() or npcTarget:IsSilenced() or
+        npcTarget:IsNightmared() then
         return true
     end
     return false
@@ -47,16 +43,14 @@ end
 
 local function GiveToMidLaner()
     local teamPlayers = GetTeamPlayers(GetTeam())
-    --local target = nil
+    -- local target = nil
     if DotaTime() <= 0 then
         return nil
     end
     for k, _ in pairs(teamPlayers) do
         local member = GetTeamMember(k)
-        if
-            member ~= nil and not member:IsIllusion() and member:IsAlive() and
-                member:GetMaxHealth() - member:GetHealth() >= 200
-         then
+        if member ~= nil and not member:IsIllusion() and member:IsAlive() and member:GetMaxHealth() - member:GetHealth() >=
+            200 then
             local num_sts = GetItemCount(member, "item_tango_single")
             local num_ff = GetItemCount(member, "item_faerie_fire")
             local num_stg = GetItemCharges(member, "item_tango")
@@ -112,14 +106,9 @@ local function IsStuck(npcBot)
         local TAd = GetUnitToUnitDistance(npcBot, GetAncient(GetTeam()))
         local Et = npcBot:GetNearbyTowers(450, true)
         local At = npcBot:GetNearbyTowers(450, false)
-        if
-            npcBot:GetCurrentActionType() == BOT_ACTION_TYPE_MOVE_TO and attackTarget == nil and EAd > 2200 and
-                TAd > 2200 and
-                #Et == 0 and
-                #At == 0 and
-                DotaTime() > npcBot.stuckTime + 5.0 and
-                GetUnitToLocationDistance(npcBot, npcBot.stuckLoc) < 25
-         then
+        if npcBot:GetCurrentActionType() == BOT_ACTION_TYPE_MOVE_TO and attackTarget == nil and EAd > 2200 and TAd >
+            2200 and #Et == 0 and #At == 0 and DotaTime() > npcBot.stuckTime + 5.0 and
+            GetUnitToLocationDistance(npcBot, npcBot.stuckLoc) < 25 then
             print(npcBot:GetUnitName() .. " is stuck")
             return true
         end
@@ -258,11 +247,8 @@ local function ShouldTP()
         if botAmount.distance > tpThreshold or botAmount.amount < laneFront / 5 then
             tpLoc = GetPushTPLocation(LANE_BOT)
         end
-    elseif
-        mode == BOT_MODE_DEFEND_ALLY and modDesire >= BOT_MODE_DESIRE_MODERATE and
-            role.CanBeSupport(npcBot:GetUnitName()) == true and
-            #enemies == 0
-     then
+    elseif mode == BOT_MODE_DEFEND_ALLY and modDesire >= BOT_MODE_DESIRE_MODERATE and
+        role.CanBeSupport(npcBot:GetUnitName()) == true and #enemies == 0 then
         local target = npcBot:GetTarget()
         if target ~= nil and target:IsHero() then
             local nearbyTower = target:GetNearbyTowers(1300, true)
@@ -282,7 +268,7 @@ local function ShouldTP()
     return false, nil
 end
 
---npcBot EXPER's code
+-- npcBot EXPER's code
 local giveTime = -90
 function M.UnImplementedItemUsage()
     local npcBot = GetBot()
@@ -337,10 +323,8 @@ function M.UnImplementedItemUsage()
         end
         if GetWantedPowerTreadsAttribute() ~= treads:GetPowerTreadsStat() then
             print(
-                npcBot:GetUnitName() ..
-                    ": power treads attribute " ..
-                        treads:GetPowerTreadsStat() .. ", but I want " .. GetWantedPowerTreadsAttribute()
-            )
+                npcBot:GetUnitName() .. ": power treads attribute " .. treads:GetPowerTreadsStat() .. ", but I want " ..
+                    GetWantedPowerTreadsAttribute())
             npcBot:Action_UseAbility(treads)
             return true
         end
@@ -351,49 +335,40 @@ function M.UnImplementedItemUsage()
         UsePowerTreads(pt)
     end
 
-    --local ringOfBasilius = IsItemAvailable("item_ring_of_basilius")
-    --if ringOfBasilius and ringOfBasilius:IsFullyCastable() then
+    -- local ringOfBasilius = IsItemAvailable("item_ring_of_basilius")
+    -- if ringOfBasilius and ringOfBasilius:IsFullyCastable() then
     --    if (npcBot:GetActiveMode() == BOT_MODE_LANING) ~= ringOfBasilius:GetToggleState() then
     --        ringOfBasilius:ToggleAutoCast()
     --    end
-    --end
+    -- end
     --
-    --local buckler = IsItemAvailable("item_buckler")
-    --if buckler and buckler:IsFullyCastable() then
+    -- local buckler = IsItemAvailable("item_buckler")
+    -- if buckler and buckler:IsFullyCastable() then
     --    if (npcBot:GetActiveMode() == BOT_MODE_LANING) ~= buckler:GetToggleState() then
     --        buckler:ToggleAutoCast()
     --    end
-    --end
+    -- end
 
     -- give tango to ally
     local itg = IsItemAvailable("item_tango")
     if itg ~= nil and itg:IsFullyCastable() then
         local tCharge = itg:GetCurrentCharges()
-        if
-            DotaTime() > -90 and DotaTime() < 0 and npcBot:DistanceFromFountain() <= 100 and
-                role.CanBeSupport(npcBot:GetUnitName()) and
-                npcBot:GetAssignedLane() ~= LANE_MID and
-                tCharge > 2 and
-                DotaTime() > giveTime + 2.0
-         then
+        if DotaTime() > -90 and DotaTime() < 0 and npcBot:DistanceFromFountain() <= 100 and
+            role.CanBeSupport(npcBot:GetUnitName()) and npcBot:GetAssignedLane() ~= LANE_MID and tCharge > 2 and
+            DotaTime() > giveTime + 2.0 then
             local target = GiveToMidLaner()
             if target ~= nil then
                 npcBot:Action_UseAbilityOnEntity(itg, target)
                 giveTime = DotaTime()
                 return
             end
-        elseif
-            DotaTime() > 0 and npcBot:GetActiveMode() == BOT_MODE_LANING and role.CanBeSupport(npcBot:GetUnitName()) and
-                tCharge > 1 and
-                DotaTime() > giveTime + 2.0
-         then
+        elseif DotaTime() > 0 and npcBot:GetActiveMode() == BOT_MODE_LANING and role.CanBeSupport(npcBot:GetUnitName()) and
+            tCharge > 1 and DotaTime() > giveTime + 2.0 then
             local allies = npcBot:GetNearbyHeroes(1200, false, BOT_MODE_NONE)
             for _, ally in pairs(allies) do
                 local tangoSlot = ally:FindItemSlot("item_tango")
-                if
-                    ally:GetUnitName() ~= npcBot:GetUnitName() and not ally:IsIllusion() and tangoSlot == -1 and
-                        GetItemCount(ally, "item_tango_single") == 0
-                 then
+                if ally:GetUnitName() ~= npcBot:GetUnitName() and not ally:IsIllusion() and tangoSlot == -1 and
+                    GetItemCount(ally, "item_tango_single") == 0 then
                     npcBot:Action_UseAbilityOnEntity(itg, ally)
                     giveTime = DotaTime()
                     return
@@ -413,12 +388,9 @@ function M.UnImplementedItemUsage()
     if tango ~= nil and tango:IsFullyCastable() and npcBot:DistanceFromFountain() > 1000 then
         if DotaTime() > 0 and not npcBot:HasModifier("modifier_tango_heal") then
             local trees = npcBot:GetNearbyTrees(1000)
-            if
-                trees[1] ~= nil and (npcBot:GetHealth() / npcBot:GetMaxHealth()) < 0.7 and
-                    (IsLocationVisible(GetTreeLocation(trees[1])) or IsLocationPassable(GetTreeLocation(trees[1]))) and
-                    #tableNearbyEnemyHeroes == 0 and
-                    #nearByTowers == 0
-             then
+            if trees[1] ~= nil and (npcBot:GetHealth() / npcBot:GetMaxHealth()) < 0.7 and
+                (IsLocationVisible(GetTreeLocation(trees[1])) or IsLocationPassable(GetTreeLocation(trees[1]))) and
+                #tableNearbyEnemyHeroes == 0 and #nearByTowers == 0 then
                 npcBot:Action_UseAbilityOnTree(tango, trees[1])
                 return
             end
@@ -431,20 +403,14 @@ function M.UnImplementedItemUsage()
             for i = 0, 5 do
                 local tower = npcBot:GetNearbyTowers(1000, true)[1]
                 local sCurItem = npcBot:GetItemInSlot(i)
-                if
-                    (sCurItem ~= nil and
-                        (sCurItem:GetName() == "item_tango" or sCurItem:GetName() == "item_tango_single"))
-                 then
-                    local trees =
-                        AbilityExtensions:Filter(
-                        npcBot:GetNearbyTrees(300),
-                        function(t)
-                            if tower == nil then
-                                return true
-                            end
-                            return GetUnitToLocationDistance(tower, GetTreeLocation(t)) > tower:GetAttackRange()
+                if (sCurItem ~= nil and
+                    (sCurItem:GetName() == "item_tango" or sCurItem:GetName() == "item_tango_single")) then
+                    local trees = AbilityExtensions:Filter(npcBot:GetNearbyTrees(300), function(t)
+                        if tower == nil then
+                            return true
                         end
-                    )
+                        return GetUnitToLocationDistance(tower, GetTreeLocation(t)) > tower:GetAttackRange()
+                    end)
                     if trees[1] ~= nil then
                         npcBot:Action_UseAbilityOnTree(sCurItem, trees[1])
                         return
@@ -479,15 +445,9 @@ function M.UnImplementedItemUsage()
     local itemQuellingBlade = IsItemAvailable("item_quelling_blade") or IsItemAvailable("item_bfury")
     if itemQuellingBlade ~= nil and itemQuellingBlade:IsFullyCastable() then
         local trees = npcBot:GetNearbyTrees(250)
-        if
-            #trees >= 8 and
-                AbilityExtensions:Contains(
-                    npcBot:GetNearbyHeroes(900, true, BOT_MODE_NONE),
-                    function(t)
-                        return t:GetUnitName() == "npc_dota_hero_furion"
-                    end
-                )
-         then
+        if #trees >= 8 and AbilityExtensions:Contains(npcBot:GetNearbyHeroes(900, true, BOT_MODE_NONE), function(t)
+            return t:GetUnitName() == "npc_dota_hero_furion"
+        end) then
             npcBot:Action_UseAbilityOnTree(itemQuellingBlade, trees[1])
             return
         end
@@ -538,11 +498,8 @@ function M.UnImplementedItemUsage()
 
     local ff = IsItemAvailable("item_faerie_fire")
     if ff ~= nil and ff:IsFullyCastable() and notBlasted then
-        if
-            npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH and
-                (npcBot:GetHealth() / npcBot:GetMaxHealth()) < 0.15 and
-                npcBot:WasRecentlyDamagedByAnyHero(3)
-         then
+        if npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH and
+            (npcBot:GetHealth() / npcBot:GetMaxHealth()) < 0.15 and npcBot:WasRecentlyDamagedByAnyHero(3) then
             npcBot:Action_UseAbility(ff)
             return
         end
@@ -550,12 +507,9 @@ function M.UnImplementedItemUsage()
 
     local sr = IsItemAvailable("item_soul_ring")
     if sr ~= nil and sr:IsFullyCastable() and notBlasted then
-        if
-            (npcBot:GetActiveMode() == BOT_MODE_LANING or npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_TOP or
-                npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_MID or
-                npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_BOT or
-                npcBot:GetActiveMode() == BOT_MODE_FARM)
-         then
+        if (npcBot:GetActiveMode() == BOT_MODE_LANING or npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_TOP or
+            npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_MID or npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_BOT or
+            npcBot:GetActiveMode() == BOT_MODE_FARM) then
             if ((npcBot:GetHealth() / npcBot:GetMaxHealth()) > 0.7 and (npcBot:GetMana() / npcBot:GetMaxMana()) < 0.4) then
                 npcBot:Action_UseAbility(sr)
                 return
@@ -565,10 +519,8 @@ function M.UnImplementedItemUsage()
 
     local bst = IsItemAvailable("item_bloodstone")
     if bst ~= nil and bst:IsFullyCastable() and notBlasted then
-        if
-            npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH and
-                (npcBot:GetHealth() / npcBot:GetMaxHealth()) < 0.2
-         then
+        if npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH and
+            (npcBot:GetHealth() / npcBot:GetMaxHealth()) < 0.2 then
             npcBot:Action_UseAbilityOnLocation(bst, npcBot:GetLocation())
             return
         end
@@ -576,14 +528,10 @@ function M.UnImplementedItemUsage()
 
     local pb = IsItemAvailable("item_phase_boots")
     if pb ~= nil and pb:IsFullyCastable() then
-        if
-            (npcBot:GetActiveMode() == BOT_MODE_ATTACK or npcBot:GetActiveMode() == BOT_MODE_RETREAT or
-                npcBot:GetActiveMode() == BOT_MODE_ROAM or
-                npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
-                npcBot:GetActiveMode() == BOT_MODE_GANK or
-                npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY) and
-                not AbilityExtensions:IsSeverelyDisabled(npcBot)
-         then
+        if (npcBot:GetActiveMode() == BOT_MODE_ATTACK or npcBot:GetActiveMode() == BOT_MODE_RETREAT or
+            npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
+            npcBot:GetActiveMode() == BOT_MODE_GANK or npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY) and
+            not AbilityExtensions:IsSeverelyDisabled(npcBot) then
             npcBot:Action_UseAbility(pb)
             return
         end
@@ -591,16 +539,11 @@ function M.UnImplementedItemUsage()
 
     local bt = IsItemAvailable("item_bloodthorn")
     if bt ~= nil and bt:IsFullyCastable() then
-        if
-            (npcBot:GetActiveMode() == BOT_MODE_ATTACK or npcBot:GetActiveMode() == BOT_MODE_ROAM or
-                npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
-                npcBot:GetActiveMode() == BOT_MODE_GANK or
-                npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY)
-         then
-            if
-                (npcTarget ~= nil and npcTarget:IsHero() and CanCastOnTarget(npcTarget) and
-                    GetUnitToUnitDistance(npcTarget, npcBot) < 900)
-             then
+        if (npcBot:GetActiveMode() == BOT_MODE_ATTACK or npcBot:GetActiveMode() == BOT_MODE_ROAM or
+            npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or npcBot:GetActiveMode() == BOT_MODE_GANK or
+            npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY) then
+            if (npcTarget ~= nil and npcTarget:IsHero() and CanCastOnTarget(npcTarget) and
+                GetUnitToUnitDistance(npcTarget, npcBot) < 900) then
                 npcBot:Action_UseAbilityOnEntity(bt, npcTarget)
                 return
             end
@@ -619,7 +562,7 @@ function M.UnImplementedItemUsage()
             return
         end
     end
-        
+
     if itemArmlet and itemArmlet:IsFullyCastable() and notBlasted then
         if AbilityExtensions:IsFarmingOrPushing(npcBot) then
             local target = npcBot:GetAttackTarget()
@@ -673,36 +616,23 @@ function M.UnImplementedItemUsage()
 
         local allies = AbilityExtensions:GetNearbyNonIllusionHeroes(npcBot)
         allies = AbilityExtensions:Filter(allies, AbilityExtensions.PhysicalCanCastFunction)
-        allies =
-            AbilityExtensions:Filter(
-            allies,
-            function(t)
-                return not t:HasModifier("modifier_item_medallion_of_courage_armor_addition")
-            end
-        )
-        allies =
-            AbilityExtensions:First(
-            allies,
-            function(t)
-                return AbilityExtensions:IsSeverelyDisabledOrSlowed(t)
-            end
-        )
+        allies = AbilityExtensions:Filter(allies, function(t)
+            return not t:HasModifier("modifier_item_medallion_of_courage_armor_addition")
+        end)
+        allies = AbilityExtensions:First(allies, function(t)
+            return AbilityExtensions:IsSeverelyDisabledOrSlowed(t)
+        end)
         if allies then
             npcBot:Action_UseAbilityOnEntity(sc, allies)
             return
         end
 
-        if
-            (npcBot:GetActiveMode() == BOT_MODE_ATTACK or npcBot:GetActiveMode() == BOT_MODE_ROAM or
-                npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
-                npcBot:GetActiveMode() == BOT_MODE_GANK or
-                npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY)
-         then
-            if
-                (npcTarget ~= nil and npcTarget:IsHero() and GetUnitToUnitDistance(npcTarget, npcBot) < 900) and
-                    not npcTarget:HasModifier("modifier_item_medallion_of_courage_armor_addition") and
-                    not npcTarget:HasModifier("modifier_item_medallion_of_courage_armor_reduction")
-             then
+        if (npcBot:GetActiveMode() == BOT_MODE_ATTACK or npcBot:GetActiveMode() == BOT_MODE_ROAM or
+            npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or npcBot:GetActiveMode() == BOT_MODE_GANK or
+            npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY) then
+            if (npcTarget ~= nil and npcTarget:IsHero() and GetUnitToUnitDistance(npcTarget, npcBot) < 900) and
+                not npcTarget:HasModifier("modifier_item_medallion_of_courage_armor_addition") and
+                not npcTarget:HasModifier("modifier_item_medallion_of_courage_armor_reduction") then
                 npcBot:Action_UseAbilityOnEntity(sc, npcTarget)
                 return
             end
@@ -712,12 +642,8 @@ function M.UnImplementedItemUsage()
     if sc ~= nil and sc:IsFullyCastable() then
         local Allies = npcBot:GetNearbyHeroes(1000, false, BOT_MODE_NONE)
         for _, Ally in pairs(Allies) do
-            if
-                (Ally:GetHealth() / Ally:GetMaxHealth() < 0.35 and tableNearbyEnemyHeroes ~= nil and
-                    #tableNearbyEnemyHeroes > 0 and
-                    CanCastOnTarget(Ally)) or
-                    (IsDisabled(Ally) and CanCastOnTarget(Ally))
-             then
+            if (Ally:GetHealth() / Ally:GetMaxHealth() < 0.35 and tableNearbyEnemyHeroes ~= nil and
+                #tableNearbyEnemyHeroes > 0 and CanCastOnTarget(Ally)) or (IsDisabled(Ally) and CanCastOnTarget(Ally)) then
                 npcBot:Action_UseAbilityOnEntity(sc, Ally)
                 return
             end
@@ -726,23 +652,15 @@ function M.UnImplementedItemUsage()
 
     local se = IsItemAvailable("item_silver_edge")
     if se ~= nil and se:IsFullyCastable() then
-        if
-            npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH and
-                tableNearbyEnemyHeroes ~= nil and
-                #tableNearbyEnemyHeroes > 0
-         then
+        if npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH and
+            tableNearbyEnemyHeroes ~= nil and #tableNearbyEnemyHeroes > 0 then
             npcBot:Action_UseAbility(se)
             return
         end
-        if
-            (npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
-                npcBot:GetActiveMode() == BOT_MODE_GANK)
-         then
-            if
-                (npcTarget ~= nil and npcTarget:IsHero() and GetUnitToUnitDistance(npcTarget, npcBot) > 1000 and
-                    GetUnitToUnitDistance(npcTarget, npcBot) < 2500) and
-                    not IsLocationVisible(npcBot)
-             then
+        if (npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
+            npcBot:GetActiveMode() == BOT_MODE_GANK) then
+            if (npcTarget ~= nil and npcTarget:IsHero() and GetUnitToUnitDistance(npcTarget, npcBot) > 1000 and
+                GetUnitToUnitDistance(npcTarget, npcBot) < 2500) and not IsLocationVisible(npcBot) then
                 npcBot:Action_UseAbility(se)
                 return
             end
@@ -759,13 +677,10 @@ function M.UnImplementedItemUsage()
 
     local lotus = IsItemAvailable("item_lotus_orb")
     if lotus ~= nil and lotus:IsFullyCastable() then
-        if
-            (npcBot:GetHealth() / npcBot:GetMaxHealth() < 0.45 and tableNearbyEnemyHeroes ~= nil and
-                #tableNearbyEnemyHeroes > 0) or
-                npcBot:IsSilenced() or
-                (tableNearbyEnemyHeroes ~= nil and #tableNearbyEnemyHeroes >= 3 and
-                    npcBot:GetHealth() / npcBot:GetMaxHealth() < 0.75)
-         then
+        if (npcBot:GetHealth() / npcBot:GetMaxHealth() < 0.45 and tableNearbyEnemyHeroes ~= nil and
+            #tableNearbyEnemyHeroes > 0) or npcBot:IsSilenced() or
+            (tableNearbyEnemyHeroes ~= nil and #tableNearbyEnemyHeroes >= 3 and npcBot:GetHealth() /
+                npcBot:GetMaxHealth() < 0.75) then
             npcBot:Action_UseAbilityOnEntity(lotus, npcBot)
             return
         end
@@ -774,11 +689,8 @@ function M.UnImplementedItemUsage()
     if lotus ~= nil and lotus:IsFullyCastable() then
         local Allies = npcBot:GetNearbyHeroes(1000, false, BOT_MODE_NONE)
         for _, Ally in pairs(Allies) do
-            if
-                (Ally:GetHealth() / Ally:GetMaxHealth() < 0.35 and tableNearbyEnemyHeroes ~= nil and
-                    #tableNearbyEnemyHeroes > 0) or
-                    IsDisabled(Ally)
-             then
+            if (Ally:GetHealth() / Ally:GetMaxHealth() < 0.35 and tableNearbyEnemyHeroes ~= nil and
+                #tableNearbyEnemyHeroes > 0) or IsDisabled(Ally) then
                 npcBot:Action_UseAbilityOnEntity(lotus, Ally)
                 return
             end
@@ -819,14 +731,9 @@ function M.UnImplementedItemUsage()
         end
     end
 
-    local itemDagon =
-        AbilityExtensions:Aggregate(
-        nil,
-        AbilityExtensions:Range(1, 5),
-        function(seed, dagonLevelIndex)
-            return seed or IsItemAvailable("item_dagon_" .. dagonLevelIndex)
-        end
-    )
+    local itemDagon = AbilityExtensions:Aggregate(nil, AbilityExtensions:Range(1, 5), function(seed, dagonLevelIndex)
+        return seed or IsItemAvailable("item_dagon_" .. dagonLevelIndex)
+    end)
     if itemDagon and itemDagon:IsFullyCastable() then
         if npcTarget ~= nil and AbilityExtensions:NormalCanCast(npcTarget) then
             npcBot:Action_UseAbilityOnEntity(itemDagon, npcBot)
@@ -836,12 +743,10 @@ function M.UnImplementedItemUsage()
 
     local glimer = IsItemAvailable("item_glimmer_cape")
     if glimer ~= nil and glimer:IsFullyCastable() then
-        if
-            (npcBot:GetHealth() / npcBot:GetMaxHealth() < 0.45 and
-                (tableNearbyEnemyHeroes ~= nil and #tableNearbyEnemyHeroes > 0)) or
-                (tableNearbyEnemyHeroes ~= nil and #tableNearbyEnemyHeroes >= 3 and
-                    npcBot:GetHealth() / npcBot:GetMaxHealth() < 0.65)
-         then
+        if (npcBot:GetHealth() / npcBot:GetMaxHealth() < 0.45 and
+            (tableNearbyEnemyHeroes ~= nil and #tableNearbyEnemyHeroes > 0)) or
+            (tableNearbyEnemyHeroes ~= nil and #tableNearbyEnemyHeroes >= 3 and npcBot:GetHealth() /
+                npcBot:GetMaxHealth() < 0.65) then
             npcBot:Action_UseAbilityOnEntity(glimer, npcBot)
             return
         end
@@ -855,10 +760,8 @@ function M.UnImplementedItemUsage()
         if #tableNearbyCreeps >= 2 then
             for _, creeps in pairs(tableNearbyCreeps) do
                 local CreepHP = creeps:GetHealth()
-                if
-                    CreepHP > maxHP and (creeps:GetHealth() / creeps:GetMaxHealth()) > .75 and
-                        not creeps:IsAncientCreep()
-                 then
+                if CreepHP > maxHP and (creeps:GetHealth() / creeps:GetMaxHealth()) > .75 and
+                    not creeps:IsAncientCreep() then
                     NCreep = creeps
                     maxHP = CreepHP
                 end
@@ -873,12 +776,8 @@ function M.UnImplementedItemUsage()
     if glimer ~= nil and glimer:IsFullyCastable() then
         local Allies = npcBot:GetNearbyHeroes(1000, false, BOT_MODE_NONE)
         for _, Ally in pairs(Allies) do
-            if
-                (Ally:GetHealth() / Ally:GetMaxHealth() < 0.35 and tableNearbyEnemyHeroes ~= nil and
-                    #tableNearbyEnemyHeroes > 0 and
-                    CanCastOnTarget(Ally)) or
-                    (IsDisabled(Ally) and CanCastOnTarget(Ally))
-             then
+            if (Ally:GetHealth() / Ally:GetMaxHealth() < 0.35 and tableNearbyEnemyHeroes ~= nil and
+                #tableNearbyEnemyHeroes > 0 and CanCastOnTarget(Ally)) or (IsDisabled(Ally) and CanCastOnTarget(Ally)) then
                 npcBot:Action_UseAbilityOnEntity(glimer, Ally)
                 return
             end
@@ -887,17 +786,15 @@ function M.UnImplementedItemUsage()
 
     local function NotSuitableForGuardianGreaves(t)
         return not t:HasModifier("modifier_ice_blast") and not t:HasModifier("modifier_item_mekansm_noheal") and
-            not t:HasModifier("modifier_item:guardian_greaves_noheal")
+                   not t:HasModifier("modifier_item:guardian_greaves_noheal")
     end
     local guardian = IsItemAvailable("item_guardian_greaves")
     if guardian ~= nil and guardian:IsFullyCastable() then
         local allys = npcBot:GetNearbyHeroes(1000, false, BOT_MODE_NONE)
         allys = AbilityExtensions:Filter(allys, NotSuitableForGuardianGreaves)
         for _, ally in pairs(allys) do
-            if
-                ally:GetHealth() / ally:GetMaxHealth() < 0.35 and tableNearbyEnemyHeroes ~= nil and
-                    #tableNearbyEnemyHeroes > 0
-             then
+            if ally:GetHealth() / ally:GetMaxHealth() < 0.35 and tableNearbyEnemyHeroes ~= nil and
+                #tableNearbyEnemyHeroes > 0 then
                 npcBot:Action_UseAbility(guardian)
                 return
             end
@@ -906,11 +803,8 @@ function M.UnImplementedItemUsage()
 
     local satanic = IsItemAvailable("item_satanic")
     if satanic ~= nil and satanic:IsFullyCastable() and notBlasted then
-        if
-            npcBot:GetHealth() / npcBot:GetMaxHealth() < 0.50 and tableNearbyEnemyHeroes ~= nil and
-                #tableNearbyEnemyHeroes > 0 and
-                npcBot:GetActiveMode() == BOT_MODE_ATTACK
-         then
+        if npcBot:GetHealth() / npcBot:GetMaxHealth() < 0.50 and tableNearbyEnemyHeroes ~= nil and
+            #tableNearbyEnemyHeroes > 0 and npcBot:GetActiveMode() == BOT_MODE_ATTACK then
             npcBot:Action_UseAbility(satanic)
             return
         end
@@ -954,13 +848,10 @@ function M.UnImplementedItemUsage()
     if stick ~= nil and stick:IsFullyCastable() and stick:GetCurrentCharges() > 0 and notBlasted then
         if DotaTime() > 0 then
             local tableNearbyEnemyHeroes = npcBot:GetNearbyHeroes(500, true, BOT_MODE_NONE)
-            if
-                ((npcBot:GetHealth() / npcBot:GetMaxHealth() < 0.4 or npcBot:GetMana() / npcBot:GetMaxMana() < 0.2) and
-                    #tableNearbyEnemyHeroes >= 1 and
-                    GetItemCharges(npcBot, "item_magic_stick") >= 1) or
-                    ((npcBot:GetHealth() / npcBot:GetMaxHealth() < 0.7 and npcBot:GetMana() / npcBot:GetMaxMana() < 0.7) and
-                        GetItemCharges(npcBot, "item_magic_stick") >= 7)
-             then
+            if ((npcBot:GetHealth() / npcBot:GetMaxHealth() < 0.4 or npcBot:GetMana() / npcBot:GetMaxMana() < 0.2) and
+                #tableNearbyEnemyHeroes >= 1 and GetItemCharges(npcBot, "item_magic_stick") >= 1) or
+                ((npcBot:GetHealth() / npcBot:GetMaxHealth() < 0.7 and npcBot:GetMana() / npcBot:GetMaxMana() < 0.7) and
+                    GetItemCharges(npcBot, "item_magic_stick") >= 7) then
                 npcBot:Action_UseAbility(stick)
                 return
             end
@@ -971,13 +862,10 @@ function M.UnImplementedItemUsage()
     if wand ~= nil and wand:IsFullyCastable() and wand:GetCurrentCharges() > 0 and notBlasted then
         if DotaTime() > 0 then
             local tableNearbyEnemyHeroes = npcBot:GetNearbyHeroes(500, true, BOT_MODE_NONE)
-            if
-                ((npcBot:GetHealth() / npcBot:GetMaxHealth() < 0.4 or npcBot:GetMana() / npcBot:GetMaxMana() < 0.2) and
-                    #tableNearbyEnemyHeroes >= 1 and
-                    GetItemCharges(npcBot, "item_magic_wand") >= 1) or
-                    ((npcBot:GetHealth() / npcBot:GetMaxHealth() < 0.7 and npcBot:GetMana() / npcBot:GetMaxMana() < 0.7) and
-                        GetItemCharges(npcBot, "item_magic_wand") >= 12)
-             then
+            if ((npcBot:GetHealth() / npcBot:GetMaxHealth() < 0.4 or npcBot:GetMana() / npcBot:GetMaxMana() < 0.2) and
+                #tableNearbyEnemyHeroes >= 1 and GetItemCharges(npcBot, "item_magic_wand") >= 1) or
+                ((npcBot:GetHealth() / npcBot:GetMaxHealth() < 0.7 and npcBot:GetMana() / npcBot:GetMaxMana() < 0.7) and
+                    GetItemCharges(npcBot, "item_magic_wand") >= 12) then
                 npcBot:Action_UseAbility(wand)
                 return
             end
@@ -988,13 +876,10 @@ function M.UnImplementedItemUsage()
     if holyLocket ~= nil and holyLocket:IsFullyCastable() and notBlasted then
         if DotaTime() > 0 then
             local tableNearbyEnemyHeroes = npcBot:GetNearbyHeroes(500, true, BOT_MODE_NONE)
-            if
-                ((npcBot:GetHealth() / npcBot:GetMaxHealth() < 0.4 or npcBot:GetMana() / npcBot:GetMaxMana() < 0.2) and
-                    #tableNearbyEnemyHeroes >= 1 and
-                    GetItemCharges(npcBot, "item_holy_locket") >= 1) or
-                    ((npcBot:GetHealth() / npcBot:GetMaxHealth() < 0.7 and npcBot:GetMana() / npcBot:GetMaxMana() < 0.7) and
-                        GetItemCharges(npcBot, "item_holy_locket") >= 12)
-             then
+            if ((npcBot:GetHealth() / npcBot:GetMaxHealth() < 0.4 or npcBot:GetMana() / npcBot:GetMaxMana() < 0.2) and
+                #tableNearbyEnemyHeroes >= 1 and GetItemCharges(npcBot, "item_holy_locket") >= 1) or
+                ((npcBot:GetHealth() / npcBot:GetMaxHealth() < 0.7 and npcBot:GetMana() / npcBot:GetMaxMana() < 0.7) and
+                    GetItemCharges(npcBot, "item_holy_locket") >= 12) then
                 npcBot:Action_UseAbilityOnEntity(wand, npcBot)
                 return
             end
@@ -1005,12 +890,9 @@ function M.UnImplementedItemUsage()
     if bottle ~= nil and bottle:IsFullyCastable() and notBlasted then
         local tableNearbyEnemyHeroes = npcBot:GetNearbyHeroes(650, true, BOT_MODE_NONE)
         if GetItemCharges(npcBot, "item_bottle") > 0 and not npcBot:HasModifier("modifier_bottle_regeneration") then
-            if
-                ((npcBot:GetHealth() / npcBot:GetMaxHealth() < 0.65 and npcBot:GetMana() / npcBot:GetMaxMana() < 0.45) or
-                    npcBot:GetHealth() / npcBot:GetMaxHealth() < 0.4 or
-                    npcBot:GetMana() / npcBot:GetMaxMana() < 0.2) and
-                    #tableNearbyEnemyHeroes == 0
-             then
+            if ((npcBot:GetHealth() / npcBot:GetMaxHealth() < 0.65 and npcBot:GetMana() / npcBot:GetMaxMana() < 0.45) or
+                npcBot:GetHealth() / npcBot:GetMaxHealth() < 0.4 or npcBot:GetMana() / npcBot:GetMaxMana() < 0.2) and
+                #tableNearbyEnemyHeroes == 0 then
                 npcBot:Action_UseAbilityOnEntity(bottle, npcBot)
                 return
             end
@@ -1019,13 +901,10 @@ function M.UnImplementedItemUsage()
 
     local cyclone = IsItemAvailable("item_cyclone") or IsItemAvailable("item_wind_waker")
     if cyclone ~= nil and cyclone:IsFullyCastable() then
-        if
-            npcTarget ~= nil and
-                (npcTarget:IsChanneling() and not AbilityExtensions:IsOrGoingToBeSeverelyDisabled(npcTarget) or
-                    AbilityExtensions:CannotBeKilledNormally(npcTarget)) and
-                CanCastOnTarget(npcTarget) and
-                GetUnitToUnitDistance(npcBot, npcTarget) < 775
-         then
+        if npcTarget ~= nil and
+            (npcTarget:IsChanneling() and not AbilityExtensions:IsOrGoingToBeSeverelyDisabled(npcTarget) or
+                AbilityExtensions:CannotBeKilledNormally(npcTarget)) and CanCastOnTarget(npcTarget) and
+            GetUnitToUnitDistance(npcBot, npcTarget) < 775 then
             npcBot:Action_UseAbilityOnEntity(cyclone, npcTarget)
             return
         end
@@ -1034,10 +913,8 @@ function M.UnImplementedItemUsage()
     local metham = IsItemAvailable("item_meteor_hammer")
     if metham ~= nil and metham:IsFullyCastable() then
         local tableNearbyAttackingAlliedHeroes = npcBot:GetNearbyHeroes(1000, false, BOT_MODE_ATTACK)
-        if
-            (npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_TOP or npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_MID or
-                npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_BOT)
-         then
+        if (npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_TOP or npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_MID or
+            npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_BOT) then
             local towers = npcBot:GetNearbyTowers(800, true)
             if #towers > 0 and towers[1] ~= nil and towers[1]:IsInvulnerable() == false then
                 npcBot:Action_UseAbilityOnLocation(metham, towers[1]:GetLocation())
@@ -1049,16 +926,10 @@ function M.UnImplementedItemUsage()
                 npcBot:Action_UseAbilityOnLocation(metham, locationAoE.targetloc)
                 return
             end
-        elseif
-            (npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
-                npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
-                npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-         then
-            if
-                npcTarget ~= nil and npcTarget:IsHero() and CanCastOnTarget(npcTarget) and
-                    GetUnitToUnitDistance(npcBot, npcTarget) < 800 and
-                    IsDisabled(true, npcTarget) == true
-             then
+        elseif (npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
+            npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or npcBot:GetActiveMode() == BOT_MODE_ATTACK) then
+            if npcTarget ~= nil and npcTarget:IsHero() and CanCastOnTarget(npcTarget) and
+                GetUnitToUnitDistance(npcBot, npcTarget) < 800 and IsDisabled(true, npcTarget) == true then
                 npcBot:Action_UseAbilityOnLocation(metham, npcTarget:GetLocation())
                 return
             end
@@ -1067,33 +938,21 @@ function M.UnImplementedItemUsage()
 
     local sv = IsItemAvailable("item_spirit_vessel")
     if sv ~= nil and sv:IsFullyCastable() and sv:GetCurrentCharges() > 0 then
-        if
-            (npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
-                npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
-                npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-         then
-            if
-                npcTarget ~= nil and npcTarget:IsHero() and AbilityExtensions:MayNotBeIllusion(npcBot, npcTarget) and
-                    CanCastOnTarget(npcTarget) and
-                    GetUnitToUnitDistance(npcBot, npcTarget) < 900 and
-                    npcTarget:HasModifier("modifier_item_spirit_vessel_damage") == false and
-                    npcTarget:GetHealth() / npcTarget:GetMaxHealth() < 0.65 and
-                    not npcTarget:HasModifier("modifier_ice_blast")
-             then
+        if (npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
+            npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or npcBot:GetActiveMode() == BOT_MODE_ATTACK) then
+            if npcTarget ~= nil and npcTarget:IsHero() and AbilityExtensions:MayNotBeIllusion(npcBot, npcTarget) and
+                CanCastOnTarget(npcTarget) and GetUnitToUnitDistance(npcBot, npcTarget) < 900 and
+                npcTarget:HasModifier("modifier_item_spirit_vessel_damage") == false and npcTarget:GetHealth() /
+                npcTarget:GetMaxHealth() < 0.65 and not npcTarget:HasModifier("modifier_ice_blast") then
                 npcBot:Action_UseAbilityOnEntity(sv, npcTarget)
                 return
             end
         else
             local Allies = npcBot:GetNearbyHeroes(1150, false, BOT_MODE_NONE)
             for _, Ally in pairs(Allies) do
-                if
-                    not Ally:IsIllusion() and Ally:HasModifier("modifier_item_spirit_vessel_heal") == false and
-                        CanCastOnTarget(Ally) and
-                        Ally:GetHealth() / Ally:GetMaxHealth() < 0.35 and
-                        #tableNearbyEnemyHeroes == 0 and
-                        Ally:WasRecentlyDamagedByAnyHero(2.5) == false and
-                        not Ally:HasModifier("modifier_ice_blast")
-                 then
+                if not Ally:IsIllusion() and Ally:HasModifier("modifier_item_spirit_vessel_heal") == false and
+                    CanCastOnTarget(Ally) and Ally:GetHealth() / Ally:GetMaxHealth() < 0.35 and #tableNearbyEnemyHeroes ==
+                    0 and Ally:WasRecentlyDamagedByAnyHero(2.5) == false and not Ally:HasModifier("modifier_ice_blast") then
                     npcBot:Action_UseAbilityOnEntity(sv, Ally)
                     return
                 end
@@ -1103,16 +962,11 @@ function M.UnImplementedItemUsage()
 
     local nullifier = IsItemAvailable("item_nullifier")
     if nullifier ~= nil and nullifier:IsFullyCastable() then
-        if
-            (npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
-                npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
-                npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-         then
-            if
-                npcTarget ~= nil and npcTarget:IsHero() and CanCastOnTarget(npcTarget) and
-                    GetUnitToUnitDistance(npcBot, npcTarget) < 800 and
-                    npcTarget:HasModifier("modifier_item_nullifier_mute") == false
-             then
+        if (npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
+            npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or npcBot:GetActiveMode() == BOT_MODE_ATTACK) then
+            if npcTarget ~= nil and npcTarget:IsHero() and CanCastOnTarget(npcTarget) and
+                GetUnitToUnitDistance(npcBot, npcTarget) < 800 and npcTarget:HasModifier("modifier_item_nullifier_mute") ==
+                false then
                 npcBot:Action_UseAbilityOnEntity(nullifier, npcTarget)
                 return
             end
@@ -1161,18 +1015,13 @@ function M.UnImplementedItemUsage()
                 npcBot:Action_UseAbilityOnLocation(sentry, npcBot:GetLocation())
             end
 
-            if
-                npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_TOP or npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_MID or
-                    npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_BOT and #NearbyTowers2 == 0 and #NearbyTowers > 0
-             then
+            if npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_TOP or npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_MID or
+                npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_BOT and #NearbyTowers2 == 0 and #NearbyTowers > 0 then
                 npcBot:Action_UseAbilityOnLocation(sentry, npcBot:GetXUnitsInBehind(300))
             end
 
-            if
-                npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_TOP or
-                    npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_MID or
-                    npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_BOT and #NearbyTowers3 == 0
-             then
+            if npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_TOP or npcBot:GetActiveMode() ==
+                BOT_MODE_DEFEND_TOWER_MID or npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_BOT and #NearbyTowers3 == 0 then
                 npcBot:Action_UseAbilityOnLocation(sentry, npcBot:GetXUnitsInFront(300))
             end
         end

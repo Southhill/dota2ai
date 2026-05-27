@@ -3,7 +3,7 @@
 --	Author: adamqqq		Email:adamqqq@163.com
 --  Contributor: zmcmcc Email:mengzhang@utexas.edu
 ----------------------------------------------------------------------------
-local ItemPurchaseSystem = dofile(GetScriptDirectory() .. "/util/ItemPurchaseSystem")
+local ItemPurchaseSystem = require(GetScriptDirectory() .. "/util/ItemPurchaseSystem")
 
 local ItemsToBuy =
 {
@@ -13,7 +13,7 @@ local ItemsToBuy =
 	"item_wraith_band",
 	"item_wraith_band",
 	"item_power_treads",
-	"item_magic_wand", --大魔棒7.14
+	"item_magic_wand", --大魔�?.14
 	"item_manta",
 	"item_skadi", --冰眼
 	"item_black_king_bar", --bkb

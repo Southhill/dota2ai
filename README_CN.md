@@ -9,9 +9,10 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.7.5-blue.svg" alt="版本 1.7.5"/>
+  <img src="https://img.shields.io/badge/version-1.7.5--dev-blue.svg" alt="版本 1.7.5-dev"/>
   <img src="https://img.shields.io/badge/license-GPLv3-green.svg" alt="许可证 GPLv3"/>
   <img src="https://img.shields.io/badge/language-Lua-orange.svg" alt="语言 Lua"/>
+  <img src="https://img.shields.io/badge/branch-agent-yellow.svg" alt="分支 agent"/>
 </p>
 
 ---
@@ -83,8 +84,16 @@ dota2ai/
 │       ├── ChatSystem.lua
 │       ├── Utility.lua             # 核心工具函数
 │       └── ...
+├── scripts/                      # 部署脚本
+│   ├── deploy_agent2026.bat      #   批处理部署
+│   └── deploy_agent2026.ps1      #   PowerShell 部署（推荐）
 ├── dev/                          # 开发与测试脚本
 ├── changelog/                    # 版本更新日志（中英文）
+├── docs/                         # 文档
+│   ├── ARCHITECTURE.md           #   架构说明
+│   ├── BEGINNER_GUIDE.md         #   新手开发指南
+│   ├── LOCAL_DEV_GUIDE.md        #   本地开发指南
+│   └── UPGRADE_GUIDE.md          #   Dota2 7.41c 升级计划
 ├── LICENSE                       # GPLv3 开源协议
 ├── README.md                     # 英文说明文档
 └── README_CN.md                  # 本文件
@@ -104,7 +113,42 @@ dota2ai/
 
 ---
 
-## 💬 聊天指令
+## �️ 部署到 Dota2
+
+克隆仓库后，一键部署脚本：
+
+**PowerShell（推荐）：**
+```powershell
+.\scripts\deploy_agent2026.ps1
+```
+
+**批处理：**
+```cmd
+scripts\deploy_agent2026.bat
+```
+
+该脚本会自动将 `src/` 下所有文件复制到 Dota2 的 `vscripts/bots/` 文件夹。
+
+> 详见 [本地开发指南](./docs/LOCAL_DEV_GUIDE.md)。
+
+---
+
+## 📋 开发状态
+
+项目当前在 **`agent`** 分支上，正在进行结构调整，为 Dota2 7.41c 版本升级做准备。
+
+| 状态 | 领域 | 说明 |
+|------|------|------|
+| ✅ | **英雄脚本** | 100+ 英雄拥有技能与出装逻辑 |
+| ✅ | **游戏模式** | 打钱、对线、推进、撤退、神符、插眼 |
+| ✅ | **工具系统** | 信使、物品、插眼、聊天指令 |
+| ✅ | **部署脚本** | PowerShell + 批处理双脚本 |
+| 🏗️ | **文档** | 架构、新手指南、开发指南、升级计划 |
+| 🎯 | **版本升级** | 已制定 7.29 → 7.41c 迁移计划（见 [UPGRADE_GUIDE.md](./docs/UPGRADE_GUIDE.md)） |
+
+---
+
+## �💬 聊天指令
 
 ### 选择英雄
 在选人阶段，在**团队聊天**（为队友选）或**全体聊天**（为对手选）中输入英雄内部名称：
@@ -149,9 +193,12 @@ dota2ai/
 
 完整的版本历史请查看 [changelog/changelog_zh_cn.txt](./changelog/changelog_zh_cn.txt)。
 
-**最新版本：v1.7.5**（2021.05.17）
-- 修复了插眼系统的问题
-- 暂时移除了臂章以解决游戏卡顿的问题
+**最新版本：v1.7.5-dev**（agent 分支，2026年5月更新）
+- 项目结构调整：分离部署脚本到 `scripts/`，补充文档
+- 新增 `LOCAL_DEV_GUIDE.md` 和 `UPGRADE_GUIDE.md`（7.29 → 7.41c 升级规划）
+- 重构 `hero_selection.lua` — 选人系统全面优化
+- 新增调试模式、枚举常量、代码清理
+- 详见 [UPGRADE_GUIDE.md](./docs/UPGRADE_GUIDE.md) 了解 7.41c 升级路线图
 
 重要历史里程碑：
 - **v1.7.0~1.7.5** — 更新至 7.28c~7.29，新增火猫，修复大量错误
@@ -168,6 +215,13 @@ dota2ai/
 ## 🤝 参与贡献
 
 欢迎提交 Issue 和 Pull Request！
+
+参考以下文档快速上手：
+- 📖 [新手开发指南](./docs/BEGINNER_GUIDE.md) — 了解 Bot 脚本原理
+- 🏗️ [架构说明](./docs/ARCHITECTURE.md) — 理解代码结构
+- 🛠️ [本地开发指南](./docs/LOCAL_DEV_GUIDE.md) — 搭建开发环境
+- 📈 [升级指南](./docs/UPGRADE_GUIDE.md) — 帮助迁移到 Dota2 7.41c
+
 请访问 [GitHub 项目主页](https://github.com/Southhill/dota2ai) 参与贡献。
 
 ---
@@ -183,6 +237,7 @@ dota2ai/
 - **adamqqq** — 项目原作者
 - **zmcmcc** — 主要贡献者（v1.4e ~ v1.5g）
 - **AaronSong321** — 7.28c+ 版本更新维护者（v1.7.x）
+- **cao / Sunny** — 当前维护者，项目结构调整与文档补充（agent 分支）
 - **Arizona Fauzie** — BOT EXPERIMENT 作者，提供大量有价值的参考代码
 - **DblTap** — 基于角色选人系统
 - **pilaoda** — Army Bots 作者，推进系统参考

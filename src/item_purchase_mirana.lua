@@ -2,7 +2,7 @@
 --	Ranked Matchmaking AI v1.6b
 --	Author: adamqqq		Email:adamqqq@163.com
 ----------------------------------------------------------------------------
-local ItemPurchaseSystem = dofile(GetScriptDirectory() .. "/util/ItemPurchaseSystem")
+local ItemPurchaseSystem = require(GetScriptDirectory() .. "/util/ItemPurchaseSystem")
 
 local ItemsToBuy =
 {
@@ -15,12 +15,12 @@ local ItemsToBuy =
 	"item_manta",
 	"item_black_king_bar",
 	"item_butterfly",
-	"item_mjollnir", --大雷锤
+	"item_mjollnir", --大雷�?
 	"item_greater_crit",
 }
 
 ItemPurchaseSystem:CreateItemInformationTable(GetBot(), ItemsToBuy)
- --检查装备列表
+ --检查装备列�?
 
 function ItemPurchaseThink()
 	ItemPurchaseSystem:ItemPurchaseExtend()

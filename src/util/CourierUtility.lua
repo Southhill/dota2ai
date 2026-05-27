@@ -5,8 +5,9 @@ local team = GetTeam()
 local pIDs = GetTeamPlayers(team)
 
 local npcBot = GetBot()
-
-npcBot.courierID = 0
+if npcBot ~= nil then
+    npcBot.courierID = 0
+end
 
 local calibrateTime = DotaTime()
 local checkCourier = false

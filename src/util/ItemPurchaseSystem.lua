@@ -1,5 +1,4 @@
-local BotsInit = require("game/botsinit")
-local M = BotsInit.CreateGeneric()
+local M = {}
 
 require(GetScriptDirectory() .. "/util/Utility")
 
@@ -46,15 +45,15 @@ function M.SellExtraItem(ItemsToBuy)
             M.SellSpecifiedItem("item_hand_of_midas")
             M.SellSpecifiedItem("item_dust")
         end
-    --if(GameTime()>40*60 and npcBot:GetGold()>2500 and (item_travel_boots[1]==nil and item_travel_boots[2]==nil) and npcBot.HaveTravelBoots~=true )
-    --then
-    --	table.insert(ItemsToBuy,"item_boots")
-    --	table.insert(ItemsToBuy,"item_recipe_travel_boots")
-    --	npcBot.HaveTravelBoots=true
-    --    if npcBot:GetGold() >= 4500 then
-    --        table.insert(ItemsToBuy, "item_recipe_travel_boots")
-    --    end
-    --end
+        -- if(GameTime()>40*60 and npcBot:GetGold()>2500 and (item_travel_boots[1]==nil and item_travel_boots[2]==nil) and npcBot.HaveTravelBoots~=true )
+        -- then
+        --	table.insert(ItemsToBuy,"item_boots")
+        --	table.insert(ItemsToBuy,"item_recipe_travel_boots")
+        --	npcBot.HaveTravelBoots=true
+        --    if npcBot:GetGold() >= 4500 then
+        --        table.insert(ItemsToBuy, "item_recipe_travel_boots")
+        --    end
+        -- end
     end
 
     if (item_travel_boots[1] ~= nil or item_travel_boots[2] ~= nil) then
@@ -147,13 +146,13 @@ function M.ItemPurchase(ItemsToBuy)
         M.WeNeedTpscroll()
     end
 
-    -- 如果没有要买的物品，重置购买目标并返回
+    -- 如果没有要买的物品，重置购买目标并返�?
     if (#ItemsToBuy == 0) then
         npcBot:SetNextItemPurchaseValue(0)
         return
     end
 
-    -- 获取下一个要购买的物品
+    -- 获取下一个要购买的物�?
     local sNextItem = ItemsToBuy[1]
     npcBot:SetNextItemPurchaseValue(GetItemCost(sNextItem))
 
@@ -164,17 +163,17 @@ function M.ItemPurchase(ItemsToBuy)
         return npcBot:GetHealth() / npcBot:GetMaxHealth()
     end
 
-    -- 在泉水附近或血量低时退出神秘商店模式
+    -- 在泉水附近或血量低时退出神秘商店模�?
     if npcBot:DistanceFromFountain() <= 2500 or npcBot:GetHealth() / npcBot:GetMaxHealth() <= 0.35 then
         npcBot.secretShopMode = false
     end
 
-    -- 如果下一个物品不来自神秘商店，退出神秘商店模式
+    -- 如果下一个物品不来自神秘商店，退出神秘商店模�?
     if IsItemPurchasedFromSecretShop(sNextItem) == false then
         npcBot.secretShopMode = false
     end
 
-    -- 钱够时尝试购买
+    -- 钱够时尝试购�?
     if (npcBot:GetGold() >= GetItemCost(sNextItem)) then
         -- 如果下一个物品来自神秘商店，进入神秘商店模式
         if npcBot.secretShopMode ~= true then
@@ -183,14 +182,14 @@ function M.ItemPurchase(ItemsToBuy)
             end
         end
 
-        local PurchaseResult = -2  -- 购买结果初始化为 -2（未尝试）
-        if (npcBot.secretShopMode == true) then  -- 神秘商店模式
+        local PurchaseResult = -2 -- 购买结果初始化为 -2（未尝试�?
+        if (npcBot.secretShopMode == true) then -- 神秘商店模式
             -- 自己在神秘商店附近则自己购买
             if (npcBot:DistanceFromSecretShop() <= 250) then
                 PurchaseResult = npcBot:ActionImmediate_PurchaseItem(sNextItem)
             end
 
-            -- 否则让信使购买
+            -- 否则让信使购�?
             local courier = GetCourier(0)
             local ItemCount = M.GetItemSlotsCount2(courier)
             if (courier:DistanceFromSecretShop() <= 250 and ItemCount < 9) then
@@ -204,9 +203,9 @@ function M.ItemPurchase(ItemsToBuy)
         -- 处理购买结果
         if (PurchaseResult == PURCHASE_ITEM_SUCCESS) then
             npcBot.secretShopMode = false
-            table.remove(ItemsToBuy, 1)  -- 移除已购买的物品
+            table.remove(ItemsToBuy, 1) -- 移除已购买的物品
         elseif PurchaseResult ~= -2 then
-            print("购买物品失败: " .. ItemsToBuy[1] .. ", 错误码: " .. PurchaseResult)
+            print("购买物品失败: " .. ItemsToBuy[1] .. ", 错误�? " .. PurchaseResult)
         end
 
         -- 缺货时卖掉消耗品腾出金钱
@@ -219,14 +218,14 @@ function M.ItemPurchase(ItemsToBuy)
         end
         -- 无效物品名或禁用物品
         if (PurchaseResult == PURCHASE_ITEM_INVALID_ITEM_NAME or PurchaseResult == PURCHASE_ITEM_DISALLOWED_ITEM) then
-            print("无效物品购买或禁用物品: " .. ItemsToBuy[1])
+            print("无效物品购买或禁用物�? " .. ItemsToBuy[1])
             table.remove(ItemsToBuy, 1)
         end
-        -- 金钱不足时退出神秘商店模式
+        -- 金钱不足时退出神秘商店模�?
         if (PurchaseResult == PURCHASE_ITEM_INSUFFICIENT_GOLD) then
             npcBot.secretShopMode = false
         end
-        -- 不在神秘商店时切换模式
+        -- 不在神秘商店时切换模�?
         if (PurchaseResult == PURCHASE_ITEM_NOT_AT_SECRET_SHOP) then
             npcBot.secretShopMode = true
         end
@@ -248,7 +247,7 @@ function M.BuyCourier()
     -- 	then
     -- 		local info=npcBot:ActionImmediate_PurchaseItem("item_courier");
     -- 		if info ==PURCHASE_ITEM_SUCCESS then
-    -- 			npcBot:ActionImmediate_Chat('I bought the courier 我买了鸡。',false);
+    -- 			npcBot:ActionImmediate_Chat('I bought the courier 我买了鸡�?,false);
     -- 		end
     -- 	end
     -- end
@@ -296,7 +295,7 @@ function M.NoNeedTpscrollForTravelBoots()
     return item_travel_boots
 end
 
--- 确保英雄有 TP 卷轴（没有飞鞋时自动购买）
+-- 确保英雄�?TP 卷轴（没有飞鞋时自动购买�?
 function M.WeNeedTpscroll()
     local npcBot = GetBot()
 
@@ -304,7 +303,7 @@ function M.WeNeedTpscroll()
     local item_travel_boots_1 = item_travel_boots[1]
     local item_travel_boots_2 = item_travel_boots[2]
 
-    -- 统计当前 TP 数量（含备用背包）
+    -- 统计当前 TP 数量（含备用背包�?
     local iScrollCount = 0
     for i = 9, 16 do
         local sCurItem = npcBot:GetItemInSlot(i)
@@ -313,21 +312,19 @@ function M.WeNeedTpscroll()
         end
     end
 
-    -- 3 分钟内不买 TP
+    -- 3 分钟内不�?TP
     if DotaTime() <= 3 * 60 then
         return
     end
 
-    -- 泉水或商店附近且 TP 不足时购买
-    if
-        ((iScrollCount <= 2 and DotaTime() >= 5 * 60) or iScrollCount == 0) and item_travel_boots_1 == nil and
-            item_travel_boots_2 == nil
-     then
+    -- 泉水或商店附近且 TP 不足时购�?
+    if ((iScrollCount <= 2 and DotaTime() >= 5 * 60) or iScrollCount == 0) and item_travel_boots_1 == nil and
+        item_travel_boots_2 == nil then
         if npcBot:DistanceFromFountain() <= 200 then
             if (DotaTime() > 2 * 60 and DotaTime() < 20 * 60) then
-                npcBot:ActionImmediate_PurchaseItem("item_tpscroll")          -- 买1个
+                npcBot:ActionImmediate_PurchaseItem("item_tpscroll") -- �?�?
             elseif (DotaTime() >= 20 * 60) then
-                npcBot:ActionImmediate_PurchaseItem("item_tpscroll")          -- 买2个
+                npcBot:ActionImmediate_PurchaseItem("item_tpscroll") -- �?�?
                 npcBot:ActionImmediate_PurchaseItem("item_tpscroll")
             end
         else
@@ -352,17 +349,15 @@ function M.SellSpecifiedItem(item_name)
         end
     end
 
-    -- 格子满且商店附近时出售
-    if
-        (item ~= nil and itemCount > 5 and
-            (npcBot:DistanceFromFountain() <= 600 or npcBot:DistanceFromSideShop() <= 200 or
-                npcBot:DistanceFromSecretShop() <= 200))
-     then
+    -- 格子满且商店附近时出�?
+    if (item ~= nil and itemCount > 5 and
+        (npcBot:DistanceFromFountain() <= 600 or npcBot:DistanceFromSideShop() <= 200 or npcBot:DistanceFromSecretShop() <=
+            200)) then
         npcBot:ActionImmediate_SellItem(item)
     end
 end
 
--- 统计单位的物品栏格数（含背包，0-8）
+-- 统计单位的物品栏格数（含背包�?-8�?
 function M.GetItemSlotsCount2(npcBot)
     local itemCount = 0
     for i = 0, 8 do
@@ -393,13 +388,7 @@ function M.IsItemSlotsFull()
 end
 
 function M.checkItemBuild(ItemsToBuy)
-    local ItemTableA = {
-        "item_tango",
-        "item_clarity",
-        "item_faerie_fire",
-        "item_enchanted_mango",
-        "item_flask"
-    }
+    local ItemTableA = {"item_tango", "item_clarity", "item_faerie_fire", "item_enchanted_mango", "item_flask"}
 
     if (DotaTime() > 0) then
         for _, item in pairs(ItemTableA) do
@@ -419,7 +408,9 @@ function M.checkItemBuild(ItemsToBuy)
     end
 end
 
-local invisHeroes = RoleUtility.invisHeroes
+local Enum = require(GetScriptDirectory() .. "/const/enum")
+
+local invisHeroes = Enum.invisHeroes
 local invisibleHeroes = {}
 for heroName, _ in pairs(invisHeroes) do
     table.insert(invisibleHeroes, heroName)
@@ -525,24 +516,17 @@ function M.BuySupportItem()
         local item_smoke = M.GetItemIncludeBackpack("item_smoke_of_deceit")
         if (DotaTime() >= 0 and hasInvisibleEnemy == true) then
             local item_dust = M.GetItemIncludeBackpack("item_dust")
-            --local item_ward_sentry = M.GetItemIncludeBackpack( "item_ward_sentry" )
+            -- local item_ward_sentry = M.GetItemIncludeBackpack( "item_ward_sentry" )
             if (item_gem == nil and M.HaveGem() == false) then
-                if
-                    (item_dust == nil and item_ward_sentry == nil and npcBot:GetGold() >= 2 * GetItemCost("item_dust") and
-                        GetItemStockCount("item_gem") >= 1)
-                 then
+                if (item_dust == nil and item_ward_sentry == nil and npcBot:GetGold() >= 2 * GetItemCost("item_dust") and
+                    GetItemStockCount("item_gem") >= 1) then
                     npcBot:ActionImmediate_PurchaseItem("item_dust")
                 end
 
-                if
-                    (DotaTime() >= 25 * 60 and npcBot:GetGold() >= GetItemCost("item_gem") and
-                        GetItemStockCount("item_gem") >= 1) and
-                        AbilityExtensions:GetEmptyItemSlots(npcBot) >= 1
-                 then
-                    if
-                        AbilityExtensions:GetEmptyItemSlots(npcBot) >= 1 and
-                            AbilityExtensions:GetEmptyBackpackSlots(npcBot) == 0
-                     then
+                if (DotaTime() >= 25 * 60 and npcBot:GetGold() >= GetItemCost("item_gem") and
+                    GetItemStockCount("item_gem") >= 1) and AbilityExtensions:GetEmptyItemSlots(npcBot) >= 1 then
+                    if AbilityExtensions:GetEmptyItemSlots(npcBot) >= 1 and
+                        AbilityExtensions:GetEmptyBackpackSlots(npcBot) == 0 then
                         npcBot:ActionImmediate_PurchaseItem("item_gem")
                     elseif AbilityExtensions:GetEmptyBackpackSlots(npcBot) >= 1 then
                         if AbilityExtensions:SwapCheapestItemToBackpack(npcBot) then
@@ -552,33 +536,25 @@ function M.BuySupportItem()
                     end
                 end
 
-            -- if ( item_ward_observer==nil and item_dust==nil and item_ward_sentry==nil and M.IsItemSlotsFull()==false and npcBot:GetGold() >= 2*GetItemCost("item_ward_sentry") ) then
-            -- 	npcBot:ActionImmediate_PurchaseItem( "item_ward_sentry" );
-            -- end
+                -- if ( item_ward_observer==nil and item_dust==nil and item_ward_sentry==nil and M.IsItemSlotsFull()==false and npcBot:GetGold() >= 2*GetItemCost("item_ward_sentry") ) then
+                -- 	npcBot:ActionImmediate_PurchaseItem( "item_ward_sentry" );
+                -- end
             end
         end
 
-        if
-            (DotaTime() >= 40 * 60 and npcBot:GetGold() >= GetItemCost("item_gem") and
-                GetItemStockCount("item_gem") >= 1 and
-                item_gem == nil and
-                M.HaveGem() == false)
-         then
+        if (DotaTime() >= 40 * 60 and npcBot:GetGold() >= GetItemCost("item_gem") and GetItemStockCount("item_gem") >= 1 and
+            item_gem == nil and M.HaveGem() == false) then
             npcBot:ActionImmediate_PurchaseItem("item_gem")
         end
-        --item_ward_observer==nil and
-        if
-            (item_ward_observer == nil and item_ward_sentry == nil and
-                (GetItemStockCount("item_ward_observer") > 1 or DotaTime() < 0) and
-                npcBot:GetGold() >= GetItemCost("item_ward_observer"))
-         then
+        -- item_ward_observer==nil and
+        if (item_ward_observer == nil and item_ward_sentry == nil and
+            (GetItemStockCount("item_ward_observer") > 1 or DotaTime() < 0) and npcBot:GetGold() >=
+            GetItemCost("item_ward_observer")) then
             npcBot:ActionImmediate_PurchaseItem("item_ward_observer")
         end
 
-        if
-            (item_smoke == nil and GetItemStockCount("item_smoke_of_deceit") >= 1 and
-                npcBot:GetGold() >= GetItemCost("item_smoke_of_deceit"))
-         then
+        if (item_smoke == nil and GetItemStockCount("item_smoke_of_deceit") >= 1 and npcBot:GetGold() >=
+            GetItemCost("item_smoke_of_deceit")) then
             npcBot:ActionImmediate_PurchaseItem("item_smoke_of_deceit")
         end
     end
@@ -622,24 +598,13 @@ function M.PrintTable(table, level)
 end ------function for printing table
 
 M.ItemName = {}
-setmetatable(
-    M.ItemName,
-    {
-        __index = function(tb, f)
-            return "item_" .. f
-        end
-    }
-)
-M.Consumables = {
-    "clarity",
-    "enchanted_mango",
-    "faerie_fire",
-    "tome_of_knowledge",
-    "tango",
-    "flask",
-    "bottle",
-    "tpscroll"
-}
+setmetatable(M.ItemName, {
+    __index = function(tb, f)
+        return "item_" .. f
+    end
+})
+M.Consumables = {"clarity", "enchanted_mango", "faerie_fire", "tome_of_knowledge", "tango", "flask", "bottle",
+                 "tpscroll"}
 M.IsConsumableItem = function(self, item)
     return AbilityExtensions:Contains(self.Consumables, string.sub(item, 6))
 end
@@ -651,9 +616,15 @@ end
 M.CreateItemInformationTable = function(self, npcBot, itemTable)
     local function ExpandFirstLevel(item)
         if isLeaf(item) then
-            return {name = item, isSingleItem = true}
+            return {
+                name = item,
+                isSingleItem = true
+            }
         else
-            return {name = item, recipe = nextNodes(item)}
+            return {
+                name = item,
+                recipe = nextNodes(item)
+            }
         end
     end
     local function ExpandOnce(item)
@@ -674,26 +645,17 @@ M.CreateItemInformationTable = function(self, npcBot, itemTable)
     end
     local function TranslateToEquivalentItem(tb)
         local k = "item_power_treads"
-        tb =
-            AbilityExtensions:Replace(
-            tb,
-            function(t)
-                return #t > #k and string.sub(t, 1, #k) == k
-            end,
-            function(t)
-                return k
-            end
-        )
+        tb = AbilityExtensions:Replace(tb, function(t)
+            return #t > #k and string.sub(t, 1, #k) == k
+        end, function(t)
+            return k
+        end)
         return tb
     end
     local function RemoveBoughtItems() -- used only when reloading scripts in game
-        local boughtItems =
-            AbilityExtensions:Map(
-            AbilityExtensions:GetAllBoughtItems(npcBot),
-            function(t)
-                return t:GetName()
-            end
-        )
+        local boughtItems = AbilityExtensions:Map(AbilityExtensions:GetAllBoughtItems(npcBot), function(t)
+            return t:GetName()
+        end)
         boughtItems = TranslateToEquivalentItem(boughtItems)
         local function TryRemoveItemWithName(itemName, tbToRemoveFirst)
             if self:IsConsumableItem(itemName) then
@@ -738,12 +700,9 @@ M.CreateItemInformationTable = function(self, npcBot, itemTable)
             end
         end
         if npcBot:HasModifier("modifier_item_ultimate_scepter") then
-            AbilityExtensions:Remove_Modify(
-                infoTable,
-                function(t)
-                    return t.name == "item_ultimate_scepter" or t.name == "item_recipe_ultimate_scepter"
-                end
-            )
+            AbilityExtensions:Remove_Modify(infoTable, function(t)
+                return t.name == "item_ultimate_scepter" or t.name == "item_recipe_ultimate_scepter"
+            end)
         end
     end
 
@@ -784,10 +743,10 @@ M.CreateItemInformationTable = function(self, npcBot, itemTable)
     if DotaTime() > -60 then
         RemoveBoughtItems()
     end
-    --print(npcBot:GetUnitName()..": item table:")
-    --AbilityExtensions:DebugArray(g)
-    --print("bought items: ")
-    --AbilityExtensions:DebugArray(AbilityExtensions:Map(AbilityExtensions:GetAllBoughtItems(npcBot), function(t) return t:GetName() end))
+    -- print(npcBot:GetUnitName()..": item table:")
+    -- AbilityExtensions:DebugArray(g)
+    -- print("bought items: ")
+    -- AbilityExtensions:DebugArray(AbilityExtensions:Map(AbilityExtensions:GetAllBoughtItems(npcBot), function(t) return t:GetName() end))
 end
 
 local sNextItem
@@ -811,23 +770,19 @@ local UseCourier = function()
     end
     local nearSecretShop = courier:DistanceFromSecretShop() <= 180
     local function IsWaitingAtSecretShop()
-        return courierState == COURIER_STATE_IDLE and nearSecretShop and
-            npcBot:GetGold() >= GetItemCost(sNextItem) * 0.9
+        return courierState == COURIER_STATE_IDLE and nearSecretShop and npcBot:GetGold() >= GetItemCost(sNextItem) *
+                   0.9
     end
 
     if courier.returnWhenCarryingTooMany then
-        if
-            courier:DistanceFromFountain() <= 1200 and courierState == COURIER_STATE_AT_BASE and
-                (courier.returnCarryNumber < courierItemNumber or #AbilityExtensions:GetStashItems(npcBot) > 0)
-         then
+        if courier:DistanceFromFountain() <= 1200 and courierState == COURIER_STATE_AT_BASE and
+            (courier.returnCarryNumber < courierItemNumber or #AbilityExtensions:GetStashItems(npcBot) > 0) then
             npcBot:ActionImmediate_Courier(courier, COURIER_ACTION_TAKE_AND_TRANSFER_ITEMS)
             courier.returnWhenCarryingTooMany = nil
             return
         end
-        if
-            courierState == COURIER_STATE_AT_BASE and IsItemPurchasedFromSecretShop(sNextItem) and
-                npcBot:GetGold() >= GetItemCost(sNextItem) * 0.9
-         then
+        if courierState == COURIER_STATE_AT_BASE and IsItemPurchasedFromSecretShop(sNextItem) and npcBot:GetGold() >=
+            GetItemCost(sNextItem) * 0.9 then
             npcBot:ActionImmediate_Courier(courier, COURIER_ACTION_SECRET_SHOP)
             return
         end
@@ -835,10 +790,8 @@ local UseCourier = function()
         return
     end
 
-    if
-        AbilityExtensions:GetEmptyItemSlots(npcBot) == 0 and courierItemNumber > 0 and
-            GetUnitToUnitDistance(npcBot, courier) <= 400
-     then
+    if AbilityExtensions:GetEmptyItemSlots(npcBot) == 0 and courierItemNumber > 0 and
+        GetUnitToUnitDistance(npcBot, courier) <= 400 then
         courier.returnCarryNumber = courierItemNumber
         npcBot:ActionImmediate_Courier(courier, COURIER_ACTION_RETURN)
         return
@@ -901,23 +854,14 @@ M.ItemPurchaseExtend = function(self, ItemsToBuy)
     local npcBot = GetBot()
 
     local function RemoveInvisibleItemsWhenBountyHunter()
-        local enemies =
-            AbilityExtensions:Filter(
-            GetBot():GetNearbyHeroes(1500, true, BOT_MODE_NONE),
-            function(t)
-                return AbilityExtensions:MayNotBeIllusion(GetBot(), t)
-            end
-        )
-        if
-            AbilityExtensions:Any(
-                enemies,
-                function(t)
-                    return t:GetUnitName() == AbilityExtensions:GetHeroFullName("bounty_hunter") or
-                        t:GetUnitName() == AbilityExtensions:GetHeroFullName("slardar") or
-                        t:GetUnitName() == AbilityExtensions:GetHeroFullName("rattletrap") and t:GetLevel() >= 18
-                end
-            )
-         then
+        local enemies = AbilityExtensions:Filter(GetBot():GetNearbyHeroes(1500, true, BOT_MODE_NONE), function(t)
+            return AbilityExtensions:MayNotBeIllusion(GetBot(), t)
+        end)
+        if AbilityExtensions:Any(enemies, function(t)
+            return t:GetUnitName() == AbilityExtensions:GetHeroFullName("bounty_hunter") or t:GetUnitName() ==
+                       AbilityExtensions:GetHeroFullName("slardar") or t:GetUnitName() ==
+                       AbilityExtensions:GetHeroFullName("rattletrap") and t:GetLevel() >= 18
+        end) then
             M:RemoveInvisibleItemPurchase(GetBot())
         end
     end
@@ -934,7 +878,7 @@ M.ItemPurchaseExtend = function(self, ItemsToBuy)
         return
     end
 
-    --RemoveInvisibleItemsWhenBountyHunter()
+    -- RemoveInvisibleItemsWhenBountyHunter()
     sNextItem = GetTopItemToBuy()
     npcBot:SetNextItemPurchaseValue(GetItemCost(sNextItem))
 
@@ -1013,18 +957,11 @@ M.RemoveItemPurchase = function(self, itemTable, itemName)
     end
 end
 
-M.InvisibleItemList = {
-    "item_invis_sword",
-    "item_silver_edge",
-    "item_glimmer_cape"
-}
+M.InvisibleItemList = {"item_invis_sword", "item_silver_edge", "item_glimmer_cape"}
 M.RemoveInvisibleItemPurchase = function(self, itemTable)
-    AbilityExtensions:ForEach(
-        self.InvisibleItemList,
-        function(t)
-            self:RemoveItemPurchase(itemTable, t)
-        end
-    )
+    AbilityExtensions:ForEach(self.InvisibleItemList, function(t)
+        self:RemoveItemPurchase(itemTable, t)
+    end)
 end
 
 return M

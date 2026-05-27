@@ -1,17 +1,15 @@
 ----------------------------------------------------------------------------
 --	Ranked Matchmaking AI
 --	Author: adamqqq		Email:adamqqq@163.com
---	推进工具模块 —— 判断兵线、推进欲望、安全位置等
+--	推进工具模块 —�?判断兵线、推进欲望、安全位置等
 ----------------------------------------------------------------------------
-_G._savedEnv = getfenv()
-
-module("PushUtility", package.seeall)
+PushUtility = {}
 
 local role = require(GetScriptDirectory() .. "/util/RoleUtility")
 local AbilityExtensions = require(GetScriptDirectory() .. "/util/AbilityAbstraction")
 
 -- 获取英雄当前所在的分路（距离哪条兵线前沿最近）
-function GetLane(nTeam, hHero)
+function PushUtility.GetLane(nTeam, hHero)
 	local vBot = GetLaneFrontLocation(nTeam, LANE_BOT, 0)
 	local vTop = GetLaneFrontLocation(nTeam, LANE_TOP, 0)
 	local vMid = GetLaneFrontLocation(nTeam, LANE_MID, 0)
@@ -27,8 +25,8 @@ function GetLane(nTeam, hHero)
 	return LANE_NONE
 end
 
--- 判断某条线路是否需要清理兵线（敌方小兵多于友方小兵）
-function IsThisLaneNeedToClean(npcBot, lane)
+-- 判断某条线路是否需要清理兵线（敌方小兵多于友方小兵�?
+function PushUtility.IsThisLaneNeedToClean(npcBot, lane)
 	local front = GetLaneFrontLocation(GetTeam(), lane, 0)
 	local AllyTower = GetNearestBuilding(GetTeam(), front)
 	local DistanceToFront = GetUnitToLocationDistance(npcBot, AllyTower:GetLocation())
@@ -50,7 +48,7 @@ function IsThisLaneNeedToClean(npcBot, lane)
 	local CountDelta = creepsCount - creepsAllyCount  -- 敌方小兵数量优势
 	local DistanceFactor = DistanceToFront / 1500
 
-	-- 距离兵线前沿6000以内且敌方小兵更多时，需要清理
+	-- 距离兵线前沿6000以内且敌方小兵更多时，需要清�?
 	if (DistanceToFront <= 6000 and DistanceFactor <= CountDelta) then
 		return true
 	end
@@ -58,19 +56,19 @@ function IsThisLaneNeedToClean(npcBot, lane)
 	return false
 end
 
--- 计算英雄对某条线路的推进欲望值
--- 综合考虑等级、状态、角色、距离、TP/飞鞋等因素
-function GetUnitPushLaneDesire(npcBot, lane)
+-- 计算英雄对某条线路的推进欲望�?
+-- 综合考虑等级、状态、角色、距离、TP/飞鞋等因�?
+function PushUtility.GetUnitPushLaneDesire(npcBot, lane)
 	local team = GetTeam()
-	local teamPush = GetPushLaneDesire(lane)  -- 团队对该线路的推进欲望
+	local teamPush = GetPushLaneDesire(lane)  -- 团队对该线路的推进欲�?
 
-	-- 等级因素：6级以下不推进
+	-- 等级因素�?级以下不推进
 	local levelFactor = 1
 	if npcBot:GetLevel() < 6 then
 		levelFactor = 0
 	end
 
-	-- 如果自己所在线路需要清理，则不去其他线路
+	-- 如果自己所在线路需要清理，则不去其他线�?
 	local mylane = GetLane(team, npcBot)
 	if (mylane ~= LANE_NONE) then
 		local ThisLaneNeedToClean = IsThisLaneNeedToClean(npcBot, mylane)
@@ -79,12 +77,12 @@ function GetUnitPushLaneDesire(npcBot, lane)
 		end
 	end
 
-	-- 状态因素（血量+蓝量）
+	-- 状态因素（血�?蓝量�?
 	local healthRate = npcBot:GetHealth() / npcBot:GetMaxHealth()
 	local manaRate = npcBot:GetMana() / npcBot:GetMaxMana()
 	local stateFactor = healthRate * 0.7 + manaRate * 0.3
 
-	-- 角色因素（推进核 > 辅助 > 大哥）
+	-- 角色因素（推进核 > 辅助 > 大哥�?
 	local roleFactor = 0
 	if role.IsPusher(npcBot:GetUnitName()) == true then
 		roleFactor = roleFactor + 0.2
@@ -106,7 +104,7 @@ function GetUnitPushLaneDesire(npcBot, lane)
 	if travel then travel = travel:IsFullyCastable() end
 
 	if DistanceToFront <= 1000 or travel then
-		distFactor = 1  -- 已经在前线或有飞鞋
+		distFactor = 1  -- 已经在前线或有飞�?
 	elseif DistanceToFront - distBuilding >= 3000 and tp then
 		if distBuilding <= 1000 then
 			distFactor = 0.7
@@ -127,8 +125,8 @@ function GetUnitPushLaneDesire(npcBot, lane)
 	return desire
 end
 
--- 判断兵线位置是否在己方塔前（防止越塔）
-function isNoCreeps(npcBot, lane)
+-- 判断兵线位置是否在己方塔前（防止越塔�?
+function PushUtility.isNoCreeps(npcBot, lane)
 	local front = GetLaneFrontLocation(GetTeam(), lane, 0)
 	local AllyTower = GetNearestBuilding(GetTeam(), front)
 	local EnemyTower = GetNearestBuilding(GetOpposingTeam(), front)
@@ -147,7 +145,7 @@ function isNoCreeps(npcBot, lane)
 	return false
 end
 
-function getTargetLocation(npcBot, lane)
+function PushUtility.getTargetLocation(npcBot, lane)
 	local front = GetLaneFrontLocation(GetTeam(), lane, 0)
 	local EnemyTower = GetNearestBuilding(GetOpposingTeam(), front)
 	local AllyTower = GetNearestBuilding(GetTeam(), front)
@@ -177,7 +175,7 @@ function getTargetLocation(npcBot, lane)
 	end
 end
 
-function IsCreepAttackTower(creepsNearTower, EnemyTower)
+function PushUtility.IsCreepAttackTower(creepsNearTower, EnemyTower)
 	if (creepsNearTower ~= nil and #creepsNearTower >= 1) then
 		for k, v in pairs(creepsNearTower) do
 			if (v:GetAttackTarget() == EnemyTower) then
@@ -188,7 +186,7 @@ function IsCreepAttackTower(creepsNearTower, EnemyTower)
 	return false
 end
 
-function IsSafe(npcBot, lane, creepsNearTower)
+function PushUtility.IsSafe(npcBot, lane, creepsNearTower)
 	local front = GetLaneFrontLocation(GetTeam(), lane, 0)
 	local EnemyTower = GetNearestBuilding(GetOpposingTeam(), front)
 	local AllyTower = GetNearestBuilding(GetTeam(), front)
@@ -223,7 +221,7 @@ function IsSafe(npcBot, lane, creepsNearTower)
 	return Safe
 end
 
-function tryTP(npcBot, lane)
+function PushUtility.tryTP(npcBot, lane)
 	local team = GetTeam()
 	local front = GetLaneFrontLocation(team, lane, 0)
 	local DistanceToFront = GetUnitToLocationDistance(npcBot, front)
@@ -279,7 +277,7 @@ local function getMyTarget(npcBot, lane, TargetLocation)
 	return nil
 end
 
-function UnitPushLaneThink(npcBot, lane)
+function PushUtility.UnitPushLaneThink(npcBot, lane)
 	if (npcBot:IsChanneling() or npcBot:IsUsingAbility() or npcBot:GetQueuedActionType(0) == BOT_ACTION_TYPE_USE_ABILITY) then
 		return
 	end
@@ -360,7 +358,7 @@ end
 -- end
 -- end
 
-function GetEnemySpawnLocation()
+function PushUtility.GetEnemySpawnLocation()
 	if GetTeam() == TEAM_RADIANT then
 		return Locations.DireSpawn
 	else
@@ -368,7 +366,7 @@ function GetEnemySpawnLocation()
 	end
 end
 
-function GetAllySpawnLocation()
+function PushUtility.GetAllySpawnLocation()
 	if GetTeam() == TEAM_RADIANT then
 		return Locations.RadiantSpawn
 	else
@@ -376,7 +374,7 @@ function GetAllySpawnLocation()
 	end
 end
 
-function GetSafeLocation(npcBot, BasicLocation, gamma)
+function PushUtility.GetSafeLocation(npcBot, BasicLocation, gamma)
 	local EnemyTeam = GetOpposingTeam()
 	local Allys = npcBot:GetNearbyHeroes(1600, false, BOT_MODE_NONE)
 	local enemys = npcBot:GetNearbyHeroes(1600, true, BOT_MODE_NONE)
@@ -459,7 +457,7 @@ function GetSafeLocation(npcBot, BasicLocation, gamma)
 	return TargetLocation --+ RandomVector( RandomInt )
 end
 
-function IsItemAvailable(item_name)
+function PushUtility.IsItemAvailable(item_name)
 	local npcBot = GetBot()
 
 	for i = 0, 5, 1 do
@@ -473,19 +471,19 @@ function IsItemAvailable(item_name)
 	return nil
 end
 
-function GetUnitVector(vMyLocation, vTargetLocation)
+function PushUtility.GetUnitVector(vMyLocation, vTargetLocation)
 	return (vTargetLocation - vMyLocation) / PointToPointDistance(vMyLocation, vTargetLocation)
 end
 
-function PointToPointDistance(p1, p2)
+function PushUtility.PointToPointDistance(p1, p2)
 	return math.sqrt((p1.x - p2.x) ^ 2 + (p1.y - p2.y) ^ 2)
 end
 
-function GetPointDistanceSqu(p1, p2)
+function PushUtility.GetPointDistanceSqu(p1, p2)
 	return (p1.x - p2.x) ^ 2 + (p1.y - p2.y) ^ 2
 end
 
-function GetNearestBuilding(team, location)
+function PushUtility.GetNearestBuilding(team, location)
 	local buildings = GetAllBuilding(team, location)
 	local minDist = 16000 ^ 2
 	local nearestBuilding = nil
@@ -501,7 +499,7 @@ function GetNearestBuilding(team, location)
 	return nearestBuilding
 end
 
-function GetAllBuilding(team, location)
+function PushUtility.GetAllBuilding(team, location)
 	local buildings = {}
 	for i = 0, 10 do
 		local tower = GetTower(team, i)
@@ -529,7 +527,7 @@ function GetAllBuilding(team, location)
 	return buildings
 end
 
-function NotNilOrDead(unit)
+function PushUtility.NotNilOrDead(unit)
 	if unit == nil or unit:IsNull() then
 		return false
 	end
@@ -539,7 +537,7 @@ function NotNilOrDead(unit)
 	return false
 end
 
-function GetWeakestCreep(r)
+function PushUtility.GetWeakestCreep(r)
 	local npcBot = GetBot()
 	r = math.min(1600, r)
 	local EnemyCreeps = npcBot:GetNearbyLaneCreeps(r, true)
@@ -568,7 +566,7 @@ Locations = {
 	["DireSpawn"] = Vector(7150, 6300)
 }
 
-function TransferHatred(unit)
+function PushUtility.TransferHatred(unit)
 	if not NotNilOrDead(unit) then
 		return false
 	end
@@ -589,7 +587,7 @@ function TransferHatred(unit)
 	return false
 end
 
-function AssembleWithAlly(unit)
+function PushUtility.AssembleWithAlly(unit)
 	if not NotNilOrDead(unit) then
 		return
 	end
@@ -619,7 +617,7 @@ function AssembleWithAlly(unit)
 	end
 end
 
-function StepBack(unit)
+function PushUtility.StepBack(unit)
 	if not NotNilOrDead(unit) then
 		return
 	end
@@ -640,7 +638,7 @@ function StepBack(unit)
 	unit:Action_MoveToLocation(targetloc + RandomVector(100))
 end
 
-function StepBackCreeps(unit)
+function PushUtility.StepBackCreeps(unit)
 	if not NotNilOrDead(unit) then
 		return
 	end
@@ -685,16 +683,16 @@ function StepBackCreeps(unit)
 	end
 end
 
-function Normalized(vector)
+function PushUtility.Normalized(vector)
 	local mod = (vector.x ^ 2 + vector.y ^ 2) ^ 0.5
 	return Vector(vector.x / mod, vector.y / mod)
 end
 
-function getShortName(npcTarget)
+function PushUtility.getShortName(npcTarget)
 	return string.sub(string.gsub(npcTarget:GetUnitName(), "npc_dota_hero_", ""), 1, 8)
 end
 
-function IsEnemyTooMany()
+function PushUtility.IsEnemyTooMany()
 	local npcBot = GetBot()
 	local MyLane = GetLane(GetTeam(), npcBot)
 	if (MyLane == LANE_NONE) then
@@ -726,11 +724,11 @@ function IsEnemyTooMany()
 	end
 end
 
-function getCurrentFileName()
+function PushUtility.getCurrentFileName()
 	return strippath(debug.getinfo(1, "S").source:sub(2))
 end
 
-function strippath(filename)
+function PushUtility.strippath(filename)
 	if filename:match(".-/.-") then
 		return string.match(filename, ".+/([^/]*%.%w+)$")
 	elseif filename:match(".-\\.-") then
@@ -743,7 +741,7 @@ end
 local EnemyHeroListTimer = -1000
 local EnemyHeroList = nil
 
-function GetRealHero(Candidates)
+function PushUtility.GetRealHero(Candidates)
 	if Candidates == nil or #Candidates == 0 then
 		return nil
 	end
@@ -813,7 +811,7 @@ function GetRealHero(Candidates)
 	return nil
 end
 
-function GetEnemyTeam()
+function PushUtility.GetEnemyTeam()
 	if EnemyHeroList ~= nil and DotaTime() - EnemyHeroListTimer < 0.1 then
 		return EnemyHeroList
 	end
@@ -869,5 +867,5 @@ function GetEnemyTeam()
 	return EnemyHeroList
 end
 for k, v in pairs(PushUtility) do
-	_G._savedEnv[k] = v
+	_G[k] = v
 end

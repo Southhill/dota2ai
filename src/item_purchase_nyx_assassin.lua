@@ -3,14 +3,14 @@
 --	Author: adamqqq		Email:adamqqq@163.com
 --  Contributor: zmcmcc Email:mengzhang@utexas.edu
 ----------------------------------------------------------------------------
-local ItemPurchaseSystem = dofile(GetScriptDirectory() .. "/util/ItemPurchaseSystem")
+local ItemPurchaseSystem = require(GetScriptDirectory() .. "/util/ItemPurchaseSystem")
 
 local ItemsToBuy =
 {
 	"item_tango",
 	"item_enchanted_mango",
 	"item_flask",
-	"item_magic_stick", --大魔棒7.14
+	"item_magic_stick", --大魔�?.14
 	"item_boots",
 	"item_hand_of_midas", --点金
 	"item_energy_booster",

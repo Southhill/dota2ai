@@ -2,8 +2,7 @@
 	AbilityAbstraction.lua
 	功能抽象库 —— 提供类似 LINQ 的函数式编程工具，
 	以及 Dota2 英雄技能/物品/行为的抽象辅助函数。
-]]
-local M = {}
+]] local M = {}
 
 local binlib = require(GetScriptDirectory() .. "/util/BinDecHex")
 
@@ -32,8 +31,8 @@ end
 -- 判断表中是否包含指定值（可自定义比较函数）
 M.Contains = function(self, tb, value, equals)
     equals = equals or function(a, b)
-            return a == b
-        end
+        return a == b
+    end
     for _, v in ipairs(tb) do
         if equals(v, value) then
             return true
@@ -45,8 +44,8 @@ end
 -- 判断表中是否包含指定键（可自定义比较函数）
 M.ContainsKey = function(self, tb, key, equals)
     equals = equals or function(a, b)
-            return a == b
-        end
+        return a == b
+    end
     for k, _ in pairs(tb) do
         if equals(key, k) then
             return true
@@ -99,12 +98,9 @@ end
 
 -- 过滤掉空值/空表
 function M:NonEmpty(self, tb)
-    return self:Filter(
-        tb,
-        function(t)
-            return t ~= nil and #t ~= 0
-        end
-    )
+    return self:Filter(tb, function(t)
+        return t ~= nil and #t ~= 0
+    end)
 end
 
 -- 映射：对表中每个元素应用转换函数
@@ -273,11 +269,11 @@ end
 -- 分组：根据 keySelector 对集合进行分组
 M.GroupBy = function(self, collection, keySelector, elementSelector, resultSelector, comparer)
     comparer = comparer or function(a, b)
-            return a == b
-        end
+        return a == b
+    end
     resultSelector = resultSelector or function(key, value)
-            return value
-        end
+        return value
+    end
     elementSelector = elementSelector or self.IdentityFunction
     local keys = NewTable()
     local values = NewTable()
@@ -315,8 +311,8 @@ end
 -- 去重：返回表中不重复的元素
 M.Distinct = function(self, tb, equals)
     equals = equals or function(a, b)
-            return a == b
-        end
+        return a == b
+    end
     local g = NewTable()
     for _, v in pairs(tb) do
         if not self:Contains(g, v, equals) then
@@ -553,25 +549,19 @@ end
 M.Sort = M.SlowSort
 M.SortByMaxFirst = function(self, tb, map)
     map = map or function(a, b)
-            return b - a
-        end
-    return self:Sort(
-        tb,
-        function(a, b)
-            return map(b) - map(a)
-        end
-    )
+        return b - a
+    end
+    return self:Sort(tb, function(a, b)
+        return map(b) - map(a)
+    end)
 end
 M.SortByMinFirst = function(self, tb, map)
     map = map or function(a, b)
-            return a - b
-        end
-    return self:Sort(
-        tb,
-        function(a, b)
-            return map(a) - map(b)
-        end
-    )
+        return a - b
+    end
+    return self:Sort(tb, function(a, b)
+        return map(a) - map(b)
+    end)
 end
 
 function M:Remove_Modify(tb, item)
@@ -692,11 +682,9 @@ end
 -- 判断 Bot 是否处于打钱或推进模式
 M.IsFarmingOrPushing = function(self, npcBot)
     local mode = npcBot:GetActiveMode()
-    return mode == BOT_MODE_FARM or mode == BOT_MODE_PUSH_TOWER_BOT or mode == BOT_MODE_PUSH_TOWER_MID or
-        mode == BOT_MODE_PUSH_TOWER_TOP or
-        mode == BOT_MODE_DEFEND_TOWER_BOT or
-        mode == BOT_MODE_DEFEND_TOWER_MID or
-        mode == BOT_MODE_DEFEND_TOWER_TOP
+    return mode == BOT_MODE_FARM or mode == BOT_MODE_PUSH_TOWER_BOT or mode == BOT_MODE_PUSH_TOWER_MID or mode ==
+               BOT_MODE_PUSH_TOWER_TOP or mode == BOT_MODE_DEFEND_TOWER_BOT or mode == BOT_MODE_DEFEND_TOWER_MID or mode ==
+               BOT_MODE_DEFEND_TOWER_TOP
 end
 
 -- 判断 Bot 是否处于对线模式
@@ -708,8 +696,8 @@ end
 -- 判断 Bot 是否处于攻击敌方模式
 M.IsAttackingEnemies = function(self, npcBot)
     local mode = npcBot:GetActiveMode()
-    return mode == BOT_MODE_ROAM or mode == BOT_MODE_TEAM_ROAM or mode == BOT_MODE_ATTACK or
-        mode == BOT_MODE_DEFEND_ALLY
+    return mode == BOT_MODE_ROAM or mode == BOT_MODE_TEAM_ROAM or mode == BOT_MODE_ATTACK or mode ==
+               BOT_MODE_DEFEND_ALLY
 end
 
 -- 判断 Bot 是否处于撤退模式
@@ -728,8 +716,8 @@ M.HasEnoughManaToUseAttackAttachedAbility = function(self, npcBot, ability)
     if percent >= 0.8 and npcBot:GetMana() >= 650 then
         return true
     end
-    return percent >= 0.4 and npcBot:GetMana() >= 300 and
-        npcBot:GetManaRegen() >= npcBot:GetAttackSpeed() / 100 * ability:GetManaCost() * 0.75
+    return percent >= 0.4 and npcBot:GetMana() >= 300 and npcBot:GetManaRegen() >= npcBot:GetAttackSpeed() / 100 *
+               ability:GetManaCost() * 0.75
 end
 
 -- ========== 函数生成器 ==========
@@ -793,10 +781,8 @@ M.PreventEnemyTargetAbilityUsageAtAbilityBlock = function(self, npcBot, oldConsi
             if target:HasModifier("modifier_antimage_counterspell") then
                 return 0
             end
-            if
-                target:HasModifier "modifier_item_sphere" or target:HasModifier("modifier_roshan_spell_block") or
-                    target:HasModifier("modifier_special_bonus_spell_block")
-             then -- qop lv 25
+            if target:HasModifier "modifier_item_sphere" or target:HasModifier("modifier_roshan_spell_block") or
+                target:HasModifier("modifier_special_bonus_spell_block") then -- qop lv 25
                 if cooldown >= 30 then
                     desire = desire - abilityImportance
                 elseif cooldown <= 20 then
@@ -848,11 +834,9 @@ M.AddCooldownToChargeAbility = function(self, oldConsider, ability, abilityInfoT
         if not (ability:GetCurrentCharges() > 0 and ability:IsFullyCastable()) then
             return 0
         end
-        if
-            DotaTime() <= abilityInfoTable.lastUsedTime + additionalCooldown and
-                abilityInfoTable.lastUsedCharge >= ability:GetCurrentCharges() and
-                abilityInfoTable.lastUsedRemainingCooldown <= ability:GetCooldownTimeRemaining()
-         then
+        if DotaTime() <= abilityInfoTable.lastUsedTime + additionalCooldown and abilityInfoTable.lastUsedCharge >=
+            ability:GetCurrentCharges() and abilityInfoTable.lastUsedRemainingCooldown <=
+            ability:GetCooldownTimeRemaining() then
             return 0
         end
         return oldConsider()
@@ -863,18 +847,13 @@ M.AutoModifyConsiderFunction = function(self, npcBot, considers, abilitiesReal)
     for index, ability in pairs(abilitiesReal) do
         if not binlib.Test(ability:GetBehavior(), ABILITY_BEHAVIOR_PASSIVE) and considers[index] == nil then
             print("Missing consider function " .. ability:GetName())
-        elseif
-            binlib.Test(ability:GetTargetTeam(), ABILITY_TARGET_TEAM_ENEMY) and
-                binlib.Test(
-                    ability:GetTargetType(),
-                    binlib.Or(ABILITY_TARGET_TYPE_HERO, ABILITY_TARGET_TYPE_CREEP, ABILITY_TARGET_TYPE_BUILDING)
-                ) and
-                binlib.Test(ability:GetBehavior(), ABILITY_BEHAVIOR_UNIT_TARGET)
-         then
+        elseif binlib.Test(ability:GetTargetTeam(), ABILITY_TARGET_TEAM_ENEMY) and binlib.Test(ability:GetTargetType(),
+            binlib.Or(ABILITY_TARGET_TYPE_HERO, ABILITY_TARGET_TYPE_CREEP, ABILITY_TARGET_TYPE_BUILDING)) and
+            binlib.Test(ability:GetBehavior(), ABILITY_BEHAVIOR_UNIT_TARGET) then
             considers[index] = self.PreventAbilityAtIllusion(self, npcBot, considers[index], ability)
             if not self:IgnoreAbilityBlock(ability) then
-                considers[index] =
-                    self.PreventEnemyTargetAbilityUsageAtAbilityBlock(self, npcBot, considers[index], ability)
+                considers[index] = self.PreventEnemyTargetAbilityUsageAtAbilityBlock(self, npcBot, considers[index],
+                    ability)
             end
         end
     end
@@ -906,424 +885,192 @@ end
 
 local keysBeforeAbilityInformation = M:Keys(M)
 
-M.UndisjointableProjectiles = {
-    "alchemist_berser_potion",
-    "alchemist_unstable_concoction_throw",
-    "arc_warden_spark_wraith",
-    "grimstroke_phantoms_embrace",
-    "earthshaker_echoslam",
-    "gyrocopter_homing_missile",
-    "beastmaster_hawk_dive",
-    "huskar_life_break",
-    "lich_chain_frost",
-    "medusa_cold_blooded",
-    "medusa_mystic_snake",
-    "mirana_starstorm",
-    "necrolyte_death_pulse",
-    "necrolyte_death_seeker",
-    "oracle_fortunes_end",
-    "queenofpain_scream_of_pain",
-    "skywrath_mage_arcane_bolt",
-    "snapfire_firesnap_cookie",
-    "spectre_spectral_dagger",
-    "tiny_toss",
-    "tusk_snowball",
-    "witch_doctor_paralyzing_cask"
-}
+M.UndisjointableProjectiles = {"alchemist_berser_potion", "alchemist_unstable_concoction_throw",
+                               "arc_warden_spark_wraith", "grimstroke_phantoms_embrace", "earthshaker_echoslam",
+                               "gyrocopter_homing_missile", "beastmaster_hawk_dive", "huskar_life_break",
+                               "lich_chain_frost", "medusa_cold_blooded", "medusa_mystic_snake", "mirana_starstorm",
+                               "necrolyte_death_pulse", "necrolyte_death_seeker", "oracle_fortunes_end",
+                               "queenofpain_scream_of_pain", "skywrath_mage_arcane_bolt", "snapfire_firesnap_cookie",
+                               "spectre_spectral_dagger", "tiny_toss", "tusk_snowball", "witch_doctor_paralyzing_cask"}
 
-M.targetTrackingStunAbilities = {
-    "alchemist_berser_potion",
-    "alchemist_unstable_concoction_throw",
-    "chaos_knight_chaos_bolt",
-    "dragon_knight_dragon_tail",
-    "gyrocopter_homing_missile",
-    "morphling_adaptive_strike_str",
-    "mud_golem_hurl_boulder",
-    "skeleton_king_hellfire_blast",
-    "sven_storm_hammer",
-    "vengefulspirit_magic_missile",
-    "windrunner_shackleshot"
-}
+M.targetTrackingStunAbilities = {"alchemist_berser_potion", "alchemist_unstable_concoction_throw",
+                                 "chaos_knight_chaos_bolt", "dragon_knight_dragon_tail", "gyrocopter_homing_missile",
+                                 "morphling_adaptive_strike_str", "mud_golem_hurl_boulder",
+                                 "skeleton_king_hellfire_blast", "sven_storm_hammer", "vengefulspirit_magic_missile",
+                                 "windrunner_shackleshot"}
 
-M.targetNonTrackingStunAbilities = {
-    "bane_fiends_grip",
-    "beastmaster_primal_roar",
-    "dark_willow_cursed_crown",
-    "enigma_malefice",
-    "invoker_cold_snap",
-    "item_abyssal_blade",
-    "lich_sinister_gaze",
-    "luna_lucent_beam",
-    "necrolyte_reapers_scythe",
-    "ogre_magi_fireblast",
-    "ogre_magi_unrefined_fireblast",
-    "pudge_dismember",
-    "rubick_telekinesis",
-    "shadow_shaman_shackles",
-    "storm_spirit_electric_vortex"
-}
+M.targetNonTrackingStunAbilities = {"bane_fiends_grip", "beastmaster_primal_roar", "dark_willow_cursed_crown",
+                                    "enigma_malefice", "invoker_cold_snap", "item_abyssal_blade", "lich_sinister_gaze",
+                                    "luna_lucent_beam", "necrolyte_reapers_scythe", "ogre_magi_fireblast",
+                                    "ogre_magi_unrefined_fireblast", "pudge_dismember", "rubick_telekinesis",
+                                    "shadow_shaman_shackles", "storm_spirit_electric_vortex"}
 
 M.targetStunAbilities = M:Concat(M.targetTrackingStunAbilities, M.targetNonTrackingStunAbilities)
 
-M.locationStunAbilities = {
-    "axe_berserkers_call",
-    "centaur_hoof_stomp",
-    "dark_seer_vacuum",
-    "dark_willow_cursed_crown",
-    "dawnbreaker_fire_wreath",
-    "dawnbreaker_solar_guardian",
-    "earthshaker_fissure",
-    "earthshaker_enchant_totem",
-    "earthshaker_echoslam",
-    "enigma_black_hole",
-    "faceless_void_chronosphere",
-    "jakiro_ice_path",
-    "keeper_of_the_light_will_o_wisp",
-    "kunkka_ghostship",
-    "kunkka_torrent",
-    "kunkka_torrent_storm",
-    "lina_light_strike_array",
-    "magnataur_skewer",
-    "magnataur_horn_toss",
-    "magnataur_reverse_polarity",
-    "monkey_king_boundless_strike",
-    "phoenix_supernova",
-    "puck_dream_coil",
-    "sand_king_burrowstrike",
-    "slardar_slithereen_crush",
-    "tidehunter_ravage"
-}
+M.locationStunAbilities = {"axe_berserkers_call", "centaur_hoof_stomp", "dark_seer_vacuum", "dark_willow_cursed_crown",
+                           "dawnbreaker_fire_wreath", "dawnbreaker_solar_guardian", "earthshaker_fissure",
+                           "earthshaker_enchant_totem", "earthshaker_echoslam", "enigma_black_hole",
+                           "faceless_void_chronosphere", "jakiro_ice_path", "keeper_of_the_light_will_o_wisp",
+                           "kunkka_ghostship", "kunkka_torrent", "kunkka_torrent_storm", "lina_light_strike_array",
+                           "magnataur_skewer", "magnataur_horn_toss", "magnataur_reverse_polarity",
+                           "monkey_king_boundless_strike", "phoenix_supernova", "puck_dream_coil",
+                           "sand_king_burrowstrike", "slardar_slithereen_crush", "tidehunter_ravage"}
 
-M.targetTrackingDisableAbilities = {
-    "gleipnir_eternal_chains",
-    "naga_siren_ensnare",
-    "riki_sleeping_dart",
-    "viper_viper_strike"
-}
+M.targetTrackingDisableAbilities = {"gleipnir_eternal_chains", "naga_siren_ensnare", "riki_sleeping_dart",
+                                    "viper_viper_strike"}
 
-M.targetNonTrackingDisableAbilities = {
-    "bloodseeker_rupture",
-    "doom_bringer_doom",
-    "ember_spirit_searing_chains",
-    "grimstroke_ink_creature",
-    "grimstroke_soul_chain",
-    "item_sheepstick",
-    "lion_vex",
-    "shadow_demon_purge",
-    "shadow_shaman_voodoo"
-}
+M.targetNonTrackingDisableAbilities = {"bloodseeker_rupture", "doom_bringer_doom", "ember_spirit_searing_chains",
+                                       "grimstroke_ink_creature", "grimstroke_soul_chain", "item_sheepstick",
+                                       "lion_vex", "shadow_demon_purge", "shadow_shaman_voodoo"}
 
 M.targetDisableAbilities = M:Concat(M.targetNonTrackingStunAbilities, M.targetTrackingDisableAbilities)
 
-M.locationDisableAbilities = {
-    "dark_willow_bramble_maze",
-    "death_prophet_silence",
-    "disruptor_kinetic_field",
-    "disruptor_static_storm",
-    "drow_ranger_wave_of_silence",
-    "elder_titan_echo_stomp",
-    "invoker_deafening_wave",
-    "treant_overgrowth"
-}
+M.locationDisableAbilities = {"dark_willow_bramble_maze", "death_prophet_silence", "disruptor_kinetic_field",
+                              "disruptor_static_storm", "drow_ranger_wave_of_silence", "elder_titan_echo_stomp",
+                              "invoker_deafening_wave", "treant_overgrowth"}
 
-M.targetTrackingHeavyDamageAbilities = {
-    "item_ethereal_blade",
-    "lich_chain_frost",
-    "lion_finger_of_death",
-    "morphling_adaptive_strike_agi",
-    "sniper_assassinate"
-}
+M.targetTrackingHeavyDamageAbilities = {"item_ethereal_blade", "lich_chain_frost", "lion_finger_of_death",
+                                        "morphling_adaptive_strike_agi", "sniper_assassinate"}
 
-M.targetNonTrackingHeavyDamageAbilities = {
-    "antimage_mana_void",
-    "item_dagon",
-    "lina_laguna_blade",
-    "pugna_life_drain",
-    "tinker_laser",
-    "zuus_lightning_bolt"
-}
+M.targetNonTrackingHeavyDamageAbilities = {"antimage_mana_void", "item_dagon", "lina_laguna_blade", "pugna_life_drain",
+                                           "tinker_laser", "zuus_lightning_bolt"}
 
 M.targetHeavyDamageAbilities = M:Concat(M.targetTrackingHeavyDamageAbilities, M.targetNonTrackingHeavyDamageAbilities)
 
-M.locationHeavyDamageAbilities = {
-    "ancient_apparition_ice_blast",
-    "antimage_mana_void",
-    "disruptor_static_storm",
-    "invoker_chaos_meteor",
-    "invoker_sun_strike",
-    "jakiro_macropyre",
-    "kunkka_ghostship",
-    "nevermore_requiem_of_souls",
-    "obsidian_destroyer_sanitys_eclipse",
-    "phoenix_sun_ray",
-    "puck_dream_coil",
-    "pugna_nether_blast",
-    "queenofpain_sonic_wave",
-    "sand_king_epicenter",
-    "skywrath_mage_mystic_flare",
-    "venomancer_poison_nova"
-}
+M.locationHeavyDamageAbilities = {"ancient_apparition_ice_blast", "antimage_mana_void", "disruptor_static_storm",
+                                  "invoker_chaos_meteor", "invoker_sun_strike", "jakiro_macropyre", "kunkka_ghostship",
+                                  "nevermore_requiem_of_souls", "obsidian_destroyer_sanitys_eclipse", "phoenix_sun_ray",
+                                  "puck_dream_coil", "pugna_nether_blast", "queenofpain_sonic_wave",
+                                  "sand_king_epicenter", "skywrath_mage_mystic_flare", "venomancer_poison_nova"}
 
 M.heavyDamageAbilities = M:Concat(M.targetTrackingHeavyDamageAbilities, M.locationHeavyDamageAbilities)
 
 M.dodgeWorthAbilities = M:Concat(M.targetStunAbilities, M.locationStunAbilities, M.heavyDamageAbilities)
 
-M.invisibleModifiers = {
-    "modifier_bounty_hunter_wind_walk",
-    "modifier_clinkz_wind_walk",
-    "modifier_dark_willow_shadow_realm_buff",
-    "modifier_item_glimmer_cape_glimmer",
-    "modifier_invoker_ghost_walk_self",
-    "modifier_nyx_assassin_vendetta",
-    "modifier_item_phase_boots_active",
-    "modifier_item_shadow_amulet_fade",
-    "modifier_item_invisibility_edge_windwalk",
-    "modifier_shadow_fiend_requiem_thinker",
-    "modifier_item_silver_edge_windwalk",
-    "modifier_windrunner_wind_walk",
-    "modifier_storm_wind_walk",
-    "modifier_templar_assassin_meld",
-    "modifier_visage_silent_as_the_grave",
-    "modifier_weaver_shukuchi"
-}
+M.invisibleModifiers = {"modifier_bounty_hunter_wind_walk", "modifier_clinkz_wind_walk",
+                        "modifier_dark_willow_shadow_realm_buff", "modifier_item_glimmer_cape_glimmer",
+                        "modifier_invoker_ghost_walk_self", "modifier_nyx_assassin_vendetta",
+                        "modifier_item_phase_boots_active", "modifier_item_shadow_amulet_fade",
+                        "modifier_item_invisibility_edge_windwalk", "modifier_shadow_fiend_requiem_thinker",
+                        "modifier_item_silver_edge_windwalk", "modifier_windrunner_wind_walk",
+                        "modifier_storm_wind_walk", "modifier_templar_assassin_meld",
+                        "modifier_visage_silent_as_the_grave", "modifier_weaver_shukuchi"}
 
-M.phaseModifiers = {
-    "modifier_bounty_hunter_wind_walk",
-    "modifier_clinkz_wind_walk",
-    "modifier_dark_willow_shadow_realm_buff",
-    "modifier_faceless_void_chronosphere_selfbuff",
-    "modifier_item_glimmer_cape_glimmer",
-    "modifier_invoker_ghost_walk_self",
-    "modifier_nyx_assassin_vendetta",
-    "modifier_item_phase_boots_active",
-    "modifier_item_shadow_amulet_fade",
-    "modifier_item_invisibility_edge_windwalk",
-    "modifier_shadow_fiend_requiem_thinker",
-    "modifier_item_silver_edge_windwalk",
-    "modifier_slardar_sprint",
-    "modifier_storm_wind_walk",
-    "modifier_templar_assassin_meld",
-    "modifier_weaver_shukuchi"
-}
+M.phaseModifiers = {"modifier_bounty_hunter_wind_walk", "modifier_clinkz_wind_walk",
+                    "modifier_dark_willow_shadow_realm_buff", "modifier_faceless_void_chronosphere_selfbuff",
+                    "modifier_item_glimmer_cape_glimmer", "modifier_invoker_ghost_walk_self",
+                    "modifier_nyx_assassin_vendetta", "modifier_item_phase_boots_active",
+                    "modifier_item_shadow_amulet_fade", "modifier_item_invisibility_edge_windwalk",
+                    "modifier_shadow_fiend_requiem_thinker", "modifier_item_silver_edge_windwalk",
+                    "modifier_slardar_sprint", "modifier_storm_wind_walk", "modifier_templar_assassin_meld",
+                    "modifier_weaver_shukuchi"}
 
-M.phaseUnits = {
-    "npc_dota_brewmaster_fire_1",
-    "npc_dota_brewmaster_fire_2",
-    "npc_dota_brewmaster_fire_3",
-    "npc_dota_broodmother_web",
-    "npc_dota_courier",
-    "npc_dota_phoenix_sun",
-    "npc_dota_juggernaut_healing_ward",
-    "npc_dota_techies_land_mine",
-    "npc_dota_techies_stasis_trap",
-    "npc_dota_techies_remote_mine",
-    "npc_dota_weaver_swarm"
-}
+M.phaseUnits = {"npc_dota_brewmaster_fire_1", "npc_dota_brewmaster_fire_2", "npc_dota_brewmaster_fire_3",
+                "npc_dota_broodmother_web", "npc_dota_courier", "npc_dota_phoenix_sun",
+                "npc_dota_juggernaut_healing_ward", "npc_dota_techies_land_mine", "npc_dota_techies_stasis_trap",
+                "npc_dota_techies_remote_mine", "npc_dota_weaver_swarm"}
 
-M.unobstructedMovementModifiers = {
-    "modifier_batrider_firefly",
-    "modifier_broodmother_spin_web",
-    "modifier_centaur_stampede",
-    "modifier_dragon_knight_dragon_form",
-    "modifier_item_giants_ring_giants_foot",
-    "modifier_lich_sinister_gaze",
-    "modifier_legion_commander_duel",
-    "modifier_nyx_assassin_vendetta",
-    "modifier_spectre_spectral_dagger_path_phased",
-    "modifier_item_spider_legs_active",
-    "modifier_visage_silent_as_the_grave"
-}
+M.unobstructedMovementModifiers = {"modifier_batrider_firefly", "modifier_broodmother_spin_web",
+                                   "modifier_centaur_stampede", "modifier_dragon_knight_dragon_form",
+                                   "modifier_item_giants_ring_giants_foot", "modifier_lich_sinister_gaze",
+                                   "modifier_legion_commander_duel", "modifier_nyx_assassin_vendetta",
+                                   "modifier_spectre_spectral_dagger_path_phased", "modifier_item_spider_legs_active",
+                                   "modifier_visage_silent_as_the_grave"}
 
-M.flyingModifiers = {
-    "modifier_rattletrap_jetpack",
-    "modifier_night_stalker_darkness",
-    "modifier_winter_wyvern_arctic_burn_flight"
-}
+M.flyingModifiers = {"modifier_rattletrap_jetpack", "modifier_night_stalker_darkness",
+                     "modifier_winter_wyvern_arctic_burn_flight"}
 
-M.flyingUnits = {
-    "npc_dota_visage_familiar1",
-    "npc_dota_visage_familiar2",
-    "npc_dota_visage_familiar3",
-    "npc_dota_flying_courier",
-    "npc_dota_beastmaster_hawk"
-}
+M.flyingUnits = {"npc_dota_visage_familiar1", "npc_dota_visage_familiar2", "npc_dota_visage_familiar3",
+                 "npc_dota_flying_courier", "npc_dota_beastmaster_hawk"}
 
-M.positiveForceMovementModifiers = {
-    "modifier_faceless_void_time_walk",
-    "modifier_huskar_life_break_charge",
-    "modifier_magnataur_skewer_movement",
-    "modifier_monkey_king_bounce",
-    "modifier_monkey_king_bounce_leap",
-    "modifier_monkey_king_tree_dance_activity",
-    "modifier_monkey_king_bounce_perch",
-    "modifier_monkey_king_right_click_jump_activity",
-    "modifier_pangolier_swashbuckle",
-    "modiifer_pangolier_shield_crash_jump",
-    "modifier_pangolier_rollup",
-    "modifier_snapfire_firesnap_cookie",
-    "modifier_snapfire_gobble_up",
-    "modifier_sand_king_burrowstrike",
-    "modifier_techies_suicide_leap"
-}
+M.positiveForceMovementModifiers = {"modifier_faceless_void_time_walk", "modifier_huskar_life_break_charge",
+                                    "modifier_magnataur_skewer_movement", "modifier_monkey_king_bounce",
+                                    "modifier_monkey_king_bounce_leap", "modifier_monkey_king_tree_dance_activity",
+                                    "modifier_monkey_king_bounce_perch",
+                                    "modifier_monkey_king_right_click_jump_activity", "modifier_pangolier_swashbuckle",
+                                    "modiifer_pangolier_shield_crash_jump", "modifier_pangolier_rollup",
+                                    "modifier_snapfire_firesnap_cookie", "modifier_snapfire_gobble_up",
+                                    "modifier_sand_king_burrowstrike", "modifier_techies_suicide_leap"}
 
-M.timeSensitivePositiveModifiers = {
-    "modifier_item_black_king_bar",
-    "modifier_faceless_void_chronosphere_selfbuff",
-    "modifier_medusa_stone_gaze",
-    "modifier_monkey_king_fur_army_soldier_in_position"
-}
+M.timeSensitivePositiveModifiers = {"modifier_item_black_king_bar", "modifier_faceless_void_chronosphere_selfbuff",
+                                    "modifier_medusa_stone_gaze", "modifier_monkey_king_fur_army_soldier_in_position"}
 -- sorted by importance, used by dispell abilities
 
-M.basicDispellablePositiveModifiers = {
-    "modifier_omniknight_guardian_angle",
-    "modifier_ember_spirit_flame_guard",
-    "modifier_legion_commander_press_the_attack",
-    "modifier_windrunner_windrun",
-    "modifier_lich_frost_shield",
-    "modifier_oracle_purifying_flames",
-    "modifier_ogre_magi_bloodlust",
-    "modifier_treant_living_armor",
-    "modifier_mirana_leap_buff",
-    "modifier_necrolyte_death_seeker",
-    "modifier_necrolyte_sadist_active",
-    "modifier_pugna_decrepify",
-    "modifier_item_ethereal_blade_ethereal",
-    "modifier_ghost_state",
-    "modifier_abaddon_frostmourne_buff",
-    "modifier_item_mjollnir_static",
-    "modifier_visage_silent_as_the_grave",
-    "modifier_spirit_breaker_bulldoze",
-    "modifier_item_spider_legs_active",
-    "modifier_item_bullwhip_buff"
-}
+M.basicDispellablePositiveModifiers = {"modifier_omniknight_guardian_angle", "modifier_ember_spirit_flame_guard",
+                                       "modifier_legion_commander_press_the_attack", "modifier_windrunner_windrun",
+                                       "modifier_lich_frost_shield", "modifier_oracle_purifying_flames",
+                                       "modifier_ogre_magi_bloodlust", "modifier_treant_living_armor",
+                                       "modifier_mirana_leap_buff", "modifier_necrolyte_death_seeker",
+                                       "modifier_necrolyte_sadist_active", "modifier_pugna_decrepify",
+                                       "modifier_item_ethereal_blade_ethereal", "modifier_ghost_state",
+                                       "modifier_abaddon_frostmourne_buff", "modifier_item_mjollnir_static",
+                                       "modifier_visage_silent_as_the_grave", "modifier_spirit_breaker_bulldoze",
+                                       "modifier_item_spider_legs_active", "modifier_item_bullwhip_buff"}
 
-M.basicDispellWorthPositiveModifiers = {
-    "modifier_omniknight_guardian_angle",
-    "modifier_ember_spirit_flame_guard",
-    "modifier_legion_commander_press_the_attack",
-    "modifier_windrunner_windrun",
-    "modifier_lich_frost_shield",
-    "modifier_oracle_purifying_flames",
-    "modifier_ogre_magi_bloodlust",
-    "modifier_treant_living_armor",
-    "modifier_mirana_leap_buff",
-    "modifier_necrolyte_death_seeker",
-    "modifier_necrolyte_sadist_active",
-    "modifier_pugna_decrepify",
-    "modifier_item_ethereal_blade_ethereal",
-    "modifier_ghost_state"
-}
+M.basicDispellWorthPositiveModifiers = {"modifier_omniknight_guardian_angle", "modifier_ember_spirit_flame_guard",
+                                        "modifier_legion_commander_press_the_attack", "modifier_windrunner_windrun",
+                                        "modifier_lich_frost_shield", "modifier_oracle_purifying_flames",
+                                        "modifier_ogre_magi_bloodlust", "modifier_treant_living_armor",
+                                        "modifier_mirana_leap_buff", "modifier_necrolyte_death_seeker",
+                                        "modifier_necrolyte_sadist_active", "modifier_pugna_decrepify",
+                                        "modifier_item_ethereal_blade_ethereal", "modifier_ghost_state"}
 
 M.basicDispellWorthNegativeModifiers = {"modifier_abaddon_frostmourne_debuff_bonus"}
 
-M.basicDispellableNegativeModifiers = {
-    "modifier_abaddon_frostmourne_debuff",
-    "modifier_abaddon_frostmourne_debuff_bonus"
-}
+M.basicDispellableNegativeModifiers = {"modifier_abaddon_frostmourne_debuff",
+                                       "modifier_abaddon_frostmourne_debuff_bonus"}
 
-M.unbreakableChannelAbilities = {
-    "puck_phase_shift",
-    "pangolier_gyroshell",
-    "lone_druid_true_form",
-    "phoenix_supernova",
-    "lycan_shapeshift"
-}
+M.unbreakableChannelAbilities = {"puck_phase_shift", "pangolier_gyroshell", "lone_druid_true_form", "phoenix_supernova",
+                                 "lycan_shapeshift"}
 
 M.nonIllusionModifiers = {}
 
-M.valubleNeutrals = {
-    "npc_dota_neutral_alpha_wolf",
-    "npc_dota_neutral_centaur_khan",
-    "npc_dota_neutral_polar_furbolg_ursa_warrior",
-    "npc_dota_neutral_dark_troll_warlord",
-    "npc_dota_neutral_mud_golem",
-    "npc_dota_neutral_satyr_hellcaller"
+M.valubleNeutrals = {"npc_dota_neutral_alpha_wolf", "npc_dota_neutral_centaur_khan",
+                     "npc_dota_neutral_polar_furbolg_ursa_warrior", "npc_dota_neutral_dark_troll_warlord",
+                     "npc_dota_neutral_mud_golem", "npc_dota_neutral_satyr_hellcaller"}
+
+M.valubleAncientNeutrals = {"npc_dota_neutral_black_dragon", "npc_dota_neutral_rock_golem",
+                            "npc_dota_neutral_big_thunder_lizard"}
+
+M.hypnosisModifiers = {"modifier_lich_sinister_gaze", "modifier_void_spirit_aether_remnant_pull",
+                       "modifier_keeper_of_the_light_will_o_wisp"}
+
+M.fearModifiers = {"modifier_dark_willow_debuff_fear", "modifier_lone_druid_savage_roar",
+                   "modifier_shadow_fiend_requiem_fear", "modifier_terrorblade_fear"}
+
+M.hexModifiers = {"modifier_lion_voodoo", "modifier_shadow_shaman_voodoo", "modifier_sheepstick_debuff",
+                  "modifier_item_princes_knife_hex", "modifier_hexxed" -- dazzle_poison_touch lv 25
 }
 
-M.valubleAncientNeutrals = {
-    "npc_dota_neutral_black_dragon",
-    "npc_dota_neutral_rock_golem",
-    "npc_dota_neutral_big_thunder_lizard"
-}
+M.silenceModifiers = {"modifier_abaddon_frostmourne_debuff_bonus", "modifier_silence", "modifier_bloodthorn_debuff",
+                      "modifier_disruptor_static_storm", "modifier_doom_bringer_doom",
+                      "modifier_drow_ranger_wave_of_silence", "modifier_earth_spirit_geomagnetic_grip_debuff",
+                      "modifier_enigma_black_hole_pull", "modifier_grimstroke_ink_creature_debuff",
+                      "modifier_legion_commander_duel", "modifier_item_mask_of_madness_berserk",
+                      "modifier_night_stalker_crippling_fear", "modifier_orchid_malevolence_debuff",
+                      "modifier_riki_smoke_screen", "modifier_silencer_global_silence", "modifier_silencer_last_word",
+                      "modifier_skywrath_mage_ancient_seal"}
 
-M.hypnosisModifiers = {
-    "modifier_lich_sinister_gaze",
-    "modifier_void_spirit_aether_remnant_pull",
-    "modifier_keeper_of_the_light_will_o_wisp"
-}
+M.timedSilenceModifiers = {"modifier_abaddon_frostmourne_debuff_bonus", "modifier_silence",
+                           "modifier_bloodthorn_debuff", "modifier_doom_bringer_doom",
+                           "modifier_drow_ranger_wave_of_silence", "modifier_earth_spirit_geomagnetic_grip_debuff",
+                           "modifier_grimstroke_ink_creature_debuff", "modifier_legion_commander_duel",
+                           "modifier_item_mask_of_madness_berserk", "modifier_orchid_malevolence_debuff",
+                           "modifier_silencer_global_silence", "modifier_silencer_last_word",
+                           "modifier_skywrath_mage_ancient_seal"}
 
-M.fearModifiers = {
-    "modifier_dark_willow_debuff_fear",
-    "modifier_lone_druid_savage_roar",
-    "modifier_shadow_fiend_requiem_fear",
-    "modifier_terrorblade_fear"
-}
-
-M.hexModifiers = {
-    "modifier_lion_voodoo",
-    "modifier_shadow_shaman_voodoo",
-    "modifier_sheepstick_debuff",
-    "modifier_item_princes_knife_hex",
-    "modifier_hexxed" -- dazzle_poison_touch lv 25
-}
-
-M.silenceModifiers = {
-    "modifier_abaddon_frostmourne_debuff_bonus",
-    "modifier_silence",
-    "modifier_bloodthorn_debuff",
-    "modifier_disruptor_static_storm",
-    "modifier_doom_bringer_doom",
-    "modifier_drow_ranger_wave_of_silence",
-    "modifier_earth_spirit_geomagnetic_grip_debuff",
-    "modifier_enigma_black_hole_pull",
-    "modifier_grimstroke_ink_creature_debuff",
-    "modifier_legion_commander_duel",
-    "modifier_item_mask_of_madness_berserk",
-    "modifier_night_stalker_crippling_fear",
-    "modifier_orchid_malevolence_debuff",
-    "modifier_riki_smoke_screen",
-    "modifier_silencer_global_silence",
-    "modifier_silencer_last_word",
-    "modifier_skywrath_mage_ancient_seal"
-}
-
-M.timedSilenceModifiers = {
-    "modifier_abaddon_frostmourne_debuff_bonus",
-    "modifier_silence",
-    "modifier_bloodthorn_debuff",
-    "modifier_doom_bringer_doom",
-    "modifier_drow_ranger_wave_of_silence",
-    "modifier_earth_spirit_geomagnetic_grip_debuff",
-    "modifier_grimstroke_ink_creature_debuff",
-    "modifier_legion_commander_duel",
-    "modifier_item_mask_of_madness_berserk",
-    "modifier_orchid_malevolence_debuff",
-    "modifier_silencer_global_silence",
-    "modifier_silencer_last_word",
-    "modifier_skywrath_mage_ancient_seal"
-}
-
-M.magicImmuneModifiers = {
-    "modifier_item_black_king_bar",
-    "modifier_life_stealer_rage",
-    "modifier_juggernaut_blade_fury",
-    "modifier_minotaur_horn_immune",
-    "modifier_elder_titan_echo_stomp_magic_immune",
-    "modifier_huskar_life_break_charge",
-    "modifier_legion_commander_press_the_attack_immunity",
-    "modifier_lion_mana_drain_immunity"
-}
+M.magicImmuneModifiers = {"modifier_item_black_king_bar", "modifier_life_stealer_rage",
+                          "modifier_juggernaut_blade_fury", "modifier_minotaur_horn_immune",
+                          "modifier_elder_titan_echo_stomp_magic_immune", "modifier_huskar_life_break_charge",
+                          "modifier_legion_commander_press_the_attack_immunity", "modifier_lion_mana_drain_immunity"}
 
 M.muteModifiers = {"modifier_tusk_snowball", "modifier_doom_bringer_doom", "modifier_disruptor_static_storm_mute"}
 
-M.breakModifiers = {
-    -- "modifier_doom_bringer_doom",--only breaks with scepter
-    "modifier_hoodwink_sharpshooter",
-    "modifier_phantom_assassin_fan_of_knives",
-    -- "modifier_shadow_demon_purge_slow",--only break with scepter
-    "modifier_silver_edge_debuff", -- "modifier_spirit_breaker_greaterbash_break",--only break with shard
-    "modifier_viper_nethertoxin"
-}
+M.breakModifiers = { -- "modifier_doom_bringer_doom",--only breaks with scepter
+"modifier_hoodwink_sharpshooter", "modifier_phantom_assassin_fan_of_knives",
+-- "modifier_shadow_demon_purge_slow",--only break with scepter
+"modifier_silver_edge_debuff", -- "modifier_spirit_breaker_greaterbash_break",--only break with shard
+"modifier_viper_nethertoxin"}
 -- TODO: how to record he caster of these abilities
 
 M.noTrueSightRootAbilityAssociation = {
@@ -1350,46 +1097,31 @@ M.permanentTrueSightRootAbilityAssociation = {
     abyssal_underlord_pit_of_malice = "modifier_abyssal_underlord_pit_of_malice_ensare"
 }
 
-M.rootAbilityAssociation =
-    M:Concat(
-    M.noTrueSightRootAbilityAssociation,
-    M.conditionalTrueSightRootAbilityAssociation,
-    M.permanentTrueSightRootAbilityAssociation
-)
+M.rootAbilityAssociation = M:Concat(M.noTrueSightRootAbilityAssociation, M.conditionalTrueSightRootAbilityAssociation,
+    M.permanentTrueSightRootAbilityAssociation)
 
 local keysAfterAbilityInformation = M:Keys(M)
 local abilityInformationKeys = keysAfterAbilityInformation:RemoveAll(keysBeforeAbilityInformation)
-abilityInformationKeys:ForEach(
-    function(t)
-        setmetatable(M[t], magicTable)
-    end
-)
-abilityInformationKeys =
-    abilityInformationKeys:Filter(
-    function(t)
-        return t:match("AbilityAssociation")
-    end
-)
+abilityInformationKeys:ForEach(function(t)
+    setmetatable(M[t], magicTable)
+end)
+abilityInformationKeys = abilityInformationKeys:Filter(function(t)
+    return t:match("AbilityAssociation")
+end)
 
 local function ExtendAssociation(association)
-    return association:MapDic(
-        function(key, value)
-            return key
-        end
-    ), association:Map(
-        function(key, value)
-            return value
-        end
-    ):Distinct()
+    return association:MapDic(function(key, value)
+        return key
+    end), association:Map(function(key, value)
+        return value
+    end):Distinct()
 end
-abilityInformationKeys:ForEach(
-    function(t)
-        local a, b = ExtendAssociation(M[t])
-        local k = t:sub(1, #t - #"AbilityAssociation")
-        M[k .. "Abilities"] = a
-        M[k .. "Modifiers"] = b
-    end
-)
+abilityInformationKeys:ForEach(function(t)
+    local a, b = ExtendAssociation(M[t])
+    local k = t:sub(1, #t - #"AbilityAssociation")
+    M[k .. "Abilities"] = a
+    M[k .. "Modifiers"] = b
+end)
 
 -- unit function
 
@@ -1421,33 +1153,26 @@ end
 M.GetIncomingDodgeWorthProjectiles = function(self, npc)
     local health = npc:GetHealth()
     local projectiles = npc:GetIncomingTrackingProjectiles()
-    projectiles =
-        self:Filter(
-        projectiles,
-        function(t)
-            if t.is_attack or npc:GetTeam() == t.caster:GetTeam() then
-                return false
-            end
-            local ability = t.ability
-            if ability then
-                local abilityName = ability:GetName()
-                if self:Contains(self.UndisjointableProjectiles, abilityName) then
-                    return false
-                end
-                if
-                    self:Contains(self.targetTrackingStunAbilities, abilityName) or
-                        self:Contains(self.targetTrackingDisableAbilities, abilityName) or
-                        self:Contains(self.targetTrackingHeavyDamageAbilities, abilityName) or
-                        npc:GetHealth() <=
-                            npc:GetActualIncomingDamage(ability:GetAbilityDamage(), ability:GetDamageType())
-                 then
-                    return true
-                end
-                return false
-            end
-            return true
+    projectiles = self:Filter(projectiles, function(t)
+        if t.is_attack or npc:GetTeam() == t.caster:GetTeam() then
+            return false
         end
-    )
+        local ability = t.ability
+        if ability then
+            local abilityName = ability:GetName()
+            if self:Contains(self.UndisjointableProjectiles, abilityName) then
+                return false
+            end
+            if self:Contains(self.targetTrackingStunAbilities, abilityName) or
+                self:Contains(self.targetTrackingDisableAbilities, abilityName) or
+                self:Contains(self.targetTrackingHeavyDamageAbilities, abilityName) or npc:GetHealth() <=
+                npc:GetActualIncomingDamage(ability:GetAbilityDamage(), ability:GetDamageType()) then
+                return true
+            end
+            return false
+        end
+        return true
+    end)
     return projectiles
 end
 
@@ -1480,7 +1205,7 @@ end
 
 M.IsChannelingItem = function(self, npc)
     return npc:HasModifier("modifier_item_meteor_hammer") or npc:HasModifier("modifier_teleporting") or
-        npc:HasModifier("modifier_boots_of_travel_incoming")
+               npc:HasModifier("modifier_boots_of_travel_incoming")
 end
 
 M.IsChannelingAbility = function(self, npc)
@@ -1519,23 +1244,16 @@ end
 
 M.GetEnemyTeamMemberNames = function(self, npcBot)
     local enemies = self:GetEnemyHeroUnique(npcBot, GetUnitList(UNIT_LIST_ENEMY_HEROES))
-    return self:Map(
-        enemies,
-        function(t)
-            return t:GetUnitName()
-        end
-    )
+    return self:Map(enemies, function(t)
+        return t:GetUnitName()
+    end)
 end
 
-M.enemyVisibleIllusionModifiers = {
-    "modifier_illusion", -- "modifier_phantom_lancer_doppelwalk_illusion",
-    -- "modifier_phantom_lancer_juxtapose_illusion",
-    "modifier_terrorblade_conjureimage",
-    "modifier_grimstroke_scepter_buff",
-    "modifier_arc_warden_tempest_double",
-    "modifier_skeleton_king_reincarnation_active",
-    "modifier_vengefulspirit_hybrid_special"
-}
+M.enemyVisibleIllusionModifiers = {"modifier_illusion", -- "modifier_phantom_lancer_doppelwalk_illusion",
+-- "modifier_phantom_lancer_juxtapose_illusion",
+"modifier_terrorblade_conjureimage", "modifier_grimstroke_scepter_buff", "modifier_arc_warden_tempest_double",
+                                   "modifier_skeleton_king_reincarnation_active",
+                                   "modifier_vengefulspirit_hybrid_special"}
 
 M.MustBeIllusion = function(self, npcBot, target)
     if npcBot:GetTeam() == target:GetTeam() then
@@ -1581,52 +1299,29 @@ end
 
 M.DetectIllusion = function(self, npcBot)
     local nearbyEnemies = self:GetNearbyNonIllusionHeroes(npcBot, 1599)
-    nearbyEnemies =
-        self:Filter(
-        nearbyEnemies,
-        function(t)
-            return string.match(t:GetUnitName(), "npc_dota_hero")
+    nearbyEnemies = self:Filter(nearbyEnemies, function(t)
+        return string.match(t:GetUnitName(), "npc_dota_hero")
+    end)
+    local nearbyEnemyGroups = self:GroupBy(nearbyEnemies, function(t)
+        return t:GetUnitName()
+    end)
+    nearbyEnemyGroups = self:Filter(nearbyEnemyGroups, function(t)
+        return #t > 1
+    end)
+    self:ForEach(nearbyEnemyGroups, function(nearbyEnemyGroup)
+        local castingEnemies = self:Filter(nearbyEnemyGroup, function(t)
+            return (t:IsUsingAbility() or t:IsChanneling() or self:HasNonIllusionModifier(t) or t.markedAsRealHero) and
+                       not t.markedAsIllusion
+        end)
+        local castingEnemy = castingEnemies[1]
+        if castingEnemy and not self:CanIllusionUseAbility(castingEnemy) then
+            castingEnemy.markedAsRealHero = true
+            castingEnemies = self:Remove(nearbyEnemyGroup, castingEnemy)
+            self:ForEach(castingEnemies, function(t)
+                t.markedAsIllusion = true
+            end)
         end
-    )
-    local nearbyEnemyGroups =
-        self:GroupBy(
-        nearbyEnemies,
-        function(t)
-            return t:GetUnitName()
-        end
-    )
-    nearbyEnemyGroups =
-        self:Filter(
-        nearbyEnemyGroups,
-        function(t)
-            return #t > 1
-        end
-    )
-    self:ForEach(
-        nearbyEnemyGroups,
-        function(nearbyEnemyGroup)
-            local castingEnemies =
-                self:Filter(
-                nearbyEnemyGroup,
-                function(t)
-                    return (t:IsUsingAbility() or t:IsChanneling() or self:HasNonIllusionModifier(t) or
-                        t.markedAsRealHero) and
-                        not t.markedAsIllusion
-                end
-            )
-            local castingEnemy = castingEnemies[1]
-            if castingEnemy and not self:CanIllusionUseAbility(castingEnemy) then
-                castingEnemy.markedAsRealHero = true
-                castingEnemies = self:Remove(nearbyEnemyGroup, castingEnemy)
-                self:ForEach(
-                    castingEnemies,
-                    function(t)
-                        t.markedAsIllusion = true
-                    end
-                )
-            end
-        end
-    )
+    end)
 end
 
 M.GetNearbyHeroes = function(self, npcBot, range, getEnemy, botModeMask)
@@ -1646,19 +1341,14 @@ M.GetNearbyNonIllusionHeroes = function(self, npcBot, range, getEnemy, botModeMa
     end
     botModeMask = botModeMask or BOT_MODE_NONE
     local heroes = npcBot:GetNearbyHeroes(range, getEnemy, botModeMask)
-    return self:Filter(
-        heroes,
-        function(t)
-            return self:MayNotBeIllusion(npcBot, t)
-        end
-    )
+    return self:Filter(heroes, function(t)
+        return self:MayNotBeIllusion(npcBot, t)
+    end)
 end
 
 function M:AttackOnceDamage(npcBot, target)
-    return target:GetActualIncomingDamage(
-        npcBot:GetAttackDamage() - npcBot:GetBaseDamageVariance() / 2,
-        DAMAGE_TYPE_PHYSICAL
-    )
+    return target:GetActualIncomingDamage(npcBot:GetAttackDamage() - npcBot:GetBaseDamageVariance() / 2,
+        DAMAGE_TYPE_PHYSICAL)
 end
 
 function M:GetNearbyAttackableCreeps(npcBot, range, getEnemy)
@@ -1667,13 +1357,9 @@ function M:GetNearbyAttackableCreeps(npcBot, range, getEnemy)
     end
     local creeps = npcBot:GetNearbyCreeps(range, getEnemy)
     if getEnemy then
-        creeps =
-            self:Filter(
-            creeps,
-            function(t)
-                return t:HasModifier("modifier_fountain_glyph")
-            end
-        )
+        creeps = self:Filter(creeps, function(t)
+            return t:HasModifier("modifier_fountain_glyph")
+        end)
     end
     return creeps
 end
@@ -1693,13 +1379,9 @@ function M:GetNearbyEnemyUnits(npc, range)
 end
 
 M.GetEnemyHeroUnique = function(self, npcBot, enemies)
-    local p =
-        self:Filter(
-        enemies,
-        function(t)
-            self:MayNotBeIllusion(npcBot, t)
-        end
-    )
+    local p = self:Filter(enemies, function(t)
+        self:MayNotBeIllusion(npcBot, t)
+    end)
     local g = NewTable()
     local readNames = NewTable()
     for _, enemy in pairs(p) do
@@ -1727,63 +1409,41 @@ M.GetModifierRemainingDuration = function(self, npc, modifierName)
     return 0
 end
 
-M.imprisonmentModifier = {
-    "modifier_item_cyclone",
-    "modifier_item_wind_waker",
-    "modifier_shadow_demon_disruption",
-    "modifier_obsidian_destroyer_astral_imprisonment_prison",
-    "modifier_brewmaster_storm_cyclone",
-    "modifier_invoker_tornado" -- "modifier_x_marks_the_target",
+M.imprisonmentModifier = {"modifier_item_cyclone", "modifier_item_wind_waker", "modifier_shadow_demon_disruption",
+                          "modifier_obsidian_destroyer_astral_imprisonment_prison", "modifier_brewmaster_storm_cyclone",
+                          "modifier_invoker_tornado" -- "modifier_x_marks_the_target",
 }
 M.GetImprisonmentRemainingDuration = function(self, npc)
-    return self:First(
-        self:Map(
-            self.imprisonmentModifier,
-            function(t)
-                return self:GetModifierRemainingDuration(npc, t)
-            end
-        ),
-        function(t)
-            return t ~= 0
-        end
-    ) or 0
+    return self:First(self:Map(self.imprisonmentModifier, function(t)
+        return self:GetModifierRemainingDuration(npc, t)
+    end), function(t)
+        return t ~= 0
+    end) or 0
 end
 
 function M:GetMagicImmuneRemainingDuration(npc)
-    local remainingTime =
-        self:Map(
-        self.magicImmuneModifiers,
-        function(t)
-            return {t, self:GetModifierRemainingDuration(npc, t)}
-        end
-    )
-    remainingTime =
-        self:SortByMaxFirst(
-        remainingTime,
-        function(t)
-            return t[2]
-        end
-    )
+    local remainingTime = self:Map(self.magicImmuneModifiers, function(t)
+        return {t, self:GetModifierRemainingDuration(npc, t)}
+    end)
+    remainingTime = self:SortByMaxFirst(remainingTime, function(t)
+        return t[2]
+    end)
     remainingTime = remainingTime[1]
     return remainingTime and remainingTime[2] or 0
 end
 
 function M:GetSilenceRemainingDuration(npc)
-    local silenceModifierRemainings =
-        self:Map(
-        self.timedSilenceModifiers,
-        function(t)
-            return self:GetModifierRemainingDuration(npc, t)
-        end
-    )
+    local silenceModifierRemainings = self:Map(self.timedSilenceModifiers, function(t)
+        return self:GetModifierRemainingDuration(npc, t)
+    end)
     if npc:HasModifier("modifier_disruptor_static_storm") then
         table.insert(silenceModifierRemainings, 1, 6)
     end
     if npc:HasModifier("modifier_enigma_black_hole_pull") or npc:HasModifier("modifier_riki_smoke_screen") then
         table.insert(silenceModifierRemainings, 1, 4)
     end
-    silenceModifierRemainings =
-        #silenceModifierRemainings ~= 0 and math.max(self:Unpack(silenceModifierRemainings)) or 0
+    silenceModifierRemainings = #silenceModifierRemainings ~= 0 and math.max(self:Unpack(silenceModifierRemainings)) or
+                                    0
     return silenceModifierRemainings
 end
 
@@ -1806,13 +1466,9 @@ function M:HasUnobstructedMovement(npc)
         end
         return true
     end
-    local activeFlyingModifiers =
-        self:Filter(
-        self.unobstructedMovementModifiers,
-        function(t)
-            return npc:HasModifier(t)
-        end
-    )
+    local activeFlyingModifiers = self:Filter(self.unobstructedMovementModifiers, function(t)
+        return npc:HasModifier(t)
+    end)
     if #activeFlyingModifiers ~= 0 then
         local dragonKnightDragonForm = self:IndexOf(activeFlyingModifiers, "modifier_dragon_knight_dragon_form")
         if dragonKnightDragonForm ~= -1 then
@@ -1875,24 +1531,16 @@ end
 
 M.GetAvailableBlink = function(self, npc)
     local blinks = {"item_blink", "item_overwhelming_blink", "item_swift_blink", "item_arcane_blink"}
-    return self:Aggregate(
-        nil,
-        blinks,
-        function(a, blinkName)
-            return a or self:GetAvailableItem(npc, blinkName)
-        end
-    )
+    return self:Aggregate(nil, blinks, function(a, blinkName)
+        return a or self:GetAvailableItem(npc, blinkName)
+    end)
 end
 
 function M:GetAvailableTravelBoots(npc)
     local travelBoots = {"item_travel_boots", "item_travel_boots_2"}
-    return self:Aggregate(
-        nil,
-        travelBoots,
-        function(seed, t)
-            return seed or self:GetAvailableItem(npc, t)
-        end
-    )
+    return self:Aggregate(nil, travelBoots, function(seed, t)
+        return seed or self:GetAvailableItem(npc, t)
+    end)
 end
 
 M.GetEmptyInventorySlots = function(self, npc)
@@ -2030,25 +1678,16 @@ M.IsBoots = function(self, item)
     if type(item) ~= "string" then
         item = item:GetName()
     end
-    return string.match(item, "boots") or item == "item_guardian_greaves" or
-        #item >= 17 and string.sub(item, 17) == "item_power_treads"
+    return string.match(item, "boots") or item == "item_guardian_greaves" or #item >= 17 and string.sub(item, 17) ==
+               "item_power_treads"
 end
 
 M.SwapCheapestItemToBackpack = function(self, npc)
-    local cheapestItem =
-        self:First(
-        self:Sort(
-            self:Filter(
-                self:GetInventoryItems(npc),
-                function(t)
-                    return not self:IsBoots(t) and not string.match(t:GetName(), "item_ward")
-                end
-            ),
-            function(a, b)
-                return GetItemCost(a:GetName()) - GetItemCost(b:GetName())
-            end
-        )
-    )
+    local cheapestItem = self:First(self:Sort(self:Filter(self:GetInventoryItems(npc), function(t)
+        return not self:IsBoots(t) and not string.match(t:GetName(), "item_ward")
+    end), function(a, b)
+        return GetItemCost(a:GetName()) - GetItemCost(b:GetName())
+    end))
     if cheapestItem == nil then
         return false
     end
@@ -2069,50 +1708,33 @@ end
 M.IsMeleeHero = function(self, npc)
     local range = npc:GetAttackRange()
     local name = npc:GetUnitName()
-    return range <= 210 or name == self:GetHeroFullName("tiny") or name == self:GetHeroFullName("doom_bringer") or
-        name == self:GetHeroFullName("pudge")
+    return
+        range <= 210 or name == self:GetHeroFullName("tiny") or name == self:GetHeroFullName("doom_bringer") or name ==
+            self:GetHeroFullName("pudge")
 end
 
 function M:HasAnyModifier(npc, modifierGroup)
-    return self:First(
-        modifierGroup,
-        function(t)
-            return npc:HasModifier(t)
-        end
-    )
+    return self:First(modifierGroup, function(t)
+        return npc:HasModifier(t)
+    end)
 end
 
-M.AttackPassiveAbilities = {
-    "doom_bringer_infernal_blade",
-    "drow_ranger_frost_arrows",
-    "clinkz_fire_arrows",
-    "viper_poison_attack",
-    "obsidian_destroyer_arcane_orb"
-}
+M.AttackPassiveAbilities = {"doom_bringer_infernal_blade", "drow_ranger_frost_arrows", "clinkz_fire_arrows",
+                            "viper_poison_attack", "obsidian_destroyer_arcane_orb"}
 M.OtherIgnoreAbilityBlockAbilities = {"batrider_flaming_lasso", "gyrocopter_homing_missile", "axe_culling_blade"}
-M.IgnoreAbilityBlockAbilities = {
-    "dark_seer_ion_shell",
-    "grimstroke_soulbind",
-    "rubick_spell_steal",
-    "spectre_spectral_dagger",
-    "morphling_morph",
-    "urn_of_shadows_soul_release",
-    "spirit_vessel_soul_release",
-    "medallion_of_courage_valor",
-    "solar_crest_armor_shine"
-}
+M.IgnoreAbilityBlockAbilities = {"dark_seer_ion_shell", "grimstroke_soulbind", "rubick_spell_steal",
+                                 "spectre_spectral_dagger", "morphling_morph", "urn_of_shadows_soul_release",
+                                 "spirit_vessel_soul_release", "medallion_of_courage_valor", "solar_crest_armor_shine"}
 
 M.IgnoreAbilityBlock = function(self, ability)
     local abilityName = ability:GetName()
     return self:Contains(self.AttackPassiveAbilities, abilityName) or
-        self:Contains(self.IgnoreAbilityBlockAbilities, abilityName) or
-        self:Contains(self.OtherIgnoreAbilityBlockAbilities, abilityName)
+               self:Contains(self.IgnoreAbilityBlockAbilities, abilityName) or
+               self:Contains(self.OtherIgnoreAbilityBlockAbilities, abilityName)
 end
 
-M.AbilityRetargetModifiers = {
-    "modifier_antimage_counterspell",
-    "modifier_item_lotus_orb_active",
-    "modifier_nyx_assassin_spiked_carapace" -- "modifier_item_blade_mail",
+M.AbilityRetargetModifiers = {"modifier_antimage_counterspell", "modifier_item_lotus_orb_active",
+                              "modifier_nyx_assassin_spiked_carapace" -- "modifier_item_blade_mail",
 }
 M.HasAbilityRetargetModifier = function(self, npc)
     return self:HasAnyModifier(npc, self.AbilityRetargetModifiers)
@@ -2142,24 +1764,18 @@ end
 function M:IsDuelCaster(npc)
     local function IsTaunting(_npc)
         local ability = _npc:GetAbilityByName("legion_commander_duel")
-        return ability and
-            ability:GetCooldownTimeRemaining() +
-                self:GetModifierRemainingDuration(_npc, "modifier_legion_commander_duel") +
-                1 >=
-                ability:GetCooldown()
+        return ability and ability:GetCooldownTimeRemaining() +
+                   self:GetModifierRemainingDuration(_npc, "modifier_legion_commander_duel") + 1 >=
+                   ability:GetCooldown()
     end
     local npcBot = GetBot()
     if npcBot:GetTeam() == npc:GetTeam() then
         return IsTaunting(npc)
     else
         local players = self:Map(self:Range(0, 4), GetTeamMember)
-        local tauntingPlayer =
-            self:First(
-            players,
-            function(t)
-                return IsTaunting(t) and t:GetAttackTarget() == npc
-            end
-        )
+        local tauntingPlayer = self:First(players, function(t)
+            return IsTaunting(t) and t:GetAttackTarget() == npc
+        end)
         return not IsTaunting(tauntingPlayer)
     end
 end
@@ -2178,11 +1794,9 @@ end
 
 M.IsSeverelyDisabled = function(self, npc)
     return npc:IsStunned() or npc:IsHexed() or npc:IsRooted() or self:IsFeared(npc) or self:IsHypnosed(npc) or
-        self:IsNightmared(npc) or
-        npc:HasModifier("modifier_legion_commander_duel") and not self:IsDuelCaster(npc) or
-        npc:HasModifier("modifier_axe_berserkers_call") or
-        npc:HasModifier("modifier_shadow_demon_purge_slow") or
-        npc:HasModifier("modifier_doom_bringer_doom")
+               self:IsNightmared(npc) or npc:HasModifier("modifier_legion_commander_duel") and
+               not self:IsDuelCaster(npc) or npc:HasModifier("modifier_axe_berserkers_call") or
+               npc:HasModifier("modifier_shadow_demon_purge_slow") or npc:HasModifier("modifier_doom_bringer_doom")
 end
 
 M.IsSeverelyDisabledOrSlowed = function(self, npc)
@@ -2191,25 +1805,17 @@ end
 
 M.HasSeverelyDisableProjectiles = function(self, npc)
     local projectiles = self:GetIncomingDodgeableProjectiles(npc)
-    return self:Any(
-        projectiles,
-        function(t)
-            return self:Contains(self.targetTrackingStunAbilities, t.ability:GetName())
-        end
-    )
+    return self:Any(projectiles, function(t)
+        return self:Contains(self.targetTrackingStunAbilities, t.ability:GetName())
+    end)
 end
 
 M.IsOrGoingToBeSeverelyDisabled = function(self, npc)
     return self:IsSeverelyDisabled(npc) or self:HasSeverelyDisableProjectiles(npc)
 end
 
-M.EtherealModifiers = {
-    "modifier_ghost_state",
-    "modifier_item_ethereal_blade_ethereal",
-    "modifier_necrolyte_death_seeker",
-    "modifier_necrolyte_sadist_active",
-    "modifier_pugna_decrepify"
-}
+M.EtherealModifiers = {"modifier_ghost_state", "modifier_item_ethereal_blade_ethereal",
+                       "modifier_necrolyte_death_seeker", "modifier_necrolyte_sadist_active", "modifier_pugna_decrepify"}
 M.IsEthereal = function(self, npc)
     return self:HasAnyModifier(npc, self.EtherealModifiers)
 end
@@ -2235,71 +1841,46 @@ M.CanBeAttackedFunction = function(npc)
 end
 
 M.IsInvulnerable = function(self, npc)
-    return npc:IsInvulnerable() or
-        self:Any(
-            self.IgnoreDamageModifiers,
-            function(t)
-                return npc:HasModifier(t)
-            end
-        )
+    return npc:IsInvulnerable() or self:Any(self.IgnoreDamageModifiers, function(t)
+        return npc:HasModifier(t)
+    end)
 end
 
 M.MayNotBeSeen = function(self, npc)
-    if
-        not npc:IsInvisible() or npc:HasModifier("modifier_item_dust") or
-            npc:HasModifier("modifier_bounty_hunter_track") or
-            npc:HasModifier("modifier_slardar_amplify_damage") or
-            npc:HasModifier("modifier_truesight")
-     then
+    if not npc:IsInvisible() or npc:HasModifier("modifier_item_dust") or npc:HasModifier("modifier_bounty_hunter_track") or
+        npc:HasModifier("modifier_slardar_amplify_damage") or npc:HasModifier("modifier_truesight") then
         return false
     end
     if self:HasAnyModifier(npc, self.permanentTrueSightRootModifiers) then
         return false
     end
     local enemies = self:GetNearbyHeroes(npc)
-    return self:All(
-        enemies,
-        function(t)
-            if t:HasItem("item_gem") then
-                return false
-            end
-            if t:GetAttackTarget() == npc then
-                return false
-            end
-            if t:IsUsingAbility() then
-                local ability = t:GetCurrentActiveAbility()
-                if
-                    binlib.Test(ability:GetBehavior(), ABILITY_BEHAVIOR_UNIT_TARGET) and
-                        t:IsFacingLocation(npc:GetLocation(), 10)
-                 then
-                    return false
-                end
-            end
-            return true
+    return self:All(enemies, function(t)
+        if t:HasItem("item_gem") then
+            return false
         end
-    ) and
-        not self:Any(
-            npc:GetNearbyCreeps(1000, true),
-            function(t)
-                return t:GetUnitName() == "npc_dota_necronomicon_warrior_3"
+        if t:GetAttackTarget() == npc then
+            return false
+        end
+        if t:IsUsingAbility() then
+            local ability = t:GetCurrentActiveAbility()
+            if binlib.Test(ability:GetBehavior(), ABILITY_BEHAVIOR_UNIT_TARGET) and
+                t:IsFacingLocation(npc:GetLocation(), 10) then
+                return false
             end
-        )
+        end
+        return true
+    end) and not self:Any(npc:GetNearbyCreeps(1000, true), function(t)
+        return t:GetUnitName() == "npc_dota_necronomicon_warrior_3"
+    end)
 end
 
 M.ShouldNotBeAttacked = function(self, npc)
-    return self:CannotBeAttacked(npc) or
-        self:Any(
-            self.IgnoreDamageModifiers,
-            function(t)
-                return npc:HasModifier(t)
-            end
-        ) or
-        self:Any(
-            self.IgnorePhysicalDamageModifiers,
-            function(t)
-                return npc:HasModifier(t)
-            end
-        )
+    return self:CannotBeAttacked(npc) or self:Any(self.IgnoreDamageModifiers, function(t)
+        return npc:HasModifier(t)
+    end) or self:Any(self.IgnorePhysicalDamageModifiers, function(t)
+        return npc:HasModifier(t)
+    end)
 end
 
 M.PhysicalCanCastFunction = function(npc)
@@ -2308,7 +1889,7 @@ end
 
 M.IsPhysicalOutputDisabled = function(self, npc)
     return npc:IsDisarmed() or npc:IsBlind() and not npc:GetAvailableItem("item_monkey_king_bar") or
-        self:IsEthereal(npc)
+               self:IsEthereal(npc)
 end
 
 M.GetHealthPercent = function(self, npc)
@@ -2356,36 +1937,28 @@ end
 -- end
 
 function M:IndexOfBasicDispellablePositiveModifier(npc)
-    return self:Aggregate(
-        nil,
-        self.basicDispellWorthPositiveModifiers,
-        function(seed, modifier, index)
-            if seed then
-                return seed
-            end
-            local b = npc:HasModifier(modifier)
-            if b then
-                return index
-            else
-                return nil
-            end
+    return self:Aggregate(nil, self.basicDispellWorthPositiveModifiers, function(seed, modifier, index)
+        if seed then
+            return seed
         end
-    ) or -1
+        local b = npc:HasModifier(modifier)
+        if b then
+            return index
+        else
+            return nil
+        end
+    end) or -1
 end
 
 function M:HasBasicDispellablePositiveModifier(npc)
-    return self:Any(
-        self.basicDispellWorthPositiveModifiers,
-        function(t)
-            return t:HasModifier(t)
-        end
-    )
+    return self:Any(self.basicDispellWorthPositiveModifiers, function(t)
+        return t:HasModifier(t)
+    end)
 end
 
 function M:DontInterruptAlly(npc)
     return self:HasAnyModifier(npc, self.positiveForceMovementModifiers) or
-        self:HasAnyModifier(npc, self.timeSensitivePositiveModifiers) or
-        self:IsDuelCaster(npc)
+               self:HasAnyModifier(npc, self.timeSensitivePositiveModifiers) or self:IsDuelCaster(npc)
 end
 
 M.MidLaneTowers = {TOWER_MID_1, TOWER_MID_2, TOWER_MID_3}
@@ -2470,12 +2043,7 @@ end
 
 -- ability function
 
-function M:NormalCanCast(
-    target,
-    isPureDamageWithoutDisable,
-    damageType,
-    pierceMagicImmune,
-    targetMustBeSeen,
+function M:NormalCanCast(target, isPureDamageWithoutDisable, damageType, pierceMagicImmune, targetMustBeSeen,
     mustBeTargettable)
     damageType = damageType or DAMAGE_TYPE_MAGICAL
     if pierceMagicImmune == nil then
@@ -2503,18 +2071,11 @@ function M:NormalCanCast(
     if targetMustBeSeen and not target:CanBeSeen() then
         return false
     end
-    if
-        isPureDamageWithoutDisable and
-            (damageType == DAMAGE_TYPE_PHYSICAL and self:ShouldNotBeAttacked(target) or
-                damageType == DAMAGE_TYPE_MAGICAL and
-                    (target:IsMagicImmune() or
-                        self:Contains(
-                            self.IgnoreMagicalDamageModifiers,
-                            function(t)
-                                target:HasModifier(t)
-                            end
-                        )))
-     then
+    if isPureDamageWithoutDisable and
+        (damageType == DAMAGE_TYPE_PHYSICAL and self:ShouldNotBeAttacked(target) or damageType == DAMAGE_TYPE_MAGICAL and
+            (target:IsMagicImmune() or self:Contains(self.IgnoreMagicalDamageModifiers, function(t)
+                target:HasModifier(t)
+            end))) then
         return false
     end
     return true
@@ -2581,7 +2142,7 @@ M.IsTalent = function(self, ability)
         ability = ability:GetName()
     end
     return ability ~= "special_bonus_attributes" and #ability >= #self.TalentNamePrefix and
-        string.sub(ability, 1, #self.TalentNamePrefix) == self.TalentNamePrefix
+               string.sub(ability, 1, #self.TalentNamePrefix) == self.TalentNamePrefix
 end
 
 M.GetAbilities = function(self, npcBot)
@@ -2596,21 +2157,15 @@ M.GetAbilities = function(self, npcBot)
 end
 
 M.GetAbilityNames = function(self, npcBot)
-    return self:Map(
-        self:GetAbilities(npcBot),
-        function(t)
-            return t:GetName()
-        end
-    )
+    return self:Map(self:GetAbilities(npcBot), function(t)
+        return t:GetName()
+    end)
 end
 
 M.GetTalents = function(self, npcBot)
-    return self:Filter(
-        self:GetAbilities(npcBot),
-        function(t)
-            return self:IsTalent(t)
-        end
-    )
+    return self:Filter(self:GetAbilities(npcBot), function(t)
+        return self:IsTalent(t)
+    end)
 end
 
 M.GetAbilityLevelUpIndex = function(self, npcBot)
@@ -2641,41 +2196,26 @@ M.FillInAbilities = function(self, npcBot, abilityTable)
     end
     if #abilityTable == 30 then
         npcBot.abilityTable = abilityTable
-        abilityTable.incorrectAbilityLevelUpNumber =
-            self:Count(
-            abilityTable,
-            function(ability, index)
-                return index < npcBot:GetLevel() - npcBot:GetAbilityPoints() + 1 and
-                    (ability == nil or not ability:CanAbilityBeUpgraded() or
-                        ability:GetName() == self.IncorrectAbilityName)
-            end
-        )
+        abilityTable.incorrectAbilityLevelUpNumber = self:Count(abilityTable, function(ability, index)
+            return index < npcBot:GetLevel() - npcBot:GetAbilityPoints() + 1 and
+                       (ability == nil or not ability:CanAbilityBeUpgraded() or ability:GetName() ==
+                           self.IncorrectAbilityName)
+        end)
         return
     end
 
-    local talents =
-        self:Map(
-        self:GetTalents(npcBot),
-        function(t)
-            return t:GetName()
-        end
-    )
-    local levelUpTalents =
-        self:Filter(
-        abilityTable,
-        function(t)
-            return self:IsTalent(t)
-        end
-    )
+    local talents = self:Map(self:GetTalents(npcBot), function(t)
+        return t:GetName()
+    end)
+    local levelUpTalents = self:Filter(abilityTable, function(t)
+        return self:IsTalent(t)
+    end)
     local g = self:Concat(abilityTable, self:RemoveAll(talents, levelUpTalents))
-    g.incorrectAbilityLevelUpNumber =
-        self:Count(
-        g,
-        function(ability, index)
-            return index < npcBot:GetLevel() - npcBot:GetAbilityPoints() + 1 and
-                (ability == nil or not ability:CanAbilityBeUpgraded() or ability:GetName() == self.IncorrectAbilityName)
-        end
-    )
+    g.incorrectAbilityLevelUpNumber = self:Count(g, function(ability, index)
+        return index < npcBot:GetLevel() - npcBot:GetAbilityPoints() + 1 and
+                   (ability == nil or not ability:CanAbilityBeUpgraded() or ability:GetName() ==
+                       self.IncorrectAbilityName)
+    end)
     npcBot.abilityTable = g
 end
 
@@ -2688,10 +2228,8 @@ M.ExecuteAbilityLevelUp = function(self, npcBot)
         abilityTable.justLevelUpAbility = false
     end
     abilityTable.abilityPoints = npcBot:GetAbilityPoints()
-    if
-        npcBot:GetAbilityPoints() < 1 + abilityTable.incorrectAbilityLevelUpNumber or
-            GetGameState() ~= GAME_STATE_PRE_GAME and GetGameState() ~= GAME_STATE_GAME_IN_PROGRESS
-     then
+    if npcBot:GetAbilityPoints() < 1 + abilityTable.incorrectAbilityLevelUpNumber or GetGameState() ~=
+        GAME_STATE_PRE_GAME and GetGameState() ~= GAME_STATE_GAME_IN_PROGRESS then
         return
     end
     local abilityName = abilityTable[self:GetAbilityLevelUpIndex(npcBot)]
@@ -2705,8 +2243,9 @@ end
 -- geometry
 
 M.IsVector = function(self, object)
-    return type(object) == "userdata" and type(object.x) == "number" and type(object.y) == "number" and
-        type(object.z) == "number"
+    return
+        type(object) == "userdata" and type(object.x) == "number" and type(object.y) == "number" and type(object.z) ==
+            "number"
 end
 M.ToStringVector = function(self, object)
     return string.format("(%d,%d,%d)", object.x, object.y, object.z)
@@ -2914,21 +2453,14 @@ M.PURCHASE_ITEM_SUCCESS = -1
 -- hero does not have enough ability points to upgrade ability (13)
 -- ability is hidden (60)
 
-M.IgnoreDamageModifiers = {
-    "modifier_abaddon_borrowed_time",
-    "modifier_item_aeon_disk_buff",
-    "modifier_winter_wyvern_winters_curse",
-    "modifier_winter_wyvern_winters_curse_aura",
-    "modifier_skeleton_king_reincarnation_scepter_active"
-}
+M.IgnoreDamageModifiers = {"modifier_abaddon_borrowed_time", "modifier_item_aeon_disk_buff",
+                           "modifier_winter_wyvern_winters_curse", "modifier_winter_wyvern_winters_curse_aura",
+                           "modifier_skeleton_king_reincarnation_scepter_active"}
 
 M.CannotKillModifiers = {"modifier_dazzle_shadow_grave", "modifier_troll_warlord_battle_trance"}
 
-M.CannotBeTargettedModifiers = {
-    "modifier_slark_shadow_dance",
-    "modifier_item_book_of_shadows",
-    "modifier_dark_willow_shadow_realm_buff"
-}
+M.CannotBeTargettedModifiers = {"modifier_slark_shadow_dance", "modifier_item_book_of_shadows",
+                                "modifier_dark_willow_shadow_realm_buff"}
 
 M.IgnorePhysicalDamageModifiers = {"modifier_winter_wyvern_cold_embrace"}
 M.IgnoreMagicalDamageModifiers = {"modifier_oracle_fates_edict"}
@@ -2950,26 +2482,12 @@ M.LastForAtLeastSeconds = function(self, predicate, time, infoTable)
 end
 
 M.GoodIllusionHero = {"antimage", "spectre", "terrorblade", "naga_siren"}
-M.ModerateIllusionHero = {
-    "abaddon",
-    "axe",
-    "chaos_knight",
-    "arc_warden",
-    "juggernaut",
-    "luna",
-    "medusa",
-    "morphling",
-    "phantom_lancer",
-    "sniper",
-    "wraith_king",
-    "phantom_assassin"
-}
+M.ModerateIllusionHero = {"abaddon", "axe", "chaos_knight", "arc_warden", "juggernaut", "luna", "medusa", "morphling",
+                          "phantom_lancer", "sniper", "wraith_king", "phantom_assassin"}
 M.GetIllusionBattlePower = function(self, npc)
     local name = self:GetHeroShortName(npc:GetUnitName())
-    if
-        npc:HasModifier("modifier_arc_warden_tempest_double") or
-            npc:HasModifier("modifier_skeleton_king_reincarnation_active")
-     then
+    if npc:HasModifier("modifier_arc_warden_tempest_double") or
+        npc:HasModifier("modifier_skeleton_king_reincarnation_active") then
         return 0.8
     end
     if npc:HasModifier("modifier_vengefulspirit_hybrid_special") then
@@ -2983,13 +2501,9 @@ M.GetIllusionBattlePower = function(self, npc)
     elseif t:IsRanged() then
         t = t + t:GetAttackRange() / 600
     end
-    local inventory =
-        self:Map(
-        self:GetInventoryItems(npc),
-        function(t)
-            return t:GetName()
-        end
-    )
+    local inventory = self:Map(self:GetInventoryItems(npc), function(t)
+        return t:GetName()
+    end)
     if self:Contains(inventory, "item_radiance") then
         t = t + 0.07
     end
@@ -3010,20 +2524,12 @@ end
 
 M.GetNetWorth = function(self, npc, isEnemy)
     if isEnemy then
-        local itemCost =
-            self:Map(
-            self:GetInventoryItems(npc),
-            function(t)
-                return GetItemCost(t:GetName())
-            end
-        )
-        return self:Aggregate(
-            0,
-            itemCost,
-            function(a, b)
-                return a + b
-            end
-        )
+        local itemCost = self:Map(self:GetInventoryItems(npc), function(t)
+            return GetItemCost(t:GetName())
+        end)
+        return self:Aggregate(0, itemCost, function(a, b)
+            return a + b
+        end)
     else
         return npc:GetNetWorth()
     end
@@ -3066,27 +2572,15 @@ end
 
 M.GetHeroGroupBattlePower = function(self, npcBot, heroes, isEnemy)
     local function A(tb)
-        local battlePowerMap =
-            self:Map(
-            tb,
-            function(t)
-                return {t:GetUnitName(), self:GetBattlePower(t)}
-            end
-        )
-        battlePowerMap =
-            self:SortByMaxFirst(
-            battlePowerMap,
-            function(t)
-                return t[2]
-            end
-        )
-        battlePowerMap =
-            self:Map(
-            battlePowerMap,
-            function(t, index)
-                return t[2] * (1.15 - 0.15 * index)
-            end
-        )
+        local battlePowerMap = self:Map(tb, function(t)
+            return {t:GetUnitName(), self:GetBattlePower(t)}
+        end)
+        battlePowerMap = self:SortByMaxFirst(battlePowerMap, function(t)
+            return t[2]
+        end)
+        battlePowerMap = self:Map(battlePowerMap, function(t, index)
+            return t[2] * (1.15 - 0.15 * index)
+        end)
         local g = NewTable()
         for _, v in ipairs(battlePowerMap) do
             g[v[1]] = v[2]
@@ -3114,25 +2608,20 @@ M.GetHeroGroupBattlePower = function(self, npcBot, heroes, isEnemy)
 end
 
 M.Outnumber = function(self, npcBot, friends, enemies)
-    return self:GetHeroGroupBattlePower(npcBot, friends, false) >=
-        self:GetHeroGroupBattlePower(npcBot, enemies, true) * 1.8
+    return self:GetHeroGroupBattlePower(npcBot, friends, false) >= self:GetHeroGroupBattlePower(npcBot, enemies, true) *
+               1.8
 end
 
 M.CannotBeKilledNormally = function(self, target)
-    return target:IsInvulnerable() or
-        self:Any(
-            self.IgnoreDamageModifiers,
-            function(t)
-                target:HasModifier(t)
-            end
-        ) or
-        target:HasModifier("modifier_dazzle_shallow_grave")
+    return target:IsInvulnerable() or self:Any(self.IgnoreDamageModifiers, function(t)
+        target:HasModifier(t)
+    end) or target:HasModifier("modifier_dazzle_shallow_grave")
 end
 
 M.HasScepter = function(self, npc)
     return npc:HasScepter() or npc:HasModifier("modifier_wisp_tether_scepter") or
-        npc:HasModifier("modifier_item_ultimate_scepter") or
-        npc:HasModifier("modifier_item_ultimate_scepter_consumed_alchemist")
+               npc:HasModifier("modifier_item_ultimate_scepter") or
+               npc:HasModifier("modifier_item_ultimate_scepter_consumed_alchemist")
 end
 
 -- ability record
@@ -3193,7 +2682,7 @@ local everySecondsCallRegistry = NewTable()
 
 function M:EveryManySeconds(second, oldFunction)
     local functionName = tostring(oldFunction)
-    everySecondsCallRegistry[functionName .. "lastCallTime"] = RandomFloat(0, second)
+    everySecondsCallRegistry[functionName .. "lastCallTime"] = math.random() * second
     return function(...)
         if everySecondsCallRegistry[functionName .. "lastCallTime"] <= DotaTime() - second then
             everySecondsCallRegistry[functionName .. "lastCallTime"] = DotaTime()
@@ -3237,8 +2726,7 @@ function M:AnnounceGroups1(npcBot)
     if groupAnnounceTimes1 == 0 then
         npcBot:ActionImmediate_Chat(
             "Thanks for choosing RMM AI. Join our new discord group at https://discord.gg/Agd632pvhA to put suggestions or devloping issues!",
-            true
-        )
+            true)
         groupAnnounceTimes1 = 1
     end
 end
@@ -3274,28 +2762,22 @@ function M:TickFromDota()
 
     if not FloatEqual(time, dotaTimer) then
         frameNumber = frameNumber + 1
-        self:ForEach(
-            slowFunctionRegistries,
-            function(t)
-                t(time - dotaTimer)
-            end
-        )
+        self:ForEach(slowFunctionRegistries, function(t)
+            t(time - dotaTimer)
+        end)
         local threadIndex = 1
         while threadIndex <= #coroutineRegistry do
             local t = coroutineRegistry[threadIndex]
             local exemptIndex
             local exempt
-            self:ForEach(
-                coroutineExempt,
-                function(exemptPair, index)
-                    if exemptPair[1] == t then
-                        if exemptPair[2] == frameNumber then
-                            exempt = true
-                        end
-                        exemptIndex = index
+            self:ForEach(coroutineExempt, function(exemptPair, index)
+                if exemptPair[1] == t then
+                    if exemptPair[2] == frameNumber then
+                        exempt = true
                     end
+                    exemptIndex = index
                 end
-            )
+            end)
             if exemptIndex then
                 table.remove(coroutineExempt, exemptIndex)
             end
@@ -3360,12 +2842,9 @@ function M:WaitForSeconds(seconds)
 end
 
 function M:StopCoroutine(thread)
-    self:Remove_Modify(
-        coroutineExempt,
-        function(t)
-            return t[1] == thread
-        end
-    )
+    self:Remove_Modify(coroutineExempt, function(t)
+        return t[1] == thread
+    end)
     self:Remove_Modify(coroutineRegistry, thread)
 end
 

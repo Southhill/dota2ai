@@ -6,44 +6,34 @@
 -- 通用技能/物品使用模块
 -- 所有英雄的技能使用、加点、防御符文等通用逻辑都在此定义
 -------
-_G._savedEnv = getfenv()
-module("ability_item_usage_generic", package.seeall)
+ability_item_usage_generic = {}
 
 local utility = require(GetScriptDirectory() .. "/util/Utility")
-local Courier = dofile(GetScriptDirectory() .. "/util/CourierSystem")
-local ItemUsageSystem = dofile(GetScriptDirectory() .. "/util/ItemUsageSystem")
-local ChatSystem = dofile(GetScriptDirectory() .. "/util/ChatSystem")
+local Courier = require(GetScriptDirectory() .. "/util/CourierSystem")
+local ItemUsageSystem = require(GetScriptDirectory() .. "/util/ItemUsageSystem")
+local ChatSystem = require(GetScriptDirectory() .. "/util/ChatSystem")
 local AbilityExtensions = require(GetScriptDirectory() .. "/util/AbilityAbstraction")
 
 -- 所有防御塔的 ID 列表（用于防御符文判断）
-local towerId = {
-    TOWER_TOP_1, TOWER_TOP_2, TOWER_TOP_3,
-    TOWER_MID_1, TOWER_MID_2, TOWER_MID_3,
-    TOWER_BOT_1, TOWER_BOT_2, TOWER_BOT_3,
-    TOWER_BASE_1, TOWER_BASE_2
-}
+local towerId = {TOWER_TOP_1, TOWER_TOP_2, TOWER_TOP_3, TOWER_MID_1, TOWER_MID_2, TOWER_MID_3, TOWER_BOT_1, TOWER_BOT_2,
+                 TOWER_BOT_3, TOWER_BASE_1, TOWER_BASE_2}
 
 -- 每 0.5 秒记录一次防御塔血量变化，用于判断是否需要使用防御符文
-local RefreshBuildingHealth =
-    AbilityExtensions:SingleForTeam(
-    AbilityExtensions:EveryManySeconds(
-        0.5,
-        function()
-            for _, id in ipairs(towerId) do
-                local tower = GetTower(GetTeam(), id)
-                if tower ~= nil and tower:GetHealth() > 0 then
-                    tower.health0SecondsAgo = tower:GetHealth()
-                    if tower:IsAlive() then
-                        for _, i in ipairs({0.5, 1, 1.5, 2}) do
-                            tower["health" .. tostring(i) .. "SecondsAgo"] =
-                                tower["health" .. tostring(i - 0.5) .. "SecondsAgo"]
-                        end
+local RefreshBuildingHealth = AbilityExtensions:SingleForTeam(
+    AbilityExtensions:EveryManySeconds(0.5, function()
+        for _, id in ipairs(towerId) do
+            local tower = GetTower(GetTeam(), id)
+            if tower ~= nil and tower:GetHealth() > 0 then
+                tower.health0SecondsAgo = tower:GetHealth()
+                if tower:IsAlive() then
+                    for _, i in ipairs({0.5, 1, 1.5, 2}) do
+                        tower["health" .. tostring(i) .. "SecondsAgo"] =
+                            tower["health" .. tostring(i - 0.5) .. "SecondsAgo"]
                     end
                 end
             end
         end
-    )
-)
+    end))
 
 -- 考虑是否使用防御符文（Glyph）
 -- 条件：12分钟后，防御塔血量在1秒内骤降 >= 7.5*游戏分钟数，或血量低于1000且有2+敌方英雄
@@ -57,15 +47,12 @@ local function ConsiderGlyph()
         local tower = GetTower(GetTeam(), BuildingID)
         if tower ~= nil and tower:GetHealth() > 0 then
             local tableNearbyEnemyHeroes = utility.GetEnemiesNearLocation(tower:GetLocation(), 700)
-            if
-                tableNearbyEnemyHeroes ~= nil and #tableNearbyEnemyHeroes >= 1 and tower["health1SecondsAgo"] and
-                    tower:GetHealth() - tower["health1SecondsAgo"] >= 7.5 * DotaTime() / 60 and
-                    DotaTime() >= 12 * 60
-             then
-                GetBot():ActionImmediate_Glyph()  -- 塔血量骤降，开符文
+            if tableNearbyEnemyHeroes ~= nil and #tableNearbyEnemyHeroes >= 1 and tower["health1SecondsAgo"] and
+                tower:GetHealth() - tower["health1SecondsAgo"] >= 7.5 * DotaTime() / 60 and DotaTime() >= 12 * 60 then
+                GetBot():ActionImmediate_Glyph() -- 塔血量骤降，开符文
             end
             if tower:GetHealth() >= 200 and tower:GetHealth() <= 1000 and #tableNearbyEnemyHeroes >= 2 then
-                GetBot():ActionImmediate_Glyph()  -- 塔残血且敌方人多，开符文
+                GetBot():ActionImmediate_Glyph() -- 塔残血且敌方人多，开符文
                 break
             end
         end
@@ -93,6 +80,9 @@ end
 -- 判断遗迹血量是否低于指定值
 local function AncientBelow(team, health)
     local ancient = GetAncient(team)
+    if ancient == nil or not ancient:CanBeSeen() then
+        return false
+    end
     return ancient:IsInvulnerable() and ancient:GetHealth() < health
 end
 
@@ -120,7 +110,7 @@ local function SecondaryOperation()
 end
 
 -- 信使使用与次要操作的主循环
-function CourierUsageThink()
+function ability_item_usage_generic.CourierUsageThink()
     if not GetBot():IsAlive() then
         return
     end
@@ -139,12 +129,9 @@ local ExecuteAbilityLevelUp = function(AbilityToLevelUp, TalentTree)
     local npcBot = GetBot()
     -- 获取下一个未学习的天赋
     local function GetNextTalent()
-        return AbilityExtensions:First(
-            AbilityExtensions:GetTalents(npcBot),
-            function(t)
-                return not t:IsTrained()
-            end
-        )
+        return AbilityExtensions:First(AbilityExtensions:GetTalents(npcBot), function(t)
+            return not t:IsTrained()
+        end)
     end
 
     -- 处理刚加点后的状态跟踪
@@ -158,10 +145,8 @@ local ExecuteAbilityLevelUp = function(AbilityToLevelUp, TalentTree)
     AbilityToLevelUp.abilityPoints = npcBot:GetAbilityPoints()
 
     -- 没有可加的技能点或游戏状态不允许时跳过
-    if
-        npcBot:GetAbilityPoints() < 1 + AbilityToLevelUp.incorrectAbilityLevelUpNumber or
-            GetGameState() ~= GAME_STATE_PRE_GAME and GetGameState() ~= GAME_STATE_GAME_IN_PROGRESS
-     then
+    if npcBot:GetAbilityPoints() < 1 + AbilityToLevelUp.incorrectAbilityLevelUpNumber or GetGameState() ~=
+        GAME_STATE_PRE_GAME and GetGameState() ~= GAME_STATE_GAME_IN_PROGRESS then
         return
     end
 
@@ -187,7 +172,7 @@ local ExecuteAbilityLevelUp = function(AbilityToLevelUp, TalentTree)
 end
 
 -- 技能加点主函数（供各英雄调用）
-function AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+function ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
     ExecuteAbilityLevelUp(AbilityToLevelUp, TalentTree)
     local npcBot = GetBot()
     npcBot:ActionImmediate_Chat(npcBot:GetUnitName() .. "我变的更强了", false)
@@ -240,18 +225,15 @@ end
 -- 判断是否可以买活（复活时间 >= 指定秒数）
 local function CanBuybackUpperRespawnTime(respawnTime)
     local npcBot = GetBot()
-    if
-        (not npcBot:IsAlive() and respawnTime ~= nil and npcBot:GetRespawnTime() >= respawnTime and
-            npcBot:GetBuybackCooldown() == 0 and
-            npcBot:GetGold() > npcBot:GetBuybackCost())
-     then
+    if (not npcBot:IsAlive() and respawnTime ~= nil and npcBot:GetRespawnTime() >= respawnTime and
+        npcBot:GetBuybackCooldown() == 0 and npcBot:GetGold() > npcBot:GetBuybackCost()) then
         return true
     end
     return false
 end
 
 -- 检测是否为米波的克隆体（只有鞋和TP，没有其他装备）
-function IsMeepoClone()
+function ability_item_usage_generic.IsMeepoClone()
     local npcBot = GetBot()
     if npcBot:GetUnitName() == "npc_dota_hero_meepo" and npcBot:GetLevel() > 1 then
         for i = 0, 5 do
@@ -266,15 +248,12 @@ function IsMeepoClone()
 end
 
 -- 买活逻辑：关键建筑被攻击时或游戏后期自动买活
-function BuybackUsageThink()
+function ability_item_usage_generic.BuybackUsageThink()
     local npcBot = GetBot()
 
     -- 无敌、非英雄、幻象、米波克隆体不买活
-    if
-        npcBot:IsInvulnerable() or not npcBot:IsHero() or not string.find(npcBot:GetUnitName(), "hero") or
-            npcBot:IsIllusion() or
-            IsMeepoClone()
-     then
+    if npcBot:IsInvulnerable() or not npcBot:IsHero() or not string.find(npcBot:GetUnitName(), "hero") or
+        npcBot:IsIllusion() or IsMeepoClone() then
         return
     end
 
@@ -298,12 +277,8 @@ function BuybackUsageThink()
     local barracks_bot_melee = GetBarracks(GetTeam(), BARRACKS_BOT_MELEE)
     local ancient = GetAncient(GetTeam())
 
-    local buildList = {
-        tower_top_3, tower_mid_3, tower_bot_3,
-        tower_base_1, tower_base_2,
-        barracks_top_melee, barracks_mid_melee, barracks_bot_melee,
-        ancient
-    }
+    local buildList = {tower_top_3, tower_mid_3, tower_bot_3, tower_base_1, tower_base_2, barracks_top_melee,
+                       barracks_mid_melee, barracks_bot_melee, ancient}
 
     -- 25分钟后，如果关键建筑附近有2+敌方英雄且正在被攻击，则买活
     for _, build in pairs(buildList) do
@@ -325,7 +300,7 @@ function BuybackUsageThink()
 end
 
 -- 初始化英雄技能：扫描所有技能槽，分离出普通技能和天赋
-function InitAbility(Abilities, AbilitiesReal, Talents)
+function ability_item_usage_generic.InitAbility(Abilities, AbilitiesReal, Talents)
     local npcBot = GetBot()
 
     for i = 0, 25, 1 do
@@ -334,20 +309,20 @@ function InitAbility(Abilities, AbilitiesReal, Talents)
         if (ability ~= nil) then
             if (ability:GetName() ~= "generic_hidden") then
                 if (ability:IsTalent() == true) then
-                    table.insert(Talents, ability:GetName())    -- 存入天赋
+                    table.insert(Talents, ability:GetName()) -- 存入天赋
                 else
-                    table.insert(Abilities, ability:GetName())  -- 存入技能名
-                    table.insert(AbilitiesReal, ability)        -- 存入技能对象
+                    table.insert(Abilities, ability:GetName()) -- 存入技能名
+                    table.insert(AbilitiesReal, ability) -- 存入技能对象
                 end
             end
         end
     end
 
-    npcBot.abilityInited = true  -- 每次脚本重载时设为 true
+    npcBot.abilityInited = true -- 每次脚本重载时设为 true
 end
 
 -- 计算连招所需的总蓝量
-function GetComboMana(AbilitiesReal)
+function ability_item_usage_generic.GetComboMana(AbilitiesReal)
     local npcBot = GetBot()
     local tempComboMana = 0
     for i, ability in pairs(AbilitiesReal) do
@@ -361,7 +336,7 @@ function GetComboMana(AbilitiesReal)
 end
 
 -- 计算连招总伤害
-function GetComboDamage(AbilitiesReal)
+function ability_item_usage_generic.GetComboDamage(AbilitiesReal)
     local npcBot = GetBot()
     local tempComboDamage = 0
     for i, ability in pairs(AbilitiesReal) do
@@ -373,20 +348,16 @@ function GetComboDamage(AbilitiesReal)
 end
 
 -- 调试用：打印技能使用信息
-function PrintDebugInfo(AbilitiesReal, cast)
+function ability_item_usage_generic.PrintDebugInfo(AbilitiesReal, cast)
     local npcBot = GetBot()
     for i = 1, #AbilitiesReal do
         if (cast.Desire[i] ~= nil and cast.Desire[i] > 0) then
             local ability = AbilitiesReal[i]
-            if
-                ((cast.Type[i] == nil or cast.Type[i] == "Target") and cast.Target[i] ~= nil and
-                    utility.CheckFlag(ability:GetBehavior(), ABILITY_BEHAVIOR_UNIT_TARGET))
-             then
+            if ((cast.Type[i] == nil or cast.Type[i] == "Target") and cast.Target[i] ~= nil and
+                utility.CheckFlag(ability:GetBehavior(), ABILITY_BEHAVIOR_UNIT_TARGET)) then
                 if (cast.Target[i] ~= nil) then
-                    utility.DebugTalk(
-                        "尝试使用技能 " ..
-                            i .. " 对 " .. cast.Target[i]:GetUnitName() .. " 欲望值= " .. cast.Desire[i]
-                    )
+                    utility.DebugTalk("尝试使用技能 " .. i .. " 对 " .. cast.Target[i]:GetUnitName() ..
+                                          " 欲望值= " .. cast.Desire[i])
                 else
                     utility.DebugTalk("尝试使用技能 " .. i .. " 欲望值= " .. cast.Desire[i])
                 end
@@ -398,7 +369,7 @@ function PrintDebugInfo(AbilitiesReal, cast)
 end
 
 -- 根据考虑函数计算各技能的施放欲望并执行
-function ConsiderAbility(AbilitiesReal, Consider)
+function ability_item_usage_generic.ConsiderAbility(AbilitiesReal, Consider)
     local npcBot = GetBot()
     local cast = {}
     cast.Desire = {}
@@ -412,7 +383,7 @@ function ConsiderAbility(AbilitiesReal, Consider)
     return cast
 end
 
-function ConsiderAbilityCoroutine(AbilitiesReal, Consider)
+function ability_item_usage_generic.ConsiderAbilityCoroutine(AbilitiesReal, Consider)
     local npcBot = GetBot()
     local cast = {}
     cast.Desire = {}
@@ -421,13 +392,9 @@ function ConsiderAbilityCoroutine(AbilitiesReal, Consider)
     for i, ability in pairs(AbilitiesReal) do
         if Consider[i] ~= nil then
             local consider1 = AbilityExtensions:ResumeUntilReturn(Consider[i])
-            consider1 =
-                AbilityExtensions:Max(
-                consider1,
-                function(t)
-                    return t[1]
-                end
-            )
+            consider1 = AbilityExtensions:Max(consider1, function(t)
+                return t[1]
+            end)
             if consider1 then
                 cast.Desire[i], cast.Target[i], cast.Type[i] = AbilityExtensions:Unpack(consider1)
             else
@@ -440,10 +407,10 @@ end
 
 local worldBounds = GetWorldBounds()
 local function OutOfBound(vector)
-    return worldBounds[1] >= vector.x or worldBounds[2] >= vector.y or worldBounds[3] <= vector.x or
-        worldBounds[4] <= vector.y
+    return worldBounds[1] >= vector.x or worldBounds[2] >= vector.y or worldBounds[3] <= vector.x or worldBounds[4] <=
+               vector.y
 end
-function UseAbility(AbilitiesReal, cast)
+function ability_item_usage_generic.UseAbility(AbilitiesReal, cast)
     local npcBot = GetBot()
     local HighestDesire = 0
     local HighestDesireAbility = 0
@@ -534,6 +501,7 @@ function UseAbility(AbilitiesReal, cast)
     end
 end
 
+-- 导出函数到全局（兼容旧版 require 调用模式）
 for k, v in pairs(ability_item_usage_generic) do
-    _G._savedEnv[k] = v
+    _G[k] = v
 end

@@ -2,7 +2,7 @@
 --	Ranked Matchmaking AI v1.6b
 --	Author: adamqqq		Email:adamqqq@163.com
 ----------------------------------------------------------------------------
-local ItemPurchaseSystem = dofile(GetScriptDirectory() .. "/util/ItemPurchaseSystem") --导入通用函数库
+local ItemPurchaseSystem = require(GetScriptDirectory() .. "/util/ItemPurchaseSystem") --导入通用函数�?
 
 local ItemsToBuy =
 {
@@ -21,7 +21,7 @@ local ItemsToBuy =
 }
 
 ItemPurchaseSystem:CreateItemInformationTable(GetBot(), ItemsToBuy)
- --检查装备列表
+ --检查装备列�?
 
 function ItemPurchaseThink()
 	ItemPurchaseSystem:ItemPurchaseExtend()

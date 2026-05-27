@@ -1,5 +1,4 @@
-local BotsInit = require("game/botsinit")
-local MyModule = BotsInit.CreateGeneric()
+local MyModule = {}
 
 -- local utils = require(GetScriptDirectory() ..  "/util")
 
@@ -22,19 +21,16 @@ local castWDesire = 0
 local castEDesire = 0
 
 function IsFrozeSigil(unit_name)
-    return unit_name == "npc_dota_tusk_frozen_sigil1" or unit_name == "npc_dota_tusk_frozen_sigil2" or
-        unit_name == "npc_dota_tusk_frozen_sigil3" or
-        unit_name == "npc_dota_tusk_frozen_sigil4"
+    return unit_name == "npc_dota_tusk_frozen_sigil1" or unit_name == "npc_dota_tusk_frozen_sigil2" or unit_name ==
+               "npc_dota_tusk_frozen_sigil3" or unit_name == "npc_dota_tusk_frozen_sigil4"
 end
 
 ------------BEASTMASTER'S HAWK
 function IsHawk(unit_name)
-    return unit_name == "npc_dota_scout_hawk" or unit_name == "npc_dota_greater_hawk" or
-        unit_name == "npc_dota_beastmaster_hawk" or
-        unit_name == "npc_dota_beastmaster_hawk_1" or
-        unit_name == "npc_dota_beastmaster_hawk_2" or
-        unit_name == "npc_dota_beastmaster_hawk_3" or
-        unit_name == "npc_dota_beastmaster_hawk_4"
+    return unit_name == "npc_dota_scout_hawk" or unit_name == "npc_dota_greater_hawk" or unit_name ==
+               "npc_dota_beastmaster_hawk" or unit_name == "npc_dota_beastmaster_hawk_1" or unit_name ==
+               "npc_dota_beastmaster_hawk_2" or unit_name == "npc_dota_beastmaster_hawk_3" or unit_name ==
+               "npc_dota_beastmaster_hawk_4"
 end
 
 function IsTornado(unit_name)
@@ -46,91 +42,52 @@ function IsHealingWard(unit_name)
 end
 
 function IsBear(unit_name)
-    return unit_name == "npc_dota_lone_druid_bear1" or unit_name == "npc_dota_lone_druid_bear2" or
-        unit_name == "npc_dota_lone_druid_bear3" or
-        unit_name == "npc_dota_lone_druid_bear4"
+    return unit_name == "npc_dota_lone_druid_bear1" or unit_name == "npc_dota_lone_druid_bear2" or unit_name ==
+               "npc_dota_lone_druid_bear3" or unit_name == "npc_dota_lone_druid_bear4"
 end
 
 function IsFamiliar(unit_name)
-    return unit_name == "npc_dota_visage_familiar1" or unit_name == "npc_dota_visage_familiar2" or
-        unit_name == "npc_dota_visage_familiar3"
+    return unit_name == "npc_dota_visage_familiar1" or unit_name == "npc_dota_visage_familiar2" or unit_name ==
+               "npc_dota_visage_familiar3"
 end
 
 function IsMinionWithNoSkill(unit_name)
-    return unit_name == "npc_dota_lesser_eidolon" or unit_name == "npc_dota_eidolon" or
-        unit_name == "npc_dota_greater_eidolon" or
-        unit_name == "npc_dota_dire_eidolon" or
-        unit_name == "npc_dota_furion_treant" or
-        unit_name == "npc_dota_furion_treant_large" or
-        unit_name == "npc_dota_invoker_forged_spirit" or
-        unit_name == "npc_dota_broodmother_spiderling" or
-        unit_name == "npc_dota_broodmother_spiderite" or
-        unit_name == "npc_dota_wraith_king_skeleton_warrior" or
-        unit_name == "npc_dota_warlock_golem_1" or
-        unit_name == "npc_dota_warlock_golem_2" or
-        unit_name == "npc_dota_warlock_golem_3" or
-        unit_name == "npc_dota_warlock_golem_scepter_1" or
-        unit_name == "npc_dota_warlock_golem_scepter_2" or
-        unit_name == "npc_dota_warlock_golem_scepter_3" or
-        unit_name == "npc_dota_beastmaster_boar" or
-        unit_name == "npc_dota_beastmaster_greater_boar" or
-        unit_name == "npc_dota_beastmaster_boar_1" or
-        unit_name == "npc_dota_beastmaster_boar_2" or
-        unit_name == "npc_dota_beastmaster_boar_3" or
-        unit_name == "npc_dota_beastmaster_boar_4" or
-        unit_name == "npc_dota_lycan_wolf1" or
-        unit_name == "npc_dota_lycan_wolf2" or
-        unit_name == "npc_dota_lycan_wolf3" or
-        unit_name == "npc_dota_lycan_wolf4" or
-        unit_name == "npc_dota_neutral_kobold" or
-        unit_name == "npc_dota_neutral_kobold_tunneler" or
-        unit_name == "npc_dota_neutral_kobold_taskmaster" or
-        unit_name == "npc_dota_neutral_centaur_outrunner" or
-        unit_name == "npc_dota_neutral_fel_beast" or
-        unit_name == "npc_dota_neutral_polar_furbolg_champion" or
-        unit_name == "npc_dota_neutral_ogre_mauler" or
-        unit_name == "npc_dota_neutral_giant_wolf" or
-        unit_name == "npc_dota_neutral_alpha_wolf" or
-        unit_name == "npc_dota_neutral_wildkin" or
-        unit_name == "npc_dota_neutral_jungle_stalker" or
-        unit_name == "npc_dota_neutral_elder_jungle_stalker" or
-        unit_name == "npc_dota_neutral_prowler_acolyte" or
-        unit_name == "npc_dota_neutral_rock_golem" or
-        unit_name == "npc_dota_neutral_granite_golem" or
-        unit_name == "npc_dota_neutral_small_thunder_lizard" or
-        unit_name == "npc_dota_neutral_gnoll_assassin" or
-        unit_name == "npc_dota_neutral_ghost" or
-        unit_name == "npc_dota_wraith_ghost" or
-        unit_name == "npc_dota_neutral_dark_troll" or
-        unit_name == "npc_dota_neutral_forest_troll_berserker" or
-        unit_name == "npc_dota_neutral_harpy_scout" or
-        unit_name == "npc_dota_neutral_black_drake" or
-        unit_name == "npc_dota_dark_troll_warlord_skeleton_warrior" or
-        unit_name == "npc_dota_necronomicon_warrior_1" or
-        unit_name == "npc_dota_necronomicon_warrior_2" or
-        unit_name == "npc_dota_necronomicon_warrior_3"
+    return unit_name == "npc_dota_lesser_eidolon" or unit_name == "npc_dota_eidolon" or unit_name ==
+               "npc_dota_greater_eidolon" or unit_name == "npc_dota_dire_eidolon" or unit_name ==
+               "npc_dota_furion_treant" or unit_name == "npc_dota_furion_treant_large" or unit_name ==
+               "npc_dota_invoker_forged_spirit" or unit_name == "npc_dota_broodmother_spiderling" or unit_name ==
+               "npc_dota_broodmother_spiderite" or unit_name == "npc_dota_wraith_king_skeleton_warrior" or unit_name ==
+               "npc_dota_warlock_golem_1" or unit_name == "npc_dota_warlock_golem_2" or unit_name ==
+               "npc_dota_warlock_golem_3" or unit_name == "npc_dota_warlock_golem_scepter_1" or unit_name ==
+               "npc_dota_warlock_golem_scepter_2" or unit_name == "npc_dota_warlock_golem_scepter_3" or unit_name ==
+               "npc_dota_beastmaster_boar" or unit_name == "npc_dota_beastmaster_greater_boar" or unit_name ==
+               "npc_dota_beastmaster_boar_1" or unit_name == "npc_dota_beastmaster_boar_2" or unit_name ==
+               "npc_dota_beastmaster_boar_3" or unit_name == "npc_dota_beastmaster_boar_4" or unit_name ==
+               "npc_dota_lycan_wolf1" or unit_name == "npc_dota_lycan_wolf2" or unit_name == "npc_dota_lycan_wolf3" or
+               unit_name == "npc_dota_lycan_wolf4" or unit_name == "npc_dota_neutral_kobold" or unit_name ==
+               "npc_dota_neutral_kobold_tunneler" or unit_name == "npc_dota_neutral_kobold_taskmaster" or unit_name ==
+               "npc_dota_neutral_centaur_outrunner" or unit_name == "npc_dota_neutral_fel_beast" or unit_name ==
+               "npc_dota_neutral_polar_furbolg_champion" or unit_name == "npc_dota_neutral_ogre_mauler" or unit_name ==
+               "npc_dota_neutral_giant_wolf" or unit_name == "npc_dota_neutral_alpha_wolf" or unit_name ==
+               "npc_dota_neutral_wildkin" or unit_name == "npc_dota_neutral_jungle_stalker" or unit_name ==
+               "npc_dota_neutral_elder_jungle_stalker" or unit_name == "npc_dota_neutral_prowler_acolyte" or unit_name ==
+               "npc_dota_neutral_rock_golem" or unit_name == "npc_dota_neutral_granite_golem" or unit_name ==
+               "npc_dota_neutral_small_thunder_lizard" or unit_name == "npc_dota_neutral_gnoll_assassin" or unit_name ==
+               "npc_dota_neutral_ghost" or unit_name == "npc_dota_wraith_ghost" or unit_name ==
+               "npc_dota_neutral_dark_troll" or unit_name == "npc_dota_neutral_forest_troll_berserker" or unit_name ==
+               "npc_dota_neutral_harpy_scout" or unit_name == "npc_dota_neutral_black_drake" or unit_name ==
+               "npc_dota_dark_troll_warlord_skeleton_warrior" or unit_name == "npc_dota_necronomicon_warrior_1" or
+               unit_name == "npc_dota_necronomicon_warrior_2" or unit_name == "npc_dota_necronomicon_warrior_3"
 end
 
 local remnant = {"npc_dota_stormspirit_remnant", "npc_dota_ember_spirit_remnant", "npc_dota_earth_spirit_stone"}
 
-local trap = {
-    "npc_dota_templar_assassin_psionic_trap",
-    "npc_dota_techies_remote_mine",
-    "npc_dota_techies_land_mine",
-    "npc_dota_techies_stasis_trap"
-}
+local trap = {"npc_dota_templar_assassin_psionic_trap", "npc_dota_techies_remote_mine", "npc_dota_techies_land_mine",
+              "npc_dota_techies_stasis_trap"}
 
-local independent = {
-    "npc_dota_brewmaster_earth_1",
-    "npc_dota_brewmaster_earth_2",
-    "npc_dota_brewmaster_earth_3",
-    "npc_dota_brewmaster_storm_1",
-    "npc_dota_brewmaster_storm_2",
-    "npc_dota_brewmaster_storm_3",
-    "npc_dota_brewmaster_fire_1",
-    "npc_dota_brewmaster_fire_2",
-    "npc_dota_brewmaster_fire_3"
-}
+local independent = {"npc_dota_brewmaster_earth_1", "npc_dota_brewmaster_earth_2", "npc_dota_brewmaster_earth_3",
+                     "npc_dota_brewmaster_storm_1", "npc_dota_brewmaster_storm_2", "npc_dota_brewmaster_storm_3",
+                     "npc_dota_brewmaster_fire_1", "npc_dota_brewmaster_fire_2", "npc_dota_brewmaster_fire_3"}
 
 function IsValidUnit(unit)
     return unit ~= nil and unit:IsNull() == false and unit:IsAlive()
@@ -138,7 +95,7 @@ end
 
 function IsValidTarget(target)
     return target ~= nil and target:IsNull() == false and target:CanBeSeen() and target:IsInvulnerable() == false and
-        target:IsAlive()
+               target:IsAlive()
 end
 
 function IsInRange(unit, target, range)
@@ -258,13 +215,10 @@ end
 
 -----------ATTACKING WARD LIKE UNIT
 function IsAttackingWard(unit_name)
-    return unit_name == "npc_dota_shadow_shaman_ward_1" or unit_name == "npc_dota_shadow_shaman_ward_2" or
-        unit_name == "npc_dota_shadow_shaman_ward_3" or
-        unit_name == "npc_dota_venomancer_plague_ward_1" or
-        unit_name == "npc_dota_venomancer_plague_ward_2" or
-        unit_name == "npc_dota_venomancer_plague_ward_3" or
-        unit_name == "npc_dota_venomancer_plague_ward_4" or
-        unit_name == "npc_dota_witch_doctor_death_ward"
+    return unit_name == "npc_dota_shadow_shaman_ward_1" or unit_name == "npc_dota_shadow_shaman_ward_2" or unit_name ==
+               "npc_dota_shadow_shaman_ward_3" or unit_name == "npc_dota_venomancer_plague_ward_1" or unit_name ==
+               "npc_dota_venomancer_plague_ward_2" or unit_name == "npc_dota_venomancer_plague_ward_3" or unit_name ==
+               "npc_dota_venomancer_plague_ward_4" or unit_name == "npc_dota_witch_doctor_death_ward"
 end
 
 function GetWardAttackTarget(minion)
@@ -303,31 +257,19 @@ end
 
 ----------CAN'T BE CONTROLLED UNIT
 function CantBeControlled(unit_name)
-    return unit_name == "npc_dota_zeus_cloud" or unit_name == "npc_dota_unit_tombstone1" or
-        unit_name == "npc_dota_unit_tombstone2" or
-        unit_name == "npc_dota_unit_tombstone3" or
-        unit_name == "npc_dota_unit_tombstone4" or
-        unit_name == "npc_dota_pugna_nether_ward_1" or
-        unit_name == "npc_dota_pugna_nether_ward_2" or
-        unit_name == "npc_dota_pugna_nether_ward_3" or
-        unit_name == "npc_dota_pugna_nether_ward_4" or
-        unit_name == "npc_dota_rattletrap_cog" or
-        unit_name == "npc_dota_rattletrap_rocket" or
-        unit_name == "npc_dota_broodmother_web" or
-        unit_name == "npc_dota_unit_undying_zombie" or
-        unit_name == "npc_dota_unit_undying_zombie_torso" or
-        unit_name == "npc_dota_weaver_swarm" or
-        unit_name == "npc_dota_death_prophet_torment" or
-        unit_name == "npc_dota_gyrocopter_homing_missile" or
-        unit_name == "npc_dota_plasma_field" or
-        unit_name == "npc_dota_wisp_spirit" or
-        unit_name == "npc_dota_beastmaster_axe" or
-        unit_name == "npc_dota_troll_warlord_axe" or
-        unit_name == "npc_dota_phoenix_sun" or
-        unit_name == "npc_dota_techies_minefield_sign" or
-        unit_name == "npc_dota_treant_eyes" or
-        unit_name == "npc_dota_death_prophet_exorcism_spirit" or
-        unit_name == "npc_dota_dark_willow_creature"
+    return unit_name == "npc_dota_zeus_cloud" or unit_name == "npc_dota_unit_tombstone1" or unit_name ==
+               "npc_dota_unit_tombstone2" or unit_name == "npc_dota_unit_tombstone3" or unit_name ==
+               "npc_dota_unit_tombstone4" or unit_name == "npc_dota_pugna_nether_ward_1" or unit_name ==
+               "npc_dota_pugna_nether_ward_2" or unit_name == "npc_dota_pugna_nether_ward_3" or unit_name ==
+               "npc_dota_pugna_nether_ward_4" or unit_name == "npc_dota_rattletrap_cog" or unit_name ==
+               "npc_dota_rattletrap_rocket" or unit_name == "npc_dota_broodmother_web" or unit_name ==
+               "npc_dota_unit_undying_zombie" or unit_name == "npc_dota_unit_undying_zombie_torso" or unit_name ==
+               "npc_dota_weaver_swarm" or unit_name == "npc_dota_death_prophet_torment" or unit_name ==
+               "npc_dota_gyrocopter_homing_missile" or unit_name == "npc_dota_plasma_field" or unit_name ==
+               "npc_dota_wisp_spirit" or unit_name == "npc_dota_beastmaster_axe" or unit_name ==
+               "npc_dota_troll_warlord_axe" or unit_name == "npc_dota_phoenix_sun" or unit_name ==
+               "npc_dota_techies_minefield_sign" or unit_name == "npc_dota_treant_eyes" or unit_name ==
+               "npc_dota_death_prophet_exorcism_spirit" or unit_name == "npc_dota_dark_willow_creature"
 end
 
 function CantBeControlledThink(minion)
@@ -337,23 +279,15 @@ end
 -----------MINION WITH SKILLS
 function IsMinionWithSkill(unit_name)
     return unit_name == "npc_dota_neutral_centaur_khan" or unit_name == "npc_dota_neutral_polar_furbolg_ursa_warrior" or
-        unit_name == "npc_dota_neutral_mud_golem" or
-        unit_name == "npc_dota_neutral_mud_golem_split" or
-        unit_name == "npc_dota_neutral_mud_golem_split_doom" or
-        unit_name == "npc_dota_neutral_ogre_magi" or
-        unit_name == "npc_dota_neutral_enraged_wildkin" or
-        unit_name == "npc_dota_neutral_satyr_soulstealer" or
-        unit_name == "npc_dota_neutral_satyr_hellcaller" or
-        unit_name == "npc_dota_neutral_prowler_shaman" or
-        unit_name == "npc_dota_neutral_big_thunder_lizard" or
-        unit_name == "npc_dota_neutral_dark_troll_warlord" or
-        unit_name == "npc_dota_neutral_satyr_trickster" or
-        unit_name == "npc_dota_neutral_forest_troll_high_priest" or
-        unit_name == "npc_dota_neutral_harpy_storm" or
-        unit_name == "npc_dota_neutral_black_dragon" or
-        unit_name == "npc_dota_necronomicon_archer_1" or
-        unit_name == "npc_dota_necronomicon_archer_2" or
-        unit_name == "npc_dota_necronomicon_archer_3"
+               unit_name == "npc_dota_neutral_mud_golem" or unit_name == "npc_dota_neutral_mud_golem_split" or unit_name ==
+               "npc_dota_neutral_mud_golem_split_doom" or unit_name == "npc_dota_neutral_ogre_magi" or unit_name ==
+               "npc_dota_neutral_enraged_wildkin" or unit_name == "npc_dota_neutral_satyr_soulstealer" or unit_name ==
+               "npc_dota_neutral_satyr_hellcaller" or unit_name == "npc_dota_neutral_prowler_shaman" or unit_name ==
+               "npc_dota_neutral_big_thunder_lizard" or unit_name == "npc_dota_neutral_dark_troll_warlord" or unit_name ==
+               "npc_dota_neutral_satyr_trickster" or unit_name == "npc_dota_neutral_forest_troll_high_priest" or
+               unit_name == "npc_dota_neutral_harpy_storm" or unit_name == "npc_dota_neutral_black_dragon" or unit_name ==
+               "npc_dota_necronomicon_archer_1" or unit_name == "npc_dota_necronomicon_archer_2" or unit_name ==
+               "npc_dota_necronomicon_archer_3"
 end
 
 function InitiateAbility(minion)
@@ -439,10 +373,8 @@ function CastThink(minion, ability)
             local allies = minion:GetNearbyHeroes(castRange + 200, false, BOT_MODE_NONE)
             if #allies > 0 then
                 for i = 1, #allies do
-                    if
-                        IsValidTarget(allies[i]) and CanCastOnTarget(allies[i], ability) and
-                            allies[i]:HasModifier("ogre_magi_frost_armor") == false
-                     then
+                    if IsValidTarget(allies[i]) and CanCastOnTarget(allies[i], ability) and
+                        allies[i]:HasModifier("ogre_magi_frost_armor") == false then
                         minion:Action_UseAbilityOnEntity(ability, allies[i])
                         return
                     end

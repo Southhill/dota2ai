@@ -14,6 +14,7 @@ print("============================================")
 print("[Agent2026] 已加载!")
 print("[Agent2026] 当前脚本路径: " .. GetScriptDirectory())
 print("============================================")
+print("============================================")
 
 -- Dota2 所有英雄的内部名称列表（英雄池）
 local hero_pool = {"npc_dota_hero_abaddon", "npc_dota_hero_abyssal_underlord", "npc_dota_hero_alchemist",

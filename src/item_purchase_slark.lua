@@ -2,7 +2,7 @@
 --	Ranked Matchmaking AI v1.6b
 --	Author: adamqqq		Email:adamqqq@163.com
 ----------------------------------------------------------------------------
-local ItemPurchaseSystem = dofile(GetScriptDirectory() .. "/util/ItemPurchaseSystem")
+local ItemPurchaseSystem = require(GetScriptDirectory() .. "/util/ItemPurchaseSystem")
 
 local ItemsToBuy =
 {
@@ -18,7 +18,7 @@ local ItemsToBuy =
 	"item_basher",
 	"item_black_king_bar", --bkb
 	"item_diffusal_blade", --散失
-	"item_abyssal_blade", --大晕锤
+	"item_abyssal_blade", --大晕�?
 	"item_butterfly",
 }
 

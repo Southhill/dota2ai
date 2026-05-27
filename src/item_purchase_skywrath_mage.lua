@@ -2,7 +2,7 @@
 --	Ranked Matchmaking AI v1.6b
 --	Author: adamqqq		Email:adamqqq@163.com
 ----------------------------------------------------------------------------
-local ItemPurchaseSystem = dofile(GetScriptDirectory() .. "/util/ItemPurchaseSystem")
+local ItemPurchaseSystem = require(GetScriptDirectory() .. "/util/ItemPurchaseSystem")
 
 local ItemsToBuy =
 {
@@ -16,7 +16,7 @@ local ItemsToBuy =
     -- "item_witch_blade",
     "item_kaya",
 	"item_aether_lens",
-	"item_rod_of_atos", --阿托斯7.20
+	"item_rod_of_atos", --阿托�?.20
 	"item_force_staff",
 	"item_ultimate_scepter", --蓝杖
 	"item_sheepstick", --羊刀
