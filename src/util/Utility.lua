@@ -441,7 +441,7 @@ function utilityModule.DebugTable(tb)
     npcBot:ActionImmediate_Chat(msg, true)
 end
 
--- 反转键值对�?
+-- 反转键值对
 function utilityModule.ReverseTable(tb)
     local g = {}
     for k, v in pairs(tb) do
@@ -452,7 +452,7 @@ function utilityModule.ReverseTable(tb)
     return g
 end
 
--- 调试用：打印技能名称列�?
+-- 调试用：打印技能名称列
 function utilityModule.PrintAbilityName(abilities)
     local msg = "{ "
     for k, v in ipairs(abilities) do

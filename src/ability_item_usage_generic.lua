@@ -18,17 +18,25 @@ local AbilityExtensions = require(GetScriptDirectory() .. "/util/AbilityAbstract
 local towerId = {TOWER_TOP_1, TOWER_TOP_2, TOWER_TOP_3, TOWER_MID_1, TOWER_MID_2, TOWER_MID_3, TOWER_BOT_1, TOWER_BOT_2,
                  TOWER_BOT_3, TOWER_BASE_1, TOWER_BASE_2}
 
+-- 使用独立表存储防御塔血量历史，避免在塔实体上设置自定义属性
+local towerHealthHistory = {}
+
 -- 每 0.5 秒记录一次防御塔血量变化，用于判断是否需要使用防御符文
 local RefreshBuildingHealth = AbilityExtensions:SingleForTeam(
     AbilityExtensions:EveryManySeconds(0.5, function()
         for _, id in ipairs(towerId) do
             local tower = GetTower(GetTeam(), id)
             if tower ~= nil and tower:GetHealth() > 0 then
-                tower.health0SecondsAgo = tower:GetHealth()
+                local towerKey = tostring(GetTeam()) .. "_" .. tostring(id)
+                if towerHealthHistory[towerKey] == nil then
+                    towerHealthHistory[towerKey] = {}
+                end
+                local history = towerHealthHistory[towerKey]
+                history.health0SecondsAgo = tower:GetHealth()
                 if tower:IsAlive() then
                     for _, i in ipairs({0.5, 1, 1.5, 2}) do
-                        tower["health" .. tostring(i) .. "SecondsAgo"] =
-                            tower["health" .. tostring(i - 0.5) .. "SecondsAgo"]
+                        history["health" .. tostring(i) .. "SecondsAgo"] =
+                            history["health" .. tostring(i - 0.5) .. "SecondsAgo"]
                     end
                 end
             end
@@ -47,8 +55,11 @@ local function ConsiderGlyph()
         local tower = GetTower(GetTeam(), BuildingID)
         if tower ~= nil and tower:GetHealth() > 0 then
             local tableNearbyEnemyHeroes = utility.GetEnemiesNearLocation(tower:GetLocation(), 700)
-            if tableNearbyEnemyHeroes ~= nil and #tableNearbyEnemyHeroes >= 1 and tower["health1SecondsAgo"] and
-                tower:GetHealth() - tower["health1SecondsAgo"] >= 7.5 * DotaTime() / 60 and DotaTime() >= 12 * 60 then
+            local towerKey = tostring(GetTeam()) .. "_" .. tostring(BuildingID)
+            local history = towerHealthHistory[towerKey]
+            if tableNearbyEnemyHeroes ~= nil and #tableNearbyEnemyHeroes >= 1 and history ~= nil and
+                history["health1SecondsAgo"] and tower:GetHealth() - history["health1SecondsAgo"] >= 7.5 * DotaTime() /
+                60 and DotaTime() >= 12 * 60 then
                 GetBot():ActionImmediate_Glyph() -- 塔血量骤降，开符文
             end
             if tower:GetHealth() >= 200 and tower:GetHealth() <= 1000 and #tableNearbyEnemyHeroes >= 2 then
@@ -114,6 +125,13 @@ function ability_item_usage_generic.CourierUsageThink()
     if not GetBot():IsAlive() then
         return
     end
+
+    -- 游戏正式开始后才执行次要操作（防御符文/卡住检测/TP等）
+    -- 英雄选择/策略/预加载阶段跳过，避免 API 不可用导致 error in error handling
+    if GetGameState() ~= GAME_STATE_GAME_IN_PROGRESS then
+        return
+    end
+
     AbilityExtensions:TickFromDota()
     SecondaryOperation()
 end
@@ -174,8 +192,6 @@ end
 -- 技能加点主函数（供各英雄调用）
 function ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
     ExecuteAbilityLevelUp(AbilityToLevelUp, TalentTree)
-    local npcBot = GetBot()
-    npcBot:ActionImmediate_Chat(npcBot:GetUnitName() .. "我变的更强了", false)
     return
     --
     -- local npcBot = GetBot()
@@ -305,8 +321,8 @@ function ability_item_usage_generic.InitAbility(Abilities, AbilitiesReal, Talent
 
     for i = 0, 25, 1 do
         local ability = npcBot:GetAbilityInSlot(i)
-        print("技能名称:" .. ability:GetName())
         if (ability ~= nil) then
+            print("技能名称:" .. npcBot:GetUnitName() .. "-" .. ability:GetName())
             if (ability:GetName() ~= "generic_hidden") then
                 if (ability:IsTalent() == true) then
                     table.insert(Talents, ability:GetName()) -- 存入天赋

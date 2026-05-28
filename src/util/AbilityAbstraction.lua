@@ -821,7 +821,9 @@ end
 
 M.GetUsedAbilityInfo = function(self, ability, abilityInfoTable, considerTarget)
     abilityInfoTable.lastUsedTime = DotaTime()
-    abilityInfoTable.lastUsedCharge = ability:GetCurrentCharges()
+    if ability:IsItem() then
+        abilityInfoTable.lastUsedCharge = ability:GetCurrentCharges()
+    end
     abilityInfoTable.lastUsedTarget = considerTarget
     abilityInfoTable.lastUsedRemainingCooldown = ability:GetCooldownTimeRemaining()
 end
@@ -831,13 +833,22 @@ M.AddCooldownToChargeAbility = function(self, oldConsider, ability, abilityInfoT
         if abilityInfoTable.lastUsedTime == nil then
             abilityInfoTable.lastUsedTime = DotaTime()
         end
-        if not (ability:GetCurrentCharges() > 0 and ability:IsFullyCastable()) then
-            return 0
-        end
-        if DotaTime() <= abilityInfoTable.lastUsedTime + additionalCooldown and abilityInfoTable.lastUsedCharge >=
-            ability:GetCurrentCharges() and abilityInfoTable.lastUsedRemainingCooldown <=
-            ability:GetCooldownTimeRemaining() then
-            return 0
+        if ability:IsItem() then
+            if not (ability:GetCurrentCharges() > 0 and ability:IsFullyCastable()) then
+                return 0
+            end
+            if DotaTime() <= abilityInfoTable.lastUsedTime + additionalCooldown and abilityInfoTable.lastUsedCharge >=
+                ability:GetCurrentCharges() and abilityInfoTable.lastUsedRemainingCooldown <=
+                ability:GetCooldownTimeRemaining() then
+                return 0
+            end
+        else
+            if not ability:IsFullyCastable() then
+                return 0
+            end
+            if DotaTime() <= abilityInfoTable.lastUsedTime + additionalCooldown then
+                return 0
+            end
         end
         return oldConsider()
     end

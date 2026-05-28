@@ -3,6 +3,10 @@
         "undefined-global"
     ],
     "chat.tools.terminal.autoApprove": {
-        ".\\scripts\\deploy_agent2026.ps1": true
+        ".\\scripts\\deploy_agent2026.ps1": true,
+        "/^powershell -ExecutionPolicy Bypass -File \"d:\\\\Programming\\\\dota2ai\\\\scripts\\\\deploy_agent2026\\.ps1\"$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
     }
 }

@@ -42,3 +42,6 @@ luac.out
 LICENSE
 .DS_Store
 .idea
+
+# folder
+logs/

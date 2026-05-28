@@ -490,6 +490,7 @@ end
 
 local hasInvisibleEnemy = false
 local BuySupportItem_Timer = DotaTime()
+local BuySupportPurchaseCooldown = 0
 
 function M.BuySupportItem()
     local npcBot = GetBot()
@@ -498,6 +499,11 @@ function M.BuySupportItem()
     if (DotaTime() - BuySupportItem_Timer >= 10) then
         BuySupportItem_Timer = DotaTime()
         hasInvisibleEnemy = M.CheckInvisibleEnemy()
+    end
+
+    -- 购买冷却：防止在物品缺货时每帧重复尝试购买
+    if DotaTime() < BuySupportPurchaseCooldown then
+        return
     end
 
     if (M.GetItemSlotsCount() < 7) then
@@ -519,8 +525,10 @@ function M.BuySupportItem()
             -- local item_ward_sentry = M.GetItemIncludeBackpack( "item_ward_sentry" )
             if (item_gem == nil and M.HaveGem() == false) then
                 if (item_dust == nil and item_ward_sentry == nil and npcBot:GetGold() >= 2 * GetItemCost("item_dust") and
-                    GetItemStockCount("item_gem") >= 1) then
+                    GetItemStockCount("item_dust") >= 1) then
                     npcBot:ActionImmediate_PurchaseItem("item_dust")
+                    BuySupportPurchaseCooldown = DotaTime() + 1.0
+                    return
                 end
 
                 if (DotaTime() >= 25 * 60 and npcBot:GetGold() >= GetItemCost("item_gem") and
@@ -528,9 +536,13 @@ function M.BuySupportItem()
                     if AbilityExtensions:GetEmptyItemSlots(npcBot) >= 1 and
                         AbilityExtensions:GetEmptyBackpackSlots(npcBot) == 0 then
                         npcBot:ActionImmediate_PurchaseItem("item_gem")
+                        BuySupportPurchaseCooldown = DotaTime() + 1.0
+                        return
                     elseif AbilityExtensions:GetEmptyBackpackSlots(npcBot) >= 1 then
                         if AbilityExtensions:SwapCheapestItemToBackpack(npcBot) then
                             npcBot:ActionImmediate_PurchaseItem("item_gem")
+                            BuySupportPurchaseCooldown = DotaTime() + 1.0
+                            return
                         end
                     else
                     end
@@ -545,17 +557,22 @@ function M.BuySupportItem()
         if (DotaTime() >= 40 * 60 and npcBot:GetGold() >= GetItemCost("item_gem") and GetItemStockCount("item_gem") >= 1 and
             item_gem == nil and M.HaveGem() == false) then
             npcBot:ActionImmediate_PurchaseItem("item_gem")
+            BuySupportPurchaseCooldown = DotaTime() + 1.0
+            return
         end
         -- item_ward_observer==nil and
-        if (item_ward_observer == nil and item_ward_sentry == nil and
-            (GetItemStockCount("item_ward_observer") > 1 or DotaTime() < 0) and npcBot:GetGold() >=
-            GetItemCost("item_ward_observer")) then
+        if (item_ward_observer == nil and item_ward_sentry == nil and GetItemStockCount("item_ward_observer") >= 1 and
+            npcBot:GetGold() >= GetItemCost("item_ward_observer")) then
             npcBot:ActionImmediate_PurchaseItem("item_ward_observer")
+            BuySupportPurchaseCooldown = DotaTime() + 1.0
+            return
         end
 
         if (item_smoke == nil and GetItemStockCount("item_smoke_of_deceit") >= 1 and npcBot:GetGold() >=
             GetItemCost("item_smoke_of_deceit")) then
             npcBot:ActionImmediate_PurchaseItem("item_smoke_of_deceit")
+            BuySupportPurchaseCooldown = DotaTime() + 1.0
+            return
         end
     end
 end
