@@ -2,7 +2,7 @@
   <a href="./README_CN.md">中文</a> | <a href="./README.md">English</a>
 </p>
 
-<h1 align="center">🎮 Team Rhythm AI — Dota2 Bot Script</h1>
+<h1 align="center">🎮 Agent2026 — Dota2 Bot Script</h1>
 
 <p align="center">
   <strong>A powerful Dota2 bot script based on Valve's default AI, significantly improved with smarter behaviors and broader hero coverage.</strong>
@@ -19,7 +19,7 @@
 
 ## 📖 Introduction
 
-**Team Rhythm AI (团队节奏 AI)** is a comprehensive Dota2 bot scripting project that builds upon Valve's default AI to provide a much smarter practice environment. It features:
+**Agent2026** is a comprehensive Dota2 bot scripting project that builds upon Valve's default AI to provide a much smarter practice environment. It features:
 
 - **100+ fully implemented heroes** — each with custom ability usage, item builds, and skill builds
 - **Smarter team coordination** — ganking, warding, pushing, and laning systems
@@ -34,17 +34,17 @@
 
 ## ✨ Features
 
-| Feature | Description |
-|---------|-------------|
-| **🤖 Hero Scripts** | 100+ heroes with custom ability usage (`ability_item_usage_*.lua`) and item purchase logic (`item_purchase_*.lua`) |
-| **🛠️ Utility Systems** | Courier system, ward placement, item purchase, push/farm/retreat modes |
-| **🎯 Team Gank System** | AI buys and uses Smoke of Deceit to coordinate ganks |
-| **🏃 Lane Assignment** | Intelligent lane selection respecting player's preferred lane |
-| **🔮 Rune System** | AI identifies rune types, picks optimal runes, and avoids danger |
-| **🏰 Push System** | Proper positioning and timing for tower pushes |
-| **🛡️ Defense System** | Glyph usage, shrine activation, buyback decisions |
-| **📡 Chat Commands** | Type hero names or lane assignments in chat to control bots |
-| **🏆 Captain Mode** | Full support with role-based pick order (offlaner → support → mid → support → carry) |
+| Feature                | Description                                                                                                        |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **🤖 Hero Scripts**     | 100+ heroes with custom ability usage (`ability_item_usage_*.lua`) and item purchase logic (`item_purchase_*.lua`) |
+| **🛠️ Utility Systems**  | Courier system, ward placement, item purchase, push/farm/retreat modes                                             |
+| **🎯 Team Gank System** | AI buys and uses Smoke of Deceit to coordinate ganks                                                               |
+| **🏃 Lane Assignment**  | Intelligent lane selection respecting player's preferred lane                                                      |
+| **🔮 Rune System**      | AI identifies rune types, picks optimal runes, and avoids danger                                                   |
+| **🏰 Push System**      | Proper positioning and timing for tower pushes                                                                     |
+| **🛡️ Defense System**   | Glyph usage, shrine activation, buyback decisions                                                                  |
+| **📡 Chat Commands**    | Type hero names or lane assignments in chat to control bots                                                        |
+| **🏆 Captain Mode**     | Full support with role-based pick order (offlaner → support → mid → support → carry)                               |
 
 ---
 
@@ -140,14 +140,14 @@ This copies all files from `src/` to your Dota2 `vscripts/bots/` folder automati
 
 The project is currently on the **`agent`** branch, undergoing structural improvements in preparation for a Dota2 7.41c upgrade.
 
-| Status | Area | Description |
-|--------|------|-------------|
-| ✅ | **Hero Scripts** | 100+ heroes with ability & item logic |
-| ✅ | **Game Modes** | Farming, laning, pushing, retreat, rune, warding |
-| ✅ | **Utility Systems** | Courier, items, wards, chat commands |
- | ✅ | **Deployment** | PowerShell + Batch deploy scripts |
-| 🏗️ | **Docs** | Architecture, beginner guide, dev guide, upgrade plan |
-| 🎯 | **Upgrade Plan** | Detailed guide for 7.29 → 7.41c migration (see [UPGRADE_GUIDE.md](./docs/UPGRADE_GUIDE.md)) |
+| Status | Area                | Description                                                                                 |
+| ------ | ------------------- | ------------------------------------------------------------------------------------------- |
+| ✅      | **Hero Scripts**    | 100+ heroes with ability & item logic                                                       |
+| ✅      | **Game Modes**      | Farming, laning, pushing, retreat, rune, warding                                            |
+| ✅      | **Utility Systems** | Courier, items, wards, chat commands                                                        |
+| ✅      | **Deployment**      | PowerShell + Batch deploy scripts                                                           |
+| 🏗️      | **Docs**            | Architecture, beginner guide, dev guide, upgrade plan                                       |
+| 🎯      | **Upgrade Plan**    | Detailed guide for 7.29 → 7.41c migration (see [UPGRADE_GUIDE.md](./docs/UPGRADE_GUIDE.md)) |
 
 ---
 

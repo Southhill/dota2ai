@@ -1,4 +1,4 @@
-# Team Rhythm AI — 架构设计文档
+# Agent2026 — 架构设计文档
 
 ## 一、项目概述
 
@@ -387,12 +387,12 @@ hero_selection.lua
 
 ## 七、已知问题与技术债务
 
-1. **`Tools.lua` 中的 `pairs` bug** — `GenEnumArray` 中 `pairs` 缺少参数 `(t)`，导致隐身英雄列表无法正确生成，影响反隐物品购买判断
+1. ~~**`Tools.lua` 中的 `pairs` bug** — `GenEnumArray` 中 `pairs` 缺少参数 `(t)`，导致隐身英雄列表无法正确生成，影响反隐物品购买判断~~ ✅ **已修复** — `pairs(t)` 参数已补全，`src/util/Tools.lua` 中函数已正常工作
 2. **神符模式已禁用** — `mode_rune_generic.lua` 的 `GetDesire()` 直接返回 0，所有神符相关逻辑被注释
 3. **臂章已移除** — v1.7.5 因性能问题移除了臂章使用逻辑
 4. **团队游走系统暂时关闭** — v1.6e 中注释了开雾抓人系统
 5. **部分英雄被移出池子** — 齐天大圣、小小等因 bug 被暂时禁用
-6. **`Trim` 函数缺少 `end`** — `AbilityAbstraction.lua` 中 `Trim` 函数的 else 分支缺少一个 `end`，可能导致解析错误
+6. ~~**`Trim` 函数缺少 `end`** — `AbilityAbstraction.lua` 中 `Trim` 函数的 else 分支缺少一个 `end`，可能导致解析错误~~ ✅ **已修复** — `src/util/AbilityAbstraction.lua` 中所有 `end` 已补全，函数结构正确
 7. **死亡的代码存在** — 多处注释掉的旧代码（神泉系统、信使购买等）
 8. **文件命名不一致** — 部分英雄使用原名（`nevermore`、`rattletrap`），部分使用新名
 
