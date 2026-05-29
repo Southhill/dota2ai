@@ -4,7 +4,7 @@
 --	开发测试脚本 —— 通用出装模板
 ----------------------------------------------------------------------------
 -- 导入通用函数库
-local ItemPurchaseSystem = dofile(GetScriptDirectory() .. "/util/ItemPurchaseSystem")
+local ItemPurchaseSystem = dofile(GetScriptDirectory() .. "/../src/base/ItemPurchaseSystem")
 
 local ItemsToBuy =
 {
@@ -15,35 +15,35 @@ local ItemsToBuy =
 	"item_branches",
 	"item_boots",
 	"item_circlet",
-	"item_magic_stick",				--大魔棒
-	"item_energy_booster",			--秘法鞋
+	"item_magic_stick", --大魔棒
+	"item_energy_booster", --秘法鞋
 
 	"item_mantle",
 	"item_circlet",
-	"item_recipe_null_talisman",	--无用挂件
+	"item_recipe_null_talisman", --无用挂件
 	"item_mantle",
 	"item_circlet",
-	"item_recipe_null_talisman",	--无用挂件
+	"item_recipe_null_talisman", --无用挂件
 	"item_helm_of_iron_will",
-	"item_recipe_veil_of_discord",	--纷争
+	"item_recipe_veil_of_discord", --纷争
 
 	"item_ring_of_regen",
 	"item_recipe_headdress",
 	"item_branches",
 	"item_chainmail",
-	"item_recipe_buckler" ,
+	"item_recipe_buckler",
 	"item_branches",
-    "item_recipe_mekansm",			--梅肯
+	"item_recipe_mekansm", --梅肯
 	"item_ring_of_regen",
 	"item_staff_of_wizardry",
-	"item_recipe_force_staff",		--推推
+	"item_recipe_force_staff",   --推推
 
-	"item_recipe_guardian_greaves",	--卫士胫甲
+	"item_recipe_guardian_greaves", --卫士胫甲
 
 	"item_wind_lace",
 	"item_void_stone",
 	"item_staff_of_wizardry",
-	"item_recipe_cyclone",			--风杖
+	"item_recipe_cyclone", --风杖
 
 }
 

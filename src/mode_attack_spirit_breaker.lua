@@ -3,7 +3,7 @@
 --	Author: adamqqq		Email:adamqqq@163.com
 ----------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------
-local utility = require(GetScriptDirectory() .. "/util/Utility")
+local utility = require(GetScriptDirectory() .. "/base/Utility")
 
 function Think()
 	local npcBot = GetBot()

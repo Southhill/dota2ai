@@ -75,7 +75,6 @@ dota2ai/
 │   │   └── text.lua
 │   └── util/                     # Utility modules
 │       ├── AbilityAbstraction.lua  # Functional programming helpers
-│       ├── AbilityHelper.lua
 │       ├── CourierSystem.lua       # Courier management
 │       ├── CourierUtility.lua
 │       ├── ItemPurchaseSystem.lua  # Smart item purchasing

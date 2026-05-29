@@ -1,4 +1,4 @@
-local role = require(GetScriptDirectory() .. "/util/RoleUtility")
+local role = require(GetScriptDirectory() .. "/base/RoleUtility")
 
 local bot = GetBot()
 local minute = 0

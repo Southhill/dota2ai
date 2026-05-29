@@ -3,7 +3,7 @@
 --	Author: adamqqq		Email:adamqqq@163.com
 --  露娜物品购买
 ----------------------------------------------------------------------------
-local ItemPurchaseSystem = require(GetScriptDirectory() .. "/util/ItemPurchaseSystem")
+local ItemPurchaseSystem = require(GetScriptDirectory() .. "/base/ItemPurchaseSystem")
 
 local ItemsToBuy =
 {

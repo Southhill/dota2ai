@@ -1,4 +1,4 @@
-local minionUtility = dofile( GetScriptDirectory().."/util/NewMinionUtil" )
+local minionUtility = dofile( GetScriptDirectory().."/base/NewMinionUtil" )
 
 function MinionThink(minion)
     if minion:IsIllusion() then

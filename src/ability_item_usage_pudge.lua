@@ -3,9 +3,9 @@
 --	Author: adamqqq		Email:adamqqq@163.com
 ----------------------------------------------------------------------------
 -- v1.7 template
-local utility = require(GetScriptDirectory() .. "/util/Utility")
+local utility = require(GetScriptDirectory() .. "/base/Utility")
 require(GetScriptDirectory() .. "/ability_item_usage_generic")
-local AbilityExtensions = require(GetScriptDirectory() .. "/util/AbilityAbstraction")
+local AbilityExtensions = require(GetScriptDirectory() .. "/base/AbilityAbstraction")
 
 local debugmode = false
 local npcBot = GetBot()

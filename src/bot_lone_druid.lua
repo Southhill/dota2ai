@@ -1,4 +1,4 @@
---local minion = dofile( GetScriptDirectory().."//util/util/MinionUtility" )
+--local minion = dofile( GetScriptDirectory().."//util/base/MinionUtility" )
 local npcBot = GetBot()
 local castRTDesire = 0
 local castSRDesire = 0

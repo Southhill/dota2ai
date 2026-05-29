@@ -3,7 +3,7 @@
 --	Author: adamqqq		Email:adamqqq@163.com
 --	敌法�?(Anti-Mage) 出装方案
 ----------------------------------------------------------------------------
-local ItemPurchaseSystem = require(GetScriptDirectory() .. "/util/ItemPurchaseSystem")
+local ItemPurchaseSystem = require(GetScriptDirectory() .. "/base/ItemPurchaseSystem")
 
 -- 出装顺序列表（按优先级从高到低）
 -- 出门�?�?补刀�?�?天鹰�?�?假腿 �?腐蚀之球 �?狂战�?�?分身�?�?大晕�?�?BKB �?蝴蝶 �?A�?�?银月

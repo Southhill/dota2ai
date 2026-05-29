@@ -9,9 +9,9 @@ if
 	return
 end
 
-local utility = require(GetScriptDirectory() .. "/util/Utility")
-local wardUtils = require(GetScriptDirectory() .. "/util/WardUtility")
-local role = require(GetScriptDirectory() .. "/util/RoleUtility")
+local utility = require(GetScriptDirectory() .. "/base/Utility")
+local wardUtils = require(GetScriptDirectory() .. "/base/WardUtility")
+local role = require(GetScriptDirectory() .. "/base/RoleUtility")
 local bot = GetBot()
 local AvailableSpots = {}
 local nWardCastRange = 500

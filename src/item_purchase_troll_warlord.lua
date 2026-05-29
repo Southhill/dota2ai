@@ -3,7 +3,7 @@
 --	Author: adamqqq		Email:adamqqq@163.com
 --  Contributor: zmcmcc Email:mengzhang@utexas.edu
 ----------------------------------------------------------------------------
-local ItemPurchaseSystem = require(GetScriptDirectory() .. "/util/ItemPurchaseSystem")
+local ItemPurchaseSystem = require(GetScriptDirectory() .. "/base/ItemPurchaseSystem")
 
 local ItemsToBuy =
 {

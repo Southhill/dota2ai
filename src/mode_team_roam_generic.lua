@@ -2,9 +2,9 @@
 --	Ranked Matchmaking AI v1.0a
 --	Author: adamqqq		Email:adamqqq@163.com
 ----------------------------------------------------------------------------
-local utility = require(GetScriptDirectory() .. "/util/Utility")
-local role = require(GetScriptDirectory() .. "/util/RoleUtility")
-local AbilityExtensions = require(GetScriptDirectory() .. "/util/AbilityAbstraction")
+local utility = require(GetScriptDirectory() .. "/base/Utility")
+local role = require(GetScriptDirectory() .. "/base/RoleUtility")
+local AbilityExtensions = require(GetScriptDirectory() .. "/base/AbilityAbstraction")
 local HeroMode
 
 function OnStart()

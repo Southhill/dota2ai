@@ -5,10 +5,10 @@
 --------------------------------------
 -- General Initialization
 --------------------------------------
-local utility = require(GetScriptDirectory() .. "/util/Utility")
+local utility = require(GetScriptDirectory() .. "/base/Utility")
 require(GetScriptDirectory() .. "/ability_item_usage_generic")
-local AbilityExtensions = require(GetScriptDirectory() .. "/util/AbilityAbstraction")
-local role = require(GetScriptDirectory() .. "/util/RoleUtility")
+local AbilityExtensions = require(GetScriptDirectory() .. "/base/AbilityAbstraction")
+local role = require(GetScriptDirectory() .. "/base/RoleUtility")
 
 local debugmode = false
 local npcBot = GetBot()

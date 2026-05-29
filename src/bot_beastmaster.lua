@@ -1,5 +1,5 @@
-local minionutils = dofile(GetScriptDirectory() .. "/util/NewMinionUtil")
-local AbilityExtensions = require(GetScriptDirectory() .. "/util/AbilityAbstraction")
+local minionutils = dofile(GetScriptDirectory() .. "/base/NewMinionUtil")
+local AbilityExtensions = require(GetScriptDirectory() .. "/base/AbilityAbstraction")
 
 local function DiveBombCanCast(target)
 	return target ~= nil and AbilityExtensions:NormalCanCast(target, false) and

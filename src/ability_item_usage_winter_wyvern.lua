@@ -5,10 +5,10 @@
 --------------------------------------
 -- General Initialization 冰龙
 --------------------------------------
-local utility = require(GetScriptDirectory() .. "/util/Utility")
+local utility = require(GetScriptDirectory() .. "/base/Utility")
 local config = require(GetScriptDirectory() .. "/const/config")
 require(GetScriptDirectory() .. "/ability_item_usage_generic")
-local AbilityExtensions = require(GetScriptDirectory() .. "/util/AbilityAbstraction")
+local AbilityExtensions = require(GetScriptDirectory() .. "/base/AbilityAbstraction")
 
 local debugmode = config.debugMode
 local npcBot = GetBot()

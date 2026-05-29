@@ -1,4 +1,4 @@
-local AbilityExtensions = require(GetScriptDirectory().."/util/AbilityAbstraction")
+local AbilityExtensions = require(GetScriptDirectory().."/base/AbilityAbstraction")
 
 local trapTable = GetBot().trapTable
 local function GetCastTime(trap)

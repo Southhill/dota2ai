@@ -2,8 +2,8 @@
 --	Ranked Matchmaking AI v1.6b
 --	Author: adamqqq		Email:adamqqq@163.com
 ----------------------------------------------------------------------------
-local ItemPurchaseSystem = require(GetScriptDirectory() .. "/util/ItemPurchaseSystem")
-local AbilityExtensions = require(GetScriptDirectory().."/util/AbilityAbstraction")
+local ItemPurchaseSystem = require(GetScriptDirectory() .. "/base/ItemPurchaseSystem")
+local AbilityExtensions = require(GetScriptDirectory().."/base/AbilityAbstraction")
 
 local enemyTeamMemberNames = AbilityExtensions:GetEnemyTeamMemberNames(GetBot())
 

@@ -1,4 +1,4 @@
-local AbilityExtensions = require(GetScriptDirectory() .. "/util/AbilityAbstraction")
+local AbilityExtensions = require(GetScriptDirectory() .. "/base/AbilityAbstraction")
 
 function GetDesire()
     local npc = GetBot()
@@ -6,7 +6,7 @@ function GetDesire()
     local healthPercent = AbilityExtensions:GetHealthPercent(npc)
     local manaPercent = AbilityExtensions:GetManaPercent(npc)
 
-    -- 健康时不想撤退，避免泉水摇摆
+    -- 健康时不想撤退，避免泉水摇�?
     if healthPercent >= 0.5 and manaPercent >= 0.5 and npc:DistanceFromFountain() <= 2000 then
         return 0.0
     end

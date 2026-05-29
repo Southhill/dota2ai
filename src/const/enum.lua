@@ -1,6 +1,5 @@
 ----------------------------------------------------------------------------
---	Ranked Matchmaking AI
---	枚举常量模块 —— 定义游戏中常用的枚举数据
+--	枚举常量模块 —定义游戏中常用的枚举数据
 ----------------------------------------------------------------------------
 local Enum = {}
 
@@ -13,38 +12,38 @@ local Tools = require(GetScriptDirectory() .. "/util/Tools")
 -- 拥有隐身能力的英雄列表
 Enum.invisHeroes =
     Tools.GenEnumArray(
-    {
-        "npc_dota_hero_templar_assassin",
-        "npc_dota_hero_clinkz",
-        "npc_dota_hero_mirana",
-        "npc_dota_hero_riki",
-        "npc_dota_hero_nyx_assassin",
-        "npc_dota_hero_bounty_hunter",
-        "npc_dota_hero_invoker",
-        "npc_dota_hero_sand_king",
-        "npc_dota_hero_treant",
-        "npc_dota_hero_weaver"
-    }
-)
+        {
+            "npc_dota_hero_templar_assassin",
+            "npc_dota_hero_clinkz",
+            "npc_dota_hero_mirana",
+            "npc_dota_hero_riki",
+            "npc_dota_hero_nyx_assassin",
+            "npc_dota_hero_bounty_hunter",
+            "npc_dota_hero_invoker",
+            "npc_dota_hero_sand_king",
+            "npc_dota_hero_treant",
+            "npc_dota_hero_weaver"
+        }
+    )
 
 -- 分身系英雄（拥有制造幻象的技能）
 Enum.illusionHeroes =
     Tools.GenEnumArray(
-    {
-        "npc_dota_hero_antimage",         -- 敌法师（大晕锤/分身斧常出）
-        "npc_dota_hero_chaos_knight",     -- 混沌骑士
-        "npc_dota_hero_crystal_maiden",   -- 水晶室女（分身符）
-        "npc_dota_hero_naga_siren",       -- 娜迦海妖
-        "npc_dota_hero_phantom_lancer",   -- 幻影长矛手
-        "npc_dota_hero_spectre",          -- 幽鬼
-        "npc_dota_hero_terrorblade",      -- 恐怖利刃
-        "npc_dota_hero_troll_warlord"     -- 巨魔战将（战斗专注）
-    }
-)
+        {
+            "npc_dota_hero_antimage",       -- 敌法师
+            "npc_dota_hero_chaos_knight",   -- 混沌骑士
+            "npc_dota_hero_crystal_maiden", -- 水晶室女
+            "npc_dota_hero_naga_siren",     -- 娜迦海妖
+            "npc_dota_hero_phantom_lancer", -- 幻影长矛手
+            "npc_dota_hero_spectre",        -- 幽鬼
+            "npc_dota_hero_terrorblade",    -- 恐怖利刃
+            "npc_dota_hero_troll_warlord"   -- 巨魔战将
+        }
+    )
 
 ----------------------------------------------------------------------------
 -- Modifier 名称常量
--- 集中管理所有 modifier 字符串，便于版本升级时统一更新
+-- 集中管理modifier 字符串，便于版本升级时统一更新
 ----------------------------------------------------------------------------
 
 -- 法术格挡相关 modifier

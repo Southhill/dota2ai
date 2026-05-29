@@ -1,17 +1,17 @@
 ----------------------------------------------------------------------------
 --	Ranked Matchmaking AI
 --	Author: adamqqq		Email:adamqqq@163.com
---	通用打钱模式 —— 控制 Bot 的打钱行为（刷野/清线）
+--	通用打钱模式 —�?控制 Bot 的打钱行为（刷野/清线�?
 ----------------------------------------------------------------------------
-local campUtils = require(GetScriptDirectory() ..  "/util/CampUtility")
+local campUtils = require(GetScriptDirectory() ..  "/base/CampUtility")
 local bot = GetBot()
-local minute = 0;            -- 当前游戏分钟数
+local minute = 0;            -- 当前游戏分钟�?
 local sec = 0;               -- 当前游戏秒数
-local preferedCamp = nil;    -- 偏好的野怪营地
-local AvailableCamp = {};    -- 可用的野怪营地列表
+local preferedCamp = nil;    -- 偏好的野怪营�?
+local AvailableCamp = {};    -- 可用的野怪营地列�?
 local LaneCreeps = {};       -- 线上小兵信息
-local numCamp = 18;          -- 野怪营地数量上限
-local farmState = 0;         -- 打钱状态
+local numCamp = 18;          -- 野怪营地数量上�?
+local farmState = 0;         -- 打钱状�?
 local teamPlayers = nil;
 local lanes = {LANE_TOP, LANE_MID, LANE_BOT};  -- 三条分路
 local cause = "";
@@ -24,7 +24,7 @@ local tPing = 0;
 local tChat = 0;
 local testTime = 0;
 
--- 获取打钱模式的欲望值
+-- 获取打钱模式的欲望�?
 function GetDesire()
 
 	-- 虚空假面（时间结界）特殊处理
@@ -52,7 +52,7 @@ function GetDesire()
 	minute = math.floor(DotaTime() / 60)
 	sec = DotaTime() % 60
 
-	-- 定期刷新野怪营地信息
+	-- 定期刷新野怪营地信�?
 	if #AvailableCamp < numCamp and ( ( DotaTime() > 30 and DotaTime() < 60 and sec > 30 and sec < 31 )
 	   or ( DotaTime() > 30 and  sec > 0 and sec < 1 ) )
 	then

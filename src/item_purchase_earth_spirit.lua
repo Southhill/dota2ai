@@ -2,7 +2,7 @@
 --	Ranked Matchmaking AI v1.6b
 --	Author: adamqqq		Email:adamqqq@163.com
 ----------------------------------------------------------------------------
-local ItemPurchaseSystem = require(GetScriptDirectory() .. "/util/ItemPurchaseSystem") --导入通用函数�?
+local ItemPurchaseSystem = require(GetScriptDirectory() .. "/base/ItemPurchaseSystem") --导入通用函数�?
 
 local ItemsToBuy =
 {

@@ -6,11 +6,9 @@
 --------------------------------------
 -- General Initialization
 --------------------------------------
-local utility = require(GetScriptDirectory() .. "/util/Utility")
+local utility = require(GetScriptDirectory() .. "/base/Utility")
 require(GetScriptDirectory() .. "/ability_item_usage_generic")
-local AbilityExtensions = require(GetScriptDirectory() .. "/util/AbilityAbstraction")
-local AbilityHelper = dofile(GetScriptDirectory() .. "/util/AbilityHelper")
-
+local AbilityExtensions = require(GetScriptDirectory() .. "/base/AbilityAbstraction")
 local debugmode = false
 local npcBot = GetBot()
 local Talents = {}
@@ -19,11 +17,11 @@ local AbilitiesReal = {}
 
 ability_item_usage_generic.InitAbility(Abilities, AbilitiesReal, Talents)
 
-local AbilityToLevelUp = {Abilities[1], Abilities[3], Abilities[3], Abilities[2], Abilities[3], Abilities[5],
-                          Abilities[3], Abilities[1], Abilities[1], "talent", Abilities[1], Abilities[5], Abilities[2],
-                          Abilities[2], "talent", Abilities[2], "nil", Abilities[5], "nil", "talent", "nil", "nil",
-                          "nil", "nil", "talent"}
-local TalentTree = {function()
+local AbilityToLevelUp = { Abilities[1], Abilities[3], Abilities[3], Abilities[2], Abilities[3], Abilities[5],
+    Abilities[3], Abilities[1], Abilities[1], "talent", Abilities[1], Abilities[5], Abilities[2],
+    Abilities[2], "talent", Abilities[2], "nil", Abilities[5], "nil", "talent", "nil", "nil",
+    "nil", "nil", "talent" }
+local TalentTree = { function()
     return Talents[1]
 end, function()
     return Talents[3]
@@ -31,7 +29,7 @@ end, function()
     return Talents[5]
 end, function()
     return Talents[8]
-end}
+end }
 
 -- check skill build vs current level
 utility.CheckAbilityBuild(AbilityToLevelUp)
@@ -43,7 +41,7 @@ end
 --------------------------------------
 -- Ability Usage Thinking
 --------------------------------------
-local const = AbilityHelper.const
+local const = utility.Const
 
 local cast = {}
 cast.Desire = {}
@@ -67,29 +65,29 @@ CanCast[1] = function(t)
     end
     if npcBot:GetTeam() == t:GetTeam() then
         return AbilityExtensions:SpellCanCast(t, true, true, true) and not AbilityExtensions:DontInterruptAlly(t) and
-                   not t:IsMagicImmune()
+            not t:IsMagicImmune()
     else
         return AbilityExtensions:NormalCanCast(t, false, DAMAGE_TYPE_MAGICAL) and
-                   not target:HasModifier("modifier_antimage_counterspell")
+            not target:HasModifier("modifier_antimage_counterspell")
     end
 end
 CanCast[2] = function(target)
     return target:HasModifier("modifier_shadow_demon_disruption") or
-               AbilityExtensions:NormalCanCast(target, false, DAMAGE_TYPE_PURE, false, false)
+        AbilityExtensions:NormalCanCast(target, false, DAMAGE_TYPE_PURE, false, false)
 end
 CanCast[3] = function(target)
     return target:HasModifier("modifier_shadow_demon_disruption") or
-               AbilityExtensions:NormalCanCast(target, false, DAMAGE_TYPE_MAGICAL, false, true) -- cannot calculate the position if the target is not seen
+        AbilityExtensions:NormalCanCast(target, false, DAMAGE_TYPE_MAGICAL, false, true)        -- cannot calculate the position if the target is not seen
 end
 CanCast[4] = function(target)
     return target:HasModifier("modifier_shadow_demon_disruption") or
-               AbilityExtensions:NormalCanCast(target, false, DAMAGE_TYPE_MAGICAL, false, true)
+        AbilityExtensions:NormalCanCast(target, false, DAMAGE_TYPE_MAGICAL, false, true)
 end
 CanCast[5] = function(target)
     return not target:HasModifier("modifier_antimage_counterspell") and
-               not target:HasModifier("modifier_shadow_demon_purge_slow") and
-               (target:HasModifier("modifier_shadow_demon_disruption") or
-                   AbilityExtensions:NormalCanCast(target, false, DAMAGE_TYPE_MAGICAL, false, true))
+        not target:HasModifier("modifier_shadow_demon_purge_slow") and
+        (target:HasModifier("modifier_shadow_demon_disruption") or
+            AbilityExtensions:NormalCanCast(target, false, DAMAGE_TYPE_MAGICAL, false, true))
 end
 
 Consider[1] = function()
@@ -114,7 +112,7 @@ Consider[1] = function()
     -- Check for a channeling enemy
     for _, enemy in pairs(enemys) do
         if (enemy:IsChanneling() and CanCast[abilityNumber](enemy) and
-            not AbilityExtensions:IsOrGoingToBeSeverelyDisabled(enemy)) then
+                not AbilityExtensions:IsOrGoingToBeSeverelyDisabled(enemy)) then
             return BOT_ACTION_DESIRE_HIGH, enemy
         end
     end
@@ -146,7 +144,7 @@ Consider[1] = function()
         if (WeakestEnemy ~= nil) then
             if (CanCast[abilityNumber](WeakestEnemy)) then
                 if (CanCast[abilityNumber](WeakestEnemy) and
-                    not AbilityExtensions:IsOrGoingToBeSeverelyDisabled(WeakestEnemy)) then
+                        not AbilityExtensions:IsOrGoingToBeSeverelyDisabled(WeakestEnemy)) then
                     return BOT_ACTION_DESIRE_MODERATE, WeakestEnemy
                 end
             end
@@ -170,13 +168,13 @@ Consider[1] = function()
 
     -- If we're going after someone
     if (npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
-        npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or npcBot:GetActiveMode() == BOT_MODE_ATTACK) then
+            npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or npcBot:GetActiveMode() == BOT_MODE_ATTACK) then
         local npcTarget = npcBot:GetTarget()
 
         if (npcTarget ~= nil) then
             if (CanCast[abilityNumber](npcTarget) and not AbilityExtensions:IsOrGoingToBeSeverelyDisabled(npcTarget) and
-                GetUnitToUnitDistance(npcBot, npcTarget) > 400 and GetUnitToUnitDistance(npcBot, npcTarget) < CastRange +
-                100) then
+                    GetUnitToUnitDistance(npcBot, npcTarget) > 400 and GetUnitToUnitDistance(npcBot, npcTarget) < CastRange +
+                    100) then
                 return BOT_ACTION_DESIRE_MODERATE, npcTarget
             end
         end
@@ -223,7 +221,7 @@ Consider[2] = function()
     end)
     local targettableEnemies = AbilityExtensions:Filter(enemies, function(t)
         return AbilityExtensions:NormalCanCast(t, true, DAMAGE_TYPE_PHYSICAL, true) and
-                   not AbilityExtensions:CannotBeAttacked(t)
+            not AbilityExtensions:CannotBeAttacked(t)
     end)
     local friends = AbilityExtensions:GetNearbyHeroes(npcBot, 1200, true)
     local friendCount = AbilityExtensions:GetEnemyHeroNumber(npcBot, friends)
@@ -295,8 +293,8 @@ Consider[3] = function()
         if (WeakestEnemy ~= nil) then
             if (CanCast[abilityNumber](WeakestEnemy)) then
                 if (ManaPercentage > 0.5 and HeroHealth <=
-                    WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and npcBot:GetMana() >
-                    ComboMana and GetPoisonCount(WeakestEnemy) < 5) then
+                        WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and npcBot:GetMana() >
+                        ComboMana and GetPoisonCount(WeakestEnemy) < 5) then
                     return BOT_ACTION_DESIRE_HIGH, WeakestEnemy:GetExtrapolatedLocation(CastPoint)
                 end
             end
@@ -308,8 +306,8 @@ Consider[3] = function()
 
     -- If we're pushing or defending a lane and can hit 4+ creeps, go for it
     if (npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_TOP or npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_MID or
-        npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_BOT or npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_TOP or
-        npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_MID or npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_BOT) then
+            npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_BOT or npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_TOP or
+            npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_MID or npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_BOT) then
         local locationAoE = npcBot:FindAoELocation(true, false, npcBot:GetLocation(), CastRange, Radius, 0, 0)
 
         if (ManaPercentage > 0.4 and locationAoE.count >= 4) then
@@ -328,7 +326,7 @@ Consider[3] = function()
 
     -- If we're going after someone
     if (npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
-        npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or npcBot:GetActiveMode() == BOT_MODE_ATTACK) then
+            npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or npcBot:GetActiveMode() == BOT_MODE_ATTACK) then
         local npcEnemy = npcBot:GetTarget()
 
         if (npcEnemy ~= nil) then
@@ -411,8 +409,8 @@ Consider[5] = function()
         if (WeakestEnemy ~= nil) then
             if (CanCast[abilityNumber](WeakestEnemy)) then
                 if (HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) or
-                    (HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
-                        npcBot:GetMana() > ComboMana)) then
+                        (HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
+                            npcBot:GetMana() > ComboMana)) then
                     return BOT_ACTION_DESIRE_HIGH, WeakestEnemy
                 end
             end
@@ -456,7 +454,7 @@ Consider[5] = function()
 
     -- If we're going after someone
     if (npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
-        npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or npcBot:GetActiveMode() == BOT_MODE_ATTACK) then
+            npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or npcBot:GetActiveMode() == BOT_MODE_ATTACK) then
         local npcEnemy = AbilityExtensions:GetTargetIfGood(npcBot)
 
         if (npcEnemy ~= nil) then

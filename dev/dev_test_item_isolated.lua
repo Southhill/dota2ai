@@ -1,6 +1,6 @@
 -- 隔离测试 ItemPurchaseSystem.lua
 print("[IPS_TEST] Loading ItemPurchaseSystem in isolation...")
-local ok, err = pcall(dofile, GetScriptDirectory() .. "/util/ItemPurchaseSystem")
+local ok, err = pcall(dofile, GetScriptDirectory() .. "/../src/base/ItemPurchaseSystem")
 if ok then
     print("[IPS_TEST] OK - loaded: " .. tostring(ok))
 else

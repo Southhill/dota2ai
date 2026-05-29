@@ -1,4 +1,4 @@
-local minionutils = dofile(GetScriptDirectory() .. "/util/NewMinionUtil")
+local minionutils = dofile(GetScriptDirectory() .. "/base/NewMinionUtil")
 
 function MinionThink(hMinionUnit)
 	local name = hMinionUnit:GetUnitName()

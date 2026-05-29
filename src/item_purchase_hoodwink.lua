@@ -2,7 +2,7 @@
 --	Ranked Matchmaking AI v1.6b
 --	Author: simonshm5	Email:simonshm5@gmail.com
 ----------------------------------------------------------------------------
-local ItemPurchaseSystem = require(GetScriptDirectory() .. "/util/ItemPurchaseSystem")
+local ItemPurchaseSystem = require(GetScriptDirectory() .. "/base/ItemPurchaseSystem")
 
 local ItemsToBuy =
 {
