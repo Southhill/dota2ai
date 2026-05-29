@@ -1,16 +1,12 @@
-----------------------------------------------------------------------------
---	Ranked Matchmaking AI v1.0a
---	Author: adamqqq		Email:adamqqq@163.com
-----------------------------------------------------------------------------
-local utilityModule = {} -- 工具模块，提供通用的辅助函�?
+local utilityModule = {} -- 工具模块，提供通用的辅助函数
 local AbilityExtensions = require(GetScriptDirectory() .. "/util/AbilityAbstraction")
 ---------------------------------------------------------------------------------------------------
 ------  全局工具库，包含一些有用的函数  ------
 ---------------------------------------------------------------------------------------------------
 
--- 检测敌方英雄是否拥有免疫类减益效果（如回光返照、寒冬诅咒等�?
+-- 检测敌方英雄是否拥有免疫类减益效果（如回光返照、寒冬诅咒等）
 function utilityModule.HasImmuneDebuff(npcEnemy)
-    return npcEnemy:HasModifier("modifier_abaddon_borrowed_time") or -- 亚巴顿回光返�?
+    return npcEnemy:HasModifier("modifier_abaddon_borrowed_time") or -- 亚巴顿回光返照
                npcEnemy:HasModifier("modifier_winter_wyvern_winters_curse") or -- 寒冬飞龙寒冬诅咒
                npcEnemy:HasModifier("modifier_obsidian_destroyer_astral_imprisonment_prison") or -- 黑鸟星体禁锢
                npcEnemy:HasModifier("modifier_winter_wyvern_winters_curse_aura") -- 寒冬诅咒光环
@@ -33,26 +29,20 @@ function utilityModule.UCanCast(npcEnemy)
                not npcEnemy:IsIllusion()
 end
 
--- 无目标施法：始终返回�?
+-- 无目标施法：始终返回true
 function utilityModule.CanCastNoTarget()
     return true
 end
 
--- 被动技能施法：始终返回�?
+-- 被动技能施法：始终返回true
 function utilityModule.CanCastPassive()
     return true
 end
 
--- 判断目标是否为肉山（Roshan�?
 function utilityModule.IsRoshan(npcTarget)
     return npcTarget ~= nil and npcTarget:IsAlive() and string.find(npcTarget:GetUnitName(), "roshan")
 end
 
--- gxc's code
--- 创建�? 2017/03/16
--- nBehavior = 技能的 TargetTeam, TargetType, TargetFlags �?Behavior 函数返回�?
--- nFlag = 技能目标队伍、目标类型、目标标志或行为位域常量
--- 用于检查技能行为标志位是否包含指定的标�?
 function utilityModule.CheckFlag(nBehavior, nFlag)
     if (nFlag == 0) then
         if (nBehavior == 0) then
@@ -86,7 +76,7 @@ function utilityModule.IsEnemy(hUnit)
     end
 end
 
--- 计算两点之间的欧几里得距�?
+-- 计算两点之间的欧几里得距离
 function utilityModule.PointToPointDistance(a, b)
     local x1 = a.x
     local x2 = b.x
@@ -110,14 +100,13 @@ end
 -- BOT EXPERIMENT 的代码，来自 http://steamcommunity.com/sharedfiles/filedetails/?id=837040016
 ----------------------------------------------------------------------------------------------------
 
--- 获取英雄的前方向�?
 function CDOTA_Bot_Script:GetForwardVector()
     local radians = self:GetFacing() * math.pi / 180
     local forward_vector = Vector(math.cos(radians), math.sin(radians))
     return forward_vector
 end
 
--- 判断英雄是否面向某个目标（带角度精度参数�?
+-- 判断英雄是否面向某个目标（带角度精度参数）
 function CDOTA_Bot_Script:IsFacingUnit(hTarget, degAccuracy)
     local direction = (hTarget:GetLocation() - self:GetLocation()):Normalized()
     local dot = direction:Dot(self:GetForwardVector())
@@ -125,30 +114,28 @@ function CDOTA_Bot_Script:IsFacingUnit(hTarget, degAccuracy)
     return dot > math.cos(radians)
 end
 
--- 获取从英雄位置朝向目标位置移�?nUnits 距离后的坐标
 function CDOTA_Bot_Script:GetXUnitsTowardsLocation(vLocation, nUnits)
     local direction = (vLocation - self:GetLocation()):Normalized()
     return self:GetLocation() + direction * nUnits
 end
 
--- 获取英雄前方 nUnits 距离的坐�?
+-- 获取英雄前方 nUnits 距离的坐标
 function CDOTA_Bot_Script:GetXUnitsInFront(nUnits)
     return self:GetLocation() + self:GetForwardVector() * nUnits
 end
 
--- 获取英雄后方 nUnits 距离的坐�?
+-- 获取英雄后方 nUnits 距离的坐标
 function CDOTA_Bot_Script:GetXUnitsInBehind(nUnits)
     return self:GetLocation() - self:GetForwardVector() * nUnits
 end
 
--- 判断英雄是否为肉山（Roshan�?
+-- 判断英雄是否为肉山（Roshan)
 function CDOTA_Bot_Script:IsRoshan()
     return string.find(self:GetUnitName(), "roshan")
 end
 
 ----------------------------------------------------------------------------------------------------
 
--- 从单位朝向目标位置偏�?nUnits 距离
 function utilityModule.GetUnitsTowardsLocation(unit, target, nUnits)
     local vMyLocation, vTargetLocation = unit:GetLocation(), target:GetLocation()
     local tempvector = (vTargetLocation - vMyLocation) /
@@ -156,7 +143,7 @@ function utilityModule.GetUnitsTowardsLocation(unit, target, nUnits)
     return vMyLocation + nUnits * tempvector
 end
 
--- 在施法范围内随机找一个落点（用于闪烁技能等），最多尝�?0�?
+-- 在施法范围内随机找一个落点（用于闪烁技能等）
 function utilityModule.RandomInCastRangePoint(unit, target, CastRange, distance)
     local i = 0
     local l, d
@@ -173,19 +160,19 @@ function utilityModule.RandomInCastRangePoint(unit, target, CastRange, distance)
     end
 end
 
--- 获取指向基地的安全随机向量（用于撤退时选择方向�?
+-- 获取指向基地的安全随机向量（用于撤退时选择方向
 function utilityModule.GetSafeVector(unit, distance)
     local v = RandomVector(distance)
     if (unit:GetTeam() == TEAM_RADIANT) then
         if (v.x > 0) then
-            v.x = -v.x -- 天辉方向指向左下（负坐标方向�?
+            v.x = -v.x -- 天辉方向指向左下（负坐标方向
         end
         if (v.y > 0) then
             v.y = -v.y
         end
     else
         if (v.x < 0) then
-            v.x = -v.x -- 夜魇方向指向右上（正坐标方向�?
+            v.x = -v.x -- 夜魇方向指向右上（正坐标方向
         end
         if (v.y < 0) then
             v.y = -v.y
@@ -194,7 +181,7 @@ function utilityModule.GetSafeVector(unit, distance)
     return v
 end
 
--- 获取某个位置附近的敌方英雄列�?
+-- 获取某个位置附近的敌方英雄列表
 function utilityModule.GetEnemiesNearLocation(loc, dist)
     if loc == nil then
         return {}
@@ -211,29 +198,29 @@ function utilityModule.GetEnemiesNearLocation(loc, dist)
     return Enemies
 end
 
--- 获取某个位置附近的友方英雄列表（基于最后一次看到的信息�?
+-- 获取某个位置附近的友方英雄列表（基于最后一次看到的信息
 function utilityModule.GetAlliesNearLocation(loc, dist)
     if loc == nil then
         return {}
     end
 
-    local Enemies = {}
+    local Allies = {}
 
     for _, enID in pairs(GetTeamPlayers(GetTeam())) do
-        local enemyInfo = GetHeroLastSeenInfo(enID)[1]
-        if enemyInfo ~= nil and enemyInfo["location"] ~= nil then
-            if IsHeroAlive(enID) and utilityModule.GetDistance(enemyInfo["location"], loc) <= dist and
-                (utilityModule.GetDistance(enemyInfo["location"], Vector(0, 0)) > 10) and enemyInfo["time_since_seen"] <
+        local allyInfo = GetHeroLastSeenInfo(enID)[1]
+        if allyInfo ~= nil and allyInfo["location"] ~= nil then
+            if IsHeroAlive(enID) and utilityModule.GetDistance(allyInfo["location"], loc) <= dist and
+                (utilityModule.GetDistance(allyInfo["location"], Vector(0, 0)) > 10) and allyInfo["time_since_seen"] <
                 10 then
-                table.insert(Enemies, enID)
+                table.insert(Allies, enID)
             end
         end
     end
 
-    return Enemies
+    return Allies
 end
 
--- 检查背包中是否有指定物品，有则返回该物�?
+-- 检查背包中是否有指定物品，有则返回该物品
 function utilityModule.IsItemAvailable(item_name)
     local npcBot = GetBot()
 
@@ -295,7 +282,7 @@ end
 ----------------------------------------------------------------------------------------------------
 --
 ----------------------------------------------------------------------------------------------------
--- 获取泉水的位置坐�?
+-- 获取泉水的位置坐标
 function utilityModule.Fountain(team)
     if team == TEAM_RADIANT then
         return Vector(-7093, -6542) -- 天辉泉水坐标
@@ -303,7 +290,7 @@ function utilityModule.Fountain(team)
     return Vector(7015, 6534) -- 夜魇泉水坐标
 end
 
--- 获取敌对队伍的枚举�?
+-- 获取敌对队伍的枚举
 function utilityModule.GetOtherTeam()
     if GetTeam() == TEAM_RADIANT then
         return TEAM_DIRE
@@ -312,7 +299,7 @@ function utilityModule.GetOtherTeam()
     end
 end
 
--- 从单位列表中找出血量最低的单位（最弱的�?
+-- 从单位列表中找出血量最低的单位
 function utilityModule.GetWeakestUnit(EnemyUnits)
     if EnemyUnits == nil or #EnemyUnits == 0 then
         return nil, 10000
@@ -332,7 +319,7 @@ function utilityModule.GetWeakestUnit(EnemyUnits)
     return WeakestUnit, LowestHealth
 end
 
--- 从单位列表中找出血量最高的单位（最强的�?
+-- 从单位列表中找出血量最高的单位
 function utilityModule.GetStrongestUnit(EnemyUnits)
     if EnemyUnits == nil or #EnemyUnits == 0 then
         return nil, 0
@@ -407,7 +394,7 @@ function utilityModule.NotNilOrDead(unit)
     return false
 end
 
--- 调试用：发送聊天消息（仅在 debug_mode 开启时生效�?
+-- 调试用：发送聊天消息（仅在 debug_mode 开启时生效
 function utilityModule.DebugTalk(message)
     local debug_mode = false
 
@@ -417,7 +404,6 @@ function utilityModule.DebugTalk(message)
     end
 end
 
--- 调试用：�?Lua 表格内容以聊天消息形式输�?
 function utilityModule.DebugTable(tb)
     local msg = "{ "
     local DebugRec
@@ -452,7 +438,7 @@ function utilityModule.ReverseTable(tb)
     return g
 end
 
--- 调试用：打印技能名称列
+-- 调试用：打印技能名称列表
 function utilityModule.PrintAbilityName(abilities)
     local msg = "{ "
     for k, v in ipairs(abilities) do
@@ -476,7 +462,7 @@ function utilityModule.DebugTalk_Delay(message)
     end
 end
 
--- 检测英雄与目标位置之间是否有树木阻�?
+-- 检测英雄与目标位置之间是否有树木阻挡
 function utilityModule.AreTreesBetween(loc, r)
     local npcBot = GetBot()
 
@@ -508,7 +494,6 @@ function utilityModule.AreTreesBetween(loc, r)
     return false
 end
 
--- 从起�?s 向目�?t 方向移动 d 距离
 function utilityModule.VectorTowards(s, t, d)
     local f = t - s
     f = f / utilityModule.GetDistance(f, Vector(0, 0))
@@ -533,7 +518,7 @@ function utilityModule.GetEscapeLoc()
     end
 end
 
--- 检测英雄是否卡住（长时间在同一个位置移动但无法前进�?
+-- 检测英雄是否卡住（长时间在同一个位置移动但无法前进
 function utilityModule.IsStuck(npcBot)
     if npcBot.stuckLoc ~= nil and npcBot.stuckTime ~= nil then
         local attackTarget = npcBot:GetAttackTarget()

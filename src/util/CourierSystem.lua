@@ -32,8 +32,8 @@ local function IsOnlyInventoryFull(npcHero)
 end
 local function CannotCarryOnBackpack(itemName)
     local items = {"item_gem", "item_rapier", "item_immortal"}
-    for _, v in ipairs(itemName) do
-        if v == items then
+    for _, v in ipairs(items) do
+        if v == itemName then
             return true
         end
     end
