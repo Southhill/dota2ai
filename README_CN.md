@@ -88,7 +88,6 @@ dota2ai/
 │   ├── deploy_agent2026.bat      #   批处理部署
 │   └── deploy_agent2026.ps1      #   PowerShell 部署（推荐）
 ├── dev/                          # 开发与测试脚本
-├── changelog/                    # 版本更新日志（中英文）
 ├── docs/                         # 文档
 │   ├── ARCHITECTURE.md           #   架构说明
 │   ├── BEGINNER_GUIDE.md         #   新手开发指南
@@ -189,26 +188,9 @@ scripts\deploy_agent2026.bat
 
 ---
 
-## 📜 更新日志
+## � 版本说明
 
-完整的版本历史请查看 [changelog/changelog_zh_cn.txt](./changelog/changelog_zh_cn.txt)。
-
-**最新版本：v1.7.5-dev**（agent 分支，2026年5月更新）
-- 项目结构调整：分离部署脚本到 `scripts/`，补充文档
-- 新增 `LOCAL_DEV_GUIDE.md` 和 `UPGRADE_GUIDE.md`（7.29 → 7.41c 升级规划）
-- 重构 `hero_selection.lua` — 选人系统全面优化
-- 新增调试模式、枚举常量、代码清理
-- 详见 [UPGRADE_GUIDE.md](./docs/UPGRADE_GUIDE.md) 了解 7.41c 升级路线图
-
-重要历史里程碑：
-- **v1.7.0~1.7.5** — 更新至 7.28c~7.29，新增火猫，修复大量错误
-- **v1.6.0~1.6f** — 全面支持 7.20~7.23，新增聊天指令，新神符/打钱系统
-- **v1.5.0~1.5h** — 新增 15+ 英雄，优化撤退/技能逻辑
-- **v1.4.0~1.4i** — 新增 20 个英雄，改进推进系统，基于角色选人
-- **v1.3.0~1.3c** — 全新推进系统，改进插眼，支持队长模式
-- **v1.2.0~1.2b** — 团队游走系统，改进神符/分路/信使系统
-- **v1.1.0~1.1h** — 新增 30+ 英雄，神泉使用，信使优化
-- **v1.0（2017.2.3）** — 初始 Beta 发布
+本仓库当前未包含独立的 `changelog/` 目录。详细更新记录请查看提交历史和 `docs/` 目录中的文档。
 
 ---
 

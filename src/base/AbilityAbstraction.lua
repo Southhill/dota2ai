@@ -1257,10 +1257,6 @@ M.CannotBeAttacked = function(self, npc)
     return self:IsEthereal(npc) or self:IsInvulnerable(npc) or self:CannotBeTargetted(npc)
 end
 
-M.CanBeAttackedFunction = function(npc)
-    return not M:CanBeAttacked(npc)
-end
-
 M.IsInvulnerable = function(self, npc)
     return npc:IsInvulnerable() or self:Any(self.IgnoreDamageModifiers, function(t)
         return npc:HasModifier(t)
@@ -1593,52 +1589,6 @@ M.GetAbilityLevelUpIndex = function(self, npcBot)
     return npcBot:GetLevel() - npcBot:GetAbilityPoints() + 1 + npcBot.abilityTable.incorrectAbilityLevelUpNumber
 end
 
-M.FillInAbilities = function(self, npcBot, abilityTable)
-    local abilities = self:GetAbilityNames(npcBot)
-    if #abilityTable == 19 then
-        table.insert(abilityTable, 17, self.SpecialBonusAttributes)
-        table.insert(abilityTable, 19, self.SpecialBonusAttributes)
-        table.insert(abilityTable, 21, self.SpecialBonusAttributes)
-        table.insert(abilityTable, 22, self.SpecialBonusAttributes)
-        table.insert(abilityTable, 23, self.SpecialBonusAttributes)
-        table.insert(abilityTable, 24, self.SpecialBonusAttributes)
-    end
-    if #abilityTable == 25 then
-        table.insert(abilityTable, 26, self.SpecialBonusAttributes)
-    end
-    for i = 1, 26 do
-        if abilityTable[i] == "nil" then
-            abilityTable[i] = self.SpecialBonusAttributes
-        end
-        if not self:Contains(abilities, abilityTable[i]) and abilityTable[i] ~= "talent" then
-            print("Bot script " .. npcBot:GetUnitName() .. " contains incorrect ability name: " .. abilityTable[i])
-            abilityTable[i] = self.IncorrectAbilityName
-        end
-    end
-    if #abilityTable == 30 then
-        npcBot.abilityTable = abilityTable
-        abilityTable.incorrectAbilityLevelUpNumber = self:Count(abilityTable, function(ability, index)
-            return index < npcBot:GetLevel() - npcBot:GetAbilityPoints() + 1 and
-                (ability == nil or not ability:CanAbilityBeUpgraded() or ability:GetName() ==
-                    self.IncorrectAbilityName)
-        end)
-        return
-    end
-
-    local talents = self:Map(self:GetTalents(npcBot), function(t)
-        return t:GetName()
-    end)
-    local levelUpTalents = self:Filter(abilityTable, function(t)
-        return self:IsTalent(t)
-    end)
-    local g = self:Concat(abilityTable, self:RemoveAll(talents, levelUpTalents))
-    g.incorrectAbilityLevelUpNumber = self:Count(g, function(ability, index)
-        return index < npcBot:GetLevel() - npcBot:GetAbilityPoints() + 1 and
-            (ability == nil or not ability:CanAbilityBeUpgraded() or ability:GetName() ==
-                self.IncorrectAbilityName)
-    end)
-    npcBot.abilityTable = g
-end
 
 M.ExecuteAbilityLevelUp = function(self, npcBot)
     local abilityTable = npcBot.abilityTable
@@ -2018,194 +1968,21 @@ function M:RecordAbility(npc, index, target, castType, abilities)
     end
 end
 
-local frameNumber = 0
-local dotaTimer
-local function FloatEqual(a, b)
-    return math.abs(a - b) < 0.000001
-end
+local Timer = require(GetScriptDirectory() .. "/util/timer")
 
--- tick
-
-function M:GetFrameNumber()
-    return frameNumber
-end
-
-function M:EveryManyFrames(count, times)
-    times = times or 1
-    return frameNumber % count < times
-end
-
-local defaultReturn = NewTable()
-local everySecondsCallRegistry = NewTable()
-
-function M:EveryManySeconds(second, oldFunction)
-    local functionName = tostring(oldFunction)
-    everySecondsCallRegistry[functionName .. "lastCallTime"] = math.random() * second
-    return function(...)
-        if everySecondsCallRegistry[functionName .. "lastCallTime"] <= DotaTime() - second then
-            everySecondsCallRegistry[functionName .. "lastCallTime"] = DotaTime()
-            return oldFunction(...)
-        else
-            return defaultReturn
-        end
-    end
-end
-
-local singleForTeamRegistry = NewTable()
-
-function M:SingleForTeam(oldFunction)
-    local functionName = tostring(oldFunction) .. GetTeam()
-    return function(...)
-        if singleForTeamRegistry[functionName] ~= frameNumber then
-            singleForTeamRegistry[functionName] = frameNumber
-            return oldFunction(...)
-        else
-            return defaultReturn
-        end
-    end
-end
-
-local singleForAllBots = NewTable()
-
-function M:SingleForAllBots(oldFunction)
-    local functionName = tostring(oldFunction)
-    return function(...)
-        if singleForAllBots[functionName] ~= frameNumber then
-            singleForAllBots[functionName] = frameNumber
-            return oldFunction(...)
-        else
-            return defaultReturn
-        end
-    end
-end
-
-local groupAnnounceTimes1 = 0
-function M:AnnounceGroups1(npcBot)
-    if groupAnnounceTimes1 == 0 then
-        npcBot:ActionImmediate_Chat(
-            "Thanks for choosing RMM AI. Join our new discord group at https://discord.gg/Agd632pvhA to put suggestions or devloping issues!",
-            true)
-        groupAnnounceTimes1 = 1
-    end
-end
-
-local groupAnnounceTimes2 = 0
-function M:AnnounceGroups2(npcBot)
-    if groupAnnounceTimes2 == 0 then
-        npcBot:ActionImmediate_Chat("Or join QQ group at 946823144!", true)
-        groupAnnounceTimes2 = 1
-    end
-end
-
-function M:CalledOnThisFrame(functionInvocationResult)
-    return functionInvocationResult ~= defaultReturn
-end
-
-local slowFunctionRegistries = NewTable()
-local coroutineRegistry = NewTable()
-local coroutineExempt = NewTable()
-
-function M:TickFromDota()
-    local time = DotaTime()
-    local function ResumeCoroutine(thread)
-        local coroutineResult = { coroutine.resume(thread[1], time - dotaTimer) }
-        if not coroutineResult[1] then
-            error(coroutineResult[2])
-        end
-    end
-
-    if dotaTimer == nil then
-        dotaTimer = time
-        return
-    end
-
-    if not FloatEqual(time, dotaTimer) then
-        frameNumber = frameNumber + 1
-        self:ForEach(slowFunctionRegistries, function(t)
-            t(time - dotaTimer)
-        end)
-        local threadIndex = 1
-        while threadIndex <= #coroutineRegistry do
-            local t = coroutineRegistry[threadIndex]
-            local exemptIndex
-            local exempt
-            self:ForEach(coroutineExempt, function(exemptPair, index)
-                if exemptPair[1] == t then
-                    if exemptPair[2] == frameNumber then
-                        exempt = true
-                    end
-                    exemptIndex = index
-                end
-            end)
-            if exemptIndex then
-                table.remove(coroutineExempt, exemptIndex)
-            end
-            if not exempt then
-                if coroutine.status(t) == "suspended" then
-                    ResumeCoroutine(t)
-                    threadIndex = threadIndex + 1
-                elseif coroutine.status(t) == "dead" then
-                    table.remove(coroutineRegistry, threadIndex)
-                else
-                    threadIndex = threadIndex + 1
-                end
-            end
-        end
-        dotaTimer = time
-    end
-end
-
-function M:RegisterSlowFunction(oldFunction, calledWhenHowManyFrames, frameOffset, defaultReturn)
-    return function(...)
-        if frameNumber % calledWhenHowManyFrames == frameOffset then
-            return oldFunction(...)
-        else
-            return self:UnpackIfTable(defaultReturn)
-        end
-    end
-end
-
--- coroutine
-
-function M:ResumeUntilReturn(func)
-    local g = NewTable()
-    local thread = coroutine.create(func)
-    while true do
-        local values = { coroutine.resume(thread) }
-        if values[1] then
-            table.remove(values, 1)
-            table.insert(g, values)
-        else
-            error(values[2])
-            break
-        end
-    end
-    return g
-end
-
-function M:StartCoroutine(func)
-    local newCoroutine = coroutine.create(func)
-    table.insert(coroutineRegistry, newCoroutine)
-    table.insert(coroutineExempt, { newCoroutine, frameNumber })
-    return newCoroutine
-end
-
-function M:WaitForSeconds(seconds)
-    local function WaitFor(firstFrameTime)
-        local t = seconds - firstFrameTime
-        while t > 0 do
-            t = t - coroutine.yield()
-        end
-    end
-    return self:StartCoroutine(WaitFor)
-end
-
-function M:StopCoroutine(thread)
-    self:Remove_Modify(coroutineExempt, function(t)
-        return t[1] == thread
-    end)
-    self:Remove_Modify(coroutineRegistry, thread)
-end
+-- 将 Timer 中的函数包装到 M 上，保持向后兼容（原有调用方改为 Timer.xxx 即可）
+M.GetFrameNumber = function(self) return Timer.GetFrameNumber() end
+M.EveryManyFrames = function(self, ...) return Timer.EveryManyFrames(...) end
+M.EveryManySeconds = function(self, ...) return Timer.EveryManySeconds(...) end
+M.SingleForTeam = function(self, ...) return Timer.SingleForTeam(...) end
+M.SingleForAllBots = function(self, ...) return Timer.SingleForAllBots(...) end
+M.CalledOnThisFrame = function(self, ...) return Timer.CalledOnThisFrame(...) end
+M.TickFromDota = function(self) Timer.TickFromDota() end
+M.RegisterSlowFunction = function(self, ...) return Timer.RegisterSlowFunction(...) end
+M.ResumeUntilReturn = function(self, ...) return Timer.ResumeUntilReturn(...) end
+M.StartCoroutine = function(self, ...) return Timer.StartCoroutine(...) end
+M.WaitForSeconds = function(self, ...) return Timer.WaitForSeconds(...) end
+M.StopCoroutine = function(self, ...) Timer.StopCoroutine(...) end
 
 -- ========== 技能属性快捷访问（语法糖）==========
 --

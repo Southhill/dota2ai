@@ -4,6 +4,7 @@ local MoveDesire = 0
 local AttackDesire = 0
 local npcBotAR = 0
 local ProxRange = 1500
+
 function MinionThink(hMinionUnit)
 	if not hMinionUnit:IsNull() and hMinionUnit ~= nil then
 		if string.find(hMinionUnit:GetUnitName(), "npc_dota_visage_familiar") then
@@ -48,8 +49,8 @@ end
 function IsDisabled(npcTarget)
 	if
 		npcTarget:IsRooted() or npcTarget:IsStunned() or npcTarget:IsHexed() or npcTarget:IsNightmared() or
-			npcTarget:IsSilenced()
-	 then
+		npcTarget:IsSilenced()
+	then
 		return true
 	end
 	return false
@@ -151,8 +152,8 @@ end
 function ConsiderMove(hMinionUnit)
 	if
 		hMinionUnit:HasModifier("modifier_visage_summon_familiars_stone_form_buff") or not npcBot:IsAlive() or
-			GetUnitToUnitDistance(hMinionUnit, npcBot) < 100
-	 then
+		GetUnitToUnitDistance(hMinionUnit, npcBot) < 100
+	then
 		return BOT_ACTION_DESIRE_NONE, {}
 	end
 
@@ -160,9 +161,10 @@ function ConsiderMove(hMinionUnit)
 
 	if
 		target == nil or (target ~= nil and not CanBeAttacked(target)) or
-			(target ~= nil and GetUnitToUnitDistance(target, npcBot) > ProxRange)
-	 then
-		return BOT_ACTION_DESIRE_MODERATE, npcBot:GetXUnitsTowardsLocation(GetAncient(GetOpposingTeam()):GetLocation(), 200)
+		(target ~= nil and GetUnitToUnitDistance(target, npcBot) > ProxRange)
+	then
+		return BOT_ACTION_DESIRE_MODERATE,
+			npcBot:GetXUnitsTowardsLocation(GetAncient(GetOpposingTeam()):GetLocation(), 200)
 	end
 
 	return BOT_ACTION_DESIRE_NONE, 0
@@ -171,7 +173,7 @@ end
 function ConsiderRetreat(hMinionUnit)
 	if
 		hMinionUnit:HasModifier("modifier_visage_summon_familiars_stone_form_buff") or hMinionUnit:DistanceFromFountain() == 0
-	 then
+	then
 		return BOT_ACTION_DESIRE_NONE, {}
 	end
 

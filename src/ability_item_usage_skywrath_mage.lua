@@ -63,7 +63,7 @@ local TalentTree = {
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-	ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+	ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
@@ -74,7 +74,7 @@ cast.Desire = {}
 cast.Target = {}
 cast.Type = {}
 local Consider = {}
-local CanCast = {utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.UCanCast}
+local CanCast = { utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.UCanCast }
 local enemyDisabled = utility.enemyDisabled
 
 function GetComboDamage()
@@ -109,7 +109,7 @@ Consider[1] = function()
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) * 3 or
 						(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 							npcBot:GetMana() > ComboMana))
-				 then
+				then
 					npcBot:SetTarget(WeakestEnemy)
 					return BOT_ACTION_DESIRE_HIGH, WeakestEnemy
 				end
@@ -129,7 +129,7 @@ Consider[1] = function()
 	--------------------------------------
 	-- Mode based usage
 	--------------------------------------
-	--消�?
+	--消�?
 	--if ( npcBot:GetActiveMode() == BOT_MODE_LANING )
 	--then
 	if ((ManaPercentage > 0.4 or npcBot:GetMana() > ComboMana) and ability:GetLevel() >= 1) then
@@ -148,7 +148,7 @@ Consider[1] = function()
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_TOP or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_MID or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_BOT)
-	 then
+	then
 		if (WeakestEnemy ~= nil) then
 			if (CanCast[1](WeakestEnemy) and GetUnitToUnitDistance(npcBot, WeakestEnemy) < CastRange + 75 * #allys) then
 				return BOT_ACTION_DESIRE_LOW, WeakestEnemy
@@ -161,7 +161,7 @@ Consider[1] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcTarget = npcBot:GetTarget()
 
 		if (npcTarget ~= nil) then
@@ -196,7 +196,7 @@ Consider[2] = function()
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) or
 						(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 							npcBot:GetMana() > ComboMana))
-				 then
+				then
 					return BOT_ACTION_DESIRE_HIGH, WeakestEnemy
 				end
 			end
@@ -225,7 +225,7 @@ Consider[2] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcTarget = npcBot:GetTarget()
 
 		if (npcTarget ~= nil) then
@@ -266,7 +266,7 @@ Consider[3] = function()
 				if
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 						npcBot:GetMana() > ComboMana)
-				 then
+				then
 					return BOT_ACTION_DESIRE_HIGH, WeakestEnemy
 				end
 			end
@@ -310,7 +310,7 @@ Consider[3] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcTarget = AbilityExtensions:GetTargetIfGood(npcBot)
 
 		if (npcTarget ~= nil) then
@@ -344,7 +344,7 @@ Consider[4] = function()
 			(GetComboDamage() > npcTarget:GetHealth() and GetUnitToUnitDistance(npcTarget, npcBot) < (CastRange + 200) and
 				(enemyDisabled(npcTarget) or
 					(npcTarget:IsSilenced() and npcTarget:HasModifier("modifier_skywrath_mage_concussive_shot_slow"))))
-		 then
+		then
 			return BOT_ACTION_DESIRE_HIGH, npcTarget:GetExtrapolatedLocation(0.5)
 		end
 	end
@@ -361,7 +361,7 @@ Consider[4] = function()
 				(CanCast[4](npcEnemy) and
 					(enemyDisabled(npcEnemy) or
 						(npcEnemy:IsSilenced() and npcEnemy:HasModifier("modifier_skywrath_mage_concussive_shot_slow"))))
-			 then
+			then
 				local Damage = npcEnemy:GetEstimatedDamageToTarget(false, npcBot, 3.0, DAMAGE_TYPE_ALL)
 				if (Damage > nMostDangerousDamage) then
 					nMostDangerousDamage = Damage

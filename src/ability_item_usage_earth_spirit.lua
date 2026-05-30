@@ -8,6 +8,7 @@
 local utility = require(GetScriptDirectory() .. "/base/Utility")
 require(GetScriptDirectory() .. "/ability_item_usage_generic")
 local AbilityExtensions = require(GetScriptDirectory() .. "/base/AbilityAbstraction")
+local heroUnit = require(GetScriptDirectory() .. "/base/HeroUtility")
 
 local debugmode = false
 local npcBot = GetBot()
@@ -64,7 +65,7 @@ local TalentTree = {
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-	ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+	ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
@@ -117,8 +118,8 @@ local function IsStoneInPath(location, dist)
 		for _, u in pairs(units) do
 			if
 				u ~= nil and u:GetUnitName() == "npc_dota_earth_spirit_stone" and npcBot:IsFacingLocation(u:GetLocation(), 5) and
-					GetUnitToUnitDistance(u, npcBot) < dist
-			 then
+				GetUnitToUnitDistance(u, npcBot) < dist
+			then
 				return true
 			end
 		end
@@ -191,7 +192,7 @@ Consider[1] = function()
 			elseif nStone >= 1 then
 				return BOT_ACTION_DESIRE_HIGH, loc, true, false
 			elseif nStone < 1 then
-			--do nothing
+				--do nothing
 			end
 		end
 	end
@@ -204,7 +205,7 @@ Consider[1] = function()
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) or
 						(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 							npcBot:GetMana() > ComboMana))
-				 then
+				then
 					local target = WeakestEnemy
 					local loc = GetCorrectLoc(target, GetUnitToUnitDistance(npcBot, target) / nSpeed)
 					if stoneNearby then
@@ -307,7 +308,7 @@ Consider[1] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local locationAoE = npcBot:FindAoELocation(true, true, npcBot:GetLocation(), nStoneCR, nRadius, nCastPoint, 0)
 		if (locationAoE.count >= 2) then
 			if stoneNearby then
@@ -323,7 +324,7 @@ Consider[1] = function()
 			if
 				(CanCast[abilityNumber](npcEnemy) and not enemyDisabled(npcEnemy) and
 					GetUnitToUnitDistance(npcBot, npcEnemy) < CastRange + 75 * #allys)
-			 then
+			then
 				local target = npcEnemy
 				local loc = GetCorrectLoc(target, GetUnitToUnitDistance(npcBot, target) / nSpeed)
 				if stoneNearby then
@@ -372,7 +373,7 @@ Consider[2] = function()
 	-- Global high-priorty usage
 	--------------------------------------
 	-- If we get stuck
-	if utility.IsStuck(npcBot) then
+	if heroUnit.IsStuck(npcBot) then
 		local loc = utility.GetEscapeLoc()
 		return BOT_ACTION_DESIRE_HIGH, npcBot:GetLocation(), false
 	end
@@ -385,7 +386,7 @@ Consider[2] = function()
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) or
 						(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 							npcBot:GetMana() > ComboMana))
-				 then
+				then
 					local target = WeakestEnemy
 					local loc = GetCorrectLoc(target, (GetUnitToUnitDistance(npcBot, target) / nRSpeed) + nDelay)
 					if IsStoneInPath(loc, (nUnitCR / 2) + 200) then
@@ -420,7 +421,7 @@ Consider[2] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcTarget = npcBot:GetTarget()
 
 		if (npcTarget ~= nil) then
@@ -523,7 +524,7 @@ Consider[3] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local locationAoE = npcBot:FindAoELocation(true, true, npcBot:GetLocation(), nCastRange, nRadius, nCastPoint, 0)
 		if (locationAoE.count >= 2) then
 			local stoneNearby = IsStoneNearby(locationAoE.targetloc, nSearchRad)
@@ -540,7 +541,7 @@ Consider[3] = function()
 			if
 				(CanCast[abilityNumber](npcTarget) and not enemyDisabled(npcTarget) and
 					GetUnitToUnitDistance(npcBot, npcTarget) < CastRange + 75 * #allys)
-			 then
+			then
 				local targetAlly = AbilityExtensions:GetNearbyNonIllusionHeroes(npcTarget, 1000, false, BOT_MODE_NONE)
 				local targetEnemy = AbilityExtensions:GetNearbyNonIllusionHeroes(npcTarget, 1000, true, BOT_MODE_NONE)
 				if targetEnemy ~= nil and targetAlly ~= nil and #targetEnemy >= #targetAlly then
@@ -581,7 +582,8 @@ Consider[4] = function()
 		AbilityExtensions:GetNearbyNonIllusionHeroes(npcBot, nCastRange - 200, true, BOT_MODE_NONE)
 	for _, npcEnemy in pairs(tableNearbyEnemyHeroes) do
 		if npcEnemy:HasModifier("modifier_earth_spirit_magnetize") then
-			local duration = npcEnemy:GetModifierRemainingDuration(npcEnemy:GetModifierByName("modifier_earth_spirit_magnetize"))
+			local duration = npcEnemy:GetModifierRemainingDuration(npcEnemy:GetModifierByName(
+				"modifier_earth_spirit_magnetize"))
 			if duration < 1.0 or CanChainMag(npcEnemy, nRadius) then
 				return BOT_ACTION_DESIRE_MODERATE, npcEnemy:GetLocation()
 			end
@@ -642,7 +644,7 @@ Consider[6] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		if (tableNearbyEnemyHeroes ~= nil and #tableNearbyEnemyHeroes >= 2) then
 			return BOT_ACTION_DESIRE_HIGH
 		end
@@ -652,8 +654,8 @@ Consider[6] = function()
 			if
 				(CanCast[abilityNumber](npcTarget) and not enemyDisabled(npcTarget) and
 					GetUnitToUnitDistance(npcBot, npcTarget) < CastRange + 75 * #allys) and
-					GetUnitToUnitDistance(npcBot, npcTarget) < nRadius - 100
-			 then
+				GetUnitToUnitDistance(npcBot, npcTarget) < nRadius - 100
+			then
 				return BOT_ACTION_DESIRE_MODERATE
 			end
 		end

@@ -18,12 +18,12 @@ local AbilitiesReal = {}
 
 ability_item_usage_generic.InitAbility(Abilities, AbilitiesReal, Talents)
 
-local AbilityToLevelUp = {Abilities[2], Abilities[3], Abilities[2], Abilities[1], Abilities[2], Abilities[4],
-                          Abilities[2], Abilities[3], Abilities[3], "talent", Abilities[3], Abilities[4], Abilities[1],
-                          Abilities[1], "talent", Abilities[1], "nil", Abilities[4], "nil", "talent", "nil", "nil",
-                          "nil", "nil", "talent"}
+local AbilityToLevelUp = { Abilities[2], Abilities[3], Abilities[2], Abilities[1], Abilities[2], Abilities[4],
+    Abilities[2], Abilities[3], Abilities[3], "talent", Abilities[3], Abilities[4], Abilities[1],
+    Abilities[1], "talent", Abilities[1], "nil", Abilities[4], "nil", "talent", "nil", "nil",
+    "nil", "nil", "talent" }
 
-local TalentTree = {function()
+local TalentTree = { function()
     return Talents[2]
 end, function()
     return Talents[4]
@@ -31,13 +31,13 @@ end, function()
     return Talents[6]
 end, function()
     return Talents[7]
-end}
+end }
 
 -- check skill build vs current level
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-    ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+    ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
@@ -55,13 +55,13 @@ CanCast[1] = function(t)
 end
 CanCast[2] = function(t)
     return AbilityExtensions:NormalCanCast(t, true, DAMAGE_TYPE_PURE, false, true) and
-               not AbilityExtensions:HasAbilityRetargetModifier(t) and
-               not (AbilityExtensions:HasModifier("modifier_item_blade_mail") and AbilityExtensions:IsRetreating(npcBot))
+        not AbilityExtensions:HasAbilityRetargetModifier(t) and
+        not (AbilityExtensions:HasModifier("modifier_item_blade_mail") and AbilityExtensions:IsRetreating(npcBot))
 end
 CanCast[3] = CanCast[1]
 CanCast[4] = function(t)
     return AbilityExtensions:NormalCanCast(t, false, DAMAGE_TYPE_PURE, true, true) and
-               not AbilityExtensions:HasAbilityRetargetModifier(t)
+        not AbilityExtensions:HasAbilityRetargetModifier(t)
 end
 
 local enemyDisabled = utility.enemyDisabled
@@ -147,13 +147,13 @@ Consider[1] = function()
 
     -- If we're pushing or defending a lane
     if (npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_TOP or npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_MID or
-        npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_BOT or npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_TOP or
-        npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_MID or npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_BOT) then
+            npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_BOT or npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_TOP or
+            npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_MID or npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_BOT) then
         if (#enemys >= 1) then
             if (ManaPercentage > 0.5 or npcBot:GetMana() > ComboMana) then
                 if (WeakestEnemy ~= nil) then
                     if (CanCast[abilityNumber](WeakestEnemy) and GetUnitToUnitDistance(npcBot, WeakestEnemy) < CastRange +
-                        75 * #allys) then
+                            75 * #allys) then
                         return BOT_ACTION_DESIRE_LOW, WeakestEnemy
                     end
                 end
@@ -163,7 +163,7 @@ Consider[1] = function()
 
     -- If we're going after someone
     if (npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
-        npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or npcBot:GetActiveMode() == BOT_MODE_ATTACK) then
+            npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or npcBot:GetActiveMode() == BOT_MODE_ATTACK) then
         local npcEnemy = npcBot:GetTarget()
 
         if (npcEnemy ~= nil) then
@@ -206,8 +206,8 @@ Consider[2] = function()
         if (WeakestEnemy ~= nil) then
             if (CanCast[abilityNumber](WeakestEnemy)) then
                 if (HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_ALL) or
-                    (HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
-                        npcBot:GetMana() > ComboMana)) then
+                        (HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
+                            npcBot:GetMana() > ComboMana)) then
                     return BOT_ACTION_DESIRE_HIGH, WeakestEnemy
                 end
             end
@@ -242,7 +242,7 @@ Consider[2] = function()
     if (npcBot:GetActiveMode() == BOT_MODE_FARM) then
         if (#creeps >= 2) then
             if (CreepHealth <= WeakestCreep:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) and npcBot:GetMana() >
-                ComboMana) then
+                    ComboMana) then
                 return BOT_ACTION_DESIRE_LOW, WeakestCreep
             end
         end
@@ -250,7 +250,7 @@ Consider[2] = function()
 
     -- If we're going after someone
     if (npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
-        npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or npcBot:GetActiveMode() == BOT_MODE_ATTACK) then
+            npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or npcBot:GetActiveMode() == BOT_MODE_ATTACK) then
         local npcEnemy = npcBot:GetTarget()
 
         if (npcEnemy ~= nil) then
@@ -331,7 +331,7 @@ Consider[3] = function()
 
     -- If we're going after someone
     if (npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
-        npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or npcBot:GetActiveMode() == BOT_MODE_ATTACK) then
+            npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or npcBot:GetActiveMode() == BOT_MODE_ATTACK) then
         local npcEnemy = npcBot:GetTarget()
         local allys2
         local allys3
@@ -348,7 +348,7 @@ Consider[3] = function()
 
         if (npcEnemy ~= nil and #allys2 < #allys3) then
             if (CanCast[abilityNumber](npcEnemy) and not enemyDisabled(npcEnemy) and
-                GetUnitToUnitDistance(npcBot, npcEnemy) < CastRange + 75 * #allys) then
+                    GetUnitToUnitDistance(npcBot, npcEnemy) < CastRange + 75 * #allys) then
                 return BOT_ACTION_DESIRE_MODERATE, npcEnemy
             end
         end
@@ -384,7 +384,7 @@ Consider[4] = function()
     -- Check for a channeling enemy
     for _, npcEnemy in pairs(enemys) do
         if (npcEnemy:IsChanneling() and CanCast[abilityNumber](npcEnemy) and
-            not AbilityExtensions:HasAbilityRetargetModifier(npcEnemy)) then
+                not AbilityExtensions:HasAbilityRetargetModifier(npcEnemy)) then
             return BOT_ACTION_DESIRE_HIGH, npcEnemy
         end
     end
@@ -398,8 +398,8 @@ Consider[4] = function()
         if (WeakestEnemy ~= nil) then
             if (CanCast[abilityNumber](WeakestEnemy) and not enemyDisabled(WeakestEnemy) and #enemys <= 2) then
                 if (HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) or
-                    (HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
-                        npcBot:GetMana() > ComboMana)) then
+                        (HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
+                            npcBot:GetMana() > ComboMana)) then
                     return BOT_ACTION_DESIRE_HIGH, WeakestEnemy
                 end
             end
@@ -450,12 +450,12 @@ Consider[4] = function()
 
     -- If we're going after someone
     if (npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
-        npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or npcBot:GetActiveMode() == BOT_MODE_ATTACK) then
+            npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or npcBot:GetActiveMode() == BOT_MODE_ATTACK) then
         local npcEnemy = npcBot:GetTarget()
 
         if (npcEnemy ~= nil) then
             if (CanCast[abilityNumber](npcEnemy) and not enemyDisabled(npcEnemy) and
-                GetUnitToUnitDistance(npcBot, npcEnemy) < CastRange + 75 * #allys) then
+                    GetUnitToUnitDistance(npcBot, npcEnemy) < CastRange + 75 * #allys) then
                 return BOT_ACTION_DESIRE_MODERATE, npcEnemy
             end
         end
@@ -508,19 +508,19 @@ Consider[5] = function()
             AbilityExtensions:All(nightmaredEnemies, function(t)
                 return AbilityExtensions:GetHealthPercent(t) <= 0.3
             end) and AbilityExtensions:All(nightmaredFriends, function(t)
-            return AbilityExtensions:GetModifierRemainingDuration(t, "modifier_bane_nightmare") <= 4
-        end) and AbilityExtensions:All(friends, function(t)
-            return AbilityExtensions:GetHealthPercent(t) >= 0.5
-        end) then
+                return AbilityExtensions:GetModifierRemainingDuration(t, "modifier_bane_nightmare") <= 4
+            end) and AbilityExtensions:All(friends, function(t)
+                return AbilityExtensions:GetHealthPercent(t) >= 0.5
+            end) then
             return BOT_ACTION_DESIRE_HIGH
         end
     end
     if #nightmaredFriends ~= 0 then
         if AbilityExtensions:All(nightmaredFriends, function(t)
-            return AbilityExtensions:GetHealthPercent(t) >= 0.3
-        end) or AbilityExtensions:All(nightmaredFriends, function(t)
-            return #t:GetIncomingTrackingProjectiles() == 0
-        end) and #enemies == 0 then
+                return AbilityExtensions:GetHealthPercent(t) >= 0.3
+            end) or AbilityExtensions:All(nightmaredFriends, function(t)
+                return #t:GetIncomingTrackingProjectiles() == 0
+            end) and #enemies == 0 then
             return BOT_ACTION_DESIRE_HIGH
         end
     end

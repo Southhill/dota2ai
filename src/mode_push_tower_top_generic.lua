@@ -1,12 +1,12 @@
-require( GetScriptDirectory().."/base/PushUtility");
+require(GetScriptDirectory() .. "/base/PushUtility");
 
 local npcBot = GetBot()
 local lane = LANE_BOT
 
 function GetDesire()
-	return PushUtility.GetUnitPushLaneDesire(npcBot,lane)
+	return PushUtility.GetUnitPushLaneDesire(npcBot, lane)
 end
 
 function Think()
-	return PushUtility.UnitPushLaneThink(npcBot,lane)
+	return PushUtility.UnitPushLaneThink(npcBot, lane)
 end

@@ -6,6 +6,7 @@ local M = {}
 require(GetScriptDirectory() .. "/base/Utility")
 
 local AbilityExtensions = require(GetScriptDirectory() .. "/base/AbilityAbstraction")
+local Timer = require(GetScriptDirectory() .. "/util/timer")
 
 function M.SellExtraItem(ItemsToBuy)
     local npcBot = GetBot()
@@ -158,7 +159,7 @@ function M.ItemPurchase(ItemsToBuy)
             end
         end
 
-        local PurchaseResult = -2               -- 购买结果初始化为 -2（未尝试�?
+        local PurchaseResult = -2               -- 购买结果初始化为 -2（未尝试）
         if (npcBot.secretShopMode == true) then -- 神秘商店模式
             -- 自己在神秘商店附近则自己购买
             if (npcBot:DistanceFromSecretShop() <= 250) then
@@ -223,7 +224,7 @@ function M.BuyCourier()
     -- 	then
     -- 		local info=npcBot:ActionImmediate_PurchaseItem("item_courier");
     -- 		if info ==PURCHASE_ITEM_SUCCESS then
-    -- 			npcBot:ActionImmediate_Chat('I bought the courier 我买了鸡�?,false);
+    -- 		npcBot:ActionImmediate_Chat('I bought the courier 我买了鸡',false);
     -- 		end
     -- 	end
     -- end
@@ -814,7 +815,7 @@ local UseCourier = function()
         end
     end
 end
-UseCourier = AbilityExtensions:EveryManySeconds(0.5, UseCourier)
+UseCourier = Timer.EveryManySeconds(0.5, UseCourier)
 
 local lastItemPurchaseTime = 0
 local ItemPurchaseInterval = 0.3

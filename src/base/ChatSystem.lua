@@ -93,4 +93,9 @@ function M.SendVersionAnnouncement()
     end
 end
 
+-- 遗迹告警：兵营被破后遗迹血量低于阈值时发送
+function M.AnnounceAncientWarning(npcBot, health)
+    npcBot:ActionImmediate_Chat("Ancient HP low: < " .. health, true)
+end
+
 return M

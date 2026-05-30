@@ -1,49 +1,61 @@
 ----------------------------------------------------------------------------
 --	全局工具库 —包含通用辅助函数
 ----------------------------------------------------------------------------
+local Func = require(GetScriptDirectory() .. "/util/functional")
 local utilityModule = {}
-local AbilityExtensions = require(GetScriptDirectory() .. "/base/AbilityAbstraction")
+local NewTable = Func.NewTable
+
+-- 引入 CDOTA_Bot_Script 扩展方法（每个 Lua 状态需加载一次）
+require(GetScriptDirectory() .. "/base/BotExtensions")
+local config = require(GetScriptDirectory() .. "/const/config")
+local heroUnit = require(GetScriptDirectory() .. "/base/HeroUtility")
+
+-- 常量定义
+utilityModule.Const = {
+    MAX_SEARCH_DISTANCE = 1600,
+    MAX_ALLY_SEARCH_DISTANCE = 1200,
+    EXTRA_SEARCH_DISTANCE = 300,
+    WARNING_DISTANCE = 600,
+    FOUNTAIN_RADIANT = Vector(-7093, -6542),                    -- 天辉泉水坐标
+    FOUNTAIN_DIRE = Vector(7015, 6534),                         -- 夜魇泉水坐标
+    RADIANT_BASE = Vector(-7174.000000, -6671.00000, 0.000000), -- 天辉基地深处坐标
+    DIRE_BASE = Vector(7023.000000, 6450.000000, 0.000000)      -- 夜魇基地深处坐标
+}
 ---------------------------------------------------------------------------------------------------
 ------  全局工具库，包含一些有用的函数  ------
 ---------------------------------------------------------------------------------------------------
 
--- 检测敌方英雄是否拥有免疫类减益效果
+-- 检测敌方英雄是否拥有免疫类减益效果（委托至 HeroUtility）
 function utilityModule.HasImmuneDebuff(npcEnemy)
-    return npcEnemy:HasModifier("modifier_abaddon_borrowed_time") or                      -- 亚巴顿回光返�?
-        npcEnemy:HasModifier("modifier_winter_wyvern_winters_curse") or                   -- 寒冬飞龙寒冬诅咒
-        npcEnemy:HasModifier("modifier_obsidian_destroyer_astral_imprisonment_prison") or -- 黑鸟星体禁锢
-        npcEnemy:HasModifier("modifier_winter_wyvern_winters_curse_aura")                 -- 寒冬诅咒光环
+    return heroUnit.HasImmuneDebuff(npcEnemy)
 end
 
--- 常规施法判定：目标可见、非魔免、非无敌、无免疫减益
+-- 常规施法判定（委托至 HeroUtility）
 function utilityModule.NCanCast(npcEnemy)
-    return npcEnemy:CanBeSeen() and not npcEnemy:IsMagicImmune() and not npcEnemy:IsInvulnerable() and
-        not utilityModule.HasImmuneDebuff(npcEnemy)
+    return heroUnit.NCanCast(npcEnemy)
 end
 
--- 魔免施法判定：等同于 UCanCast（可对魔免目标施法）
+-- 魔免施法判定（委托至 HeroUtility）
 function utilityModule.MiCanCast(npcEnemy)
-    return utilityModule.UCanCast(npcEnemy)
+    return heroUnit.MiCanCast(npcEnemy)
 end
 
--- 通用施法判定：目标可见、非无敌、无免疫减益、非幻象
+-- 通用施法判定（委托至 HeroUtility）
 function utilityModule.UCanCast(npcEnemy)
-    return npcEnemy:CanBeSeen() and not npcEnemy:IsInvulnerable() and not utilityModule.HasImmuneDebuff(npcEnemy) and
-        not npcEnemy:IsIllusion()
+    return heroUnit.UCanCast(npcEnemy)
 end
 
 -- 无目标施法：始终返回true
 function utilityModule.CanCastNoTarget()
-    return true
+    return heroUnit.CanCastNoTarget()
 end
 
--- 被动技能施法：始终返回true
 function utilityModule.CanCastPassive()
-    return true
+    return heroUnit.CanCastPassive()
 end
 
 function utilityModule.IsRoshan(npcTarget)
-    return npcTarget ~= nil and npcTarget:IsAlive() and string.find(npcTarget:GetUnitName(), "roshan")
+    return heroUnit.IsRoshan(npcTarget)
 end
 
 function utilityModule.CheckFlag(nBehavior, nFlag)
@@ -58,25 +70,14 @@ function utilityModule.CheckFlag(nBehavior, nFlag)
     return ((nBehavior / nFlag) % 2) >= 1
 end
 
------------------ 本地工具函数（为 Lua 局部可见性重新排序）--------
-
--- 判断敌方英雄是否处于被控制状态（缠绕、眩晕、妖术）
+-- 判断敌方英雄是否处于被控制状态（委托至 HeroUtility）
 function utilityModule.enemyDisabled(npcEnemy)
-    if npcEnemy:IsRooted() or npcEnemy:IsStunned() or npcEnemy:IsHexed() then
-        return true
-    end
-    return false
+    return heroUnit.enemyDisabled(npcEnemy)
 end
 
--- 判断一个单位是否为敌方单位
+-- 判断一个单位是否为敌方单位（委托至 HeroUtility）
 function utilityModule.IsEnemy(hUnit)
-    local ourTeam = GetTeam()
-    local Team = GetTeamForPlayer(hUnit:GetPlayerID())
-    if ourTeam == Team then
-        return false
-    else
-        return true
-    end
+    return heroUnit.IsEnemy(hUnit)
 end
 
 function utilityModule.PointToPointDistance(a, b)
@@ -90,50 +91,6 @@ end
 -- 获取两点间距离（PointToPointDistance 的别名）
 function utilityModule.GetDistance(a, b)
     return utilityModule.PointToPointDistance(a, b)
-end
-
--- 计算英雄的综合状态因子（血量百分比 + 蓝量百分比）
-function CDOTA_Bot_Script:GetFactor()
-    return self:GetHealth() / self:GetMaxHealth() + self:GetMana() / self:GetMaxMana()
-end
-
-----------------------------------------------------------------------------------------------------
--- 向量相关函数
--- BOT EXPERIMENT 的代码，来自 http://steamcommunity.com/sharedfiles/filedetails/?id=837040016
-----------------------------------------------------------------------------------------------------
-
-function CDOTA_Bot_Script:GetForwardVector()
-    local radians = self:GetFacing() * math.pi / 180
-    local forward_vector = Vector(math.cos(radians), math.sin(radians))
-    return forward_vector
-end
-
--- 判断英雄是否面向某个目标
-function CDOTA_Bot_Script:IsFacingUnit(hTarget, degAccuracy)
-    local direction = (hTarget:GetLocation() - self:GetLocation()):Normalized()
-    local dot = direction:Dot(self:GetForwardVector())
-    local radians = degAccuracy * math.pi / 180
-    return dot > math.cos(radians)
-end
-
-function CDOTA_Bot_Script:GetXUnitsTowardsLocation(vLocation, nUnits)
-    local direction = (vLocation - self:GetLocation()):Normalized()
-    return self:GetLocation() + direction * nUnits
-end
-
--- 获取英雄前方 nUnits 距离的坐标
-function CDOTA_Bot_Script:GetXUnitsInFront(nUnits)
-    return self:GetLocation() + self:GetForwardVector() * nUnits
-end
-
--- 获取英雄后方 nUnits 距离的坐标
-function CDOTA_Bot_Script:GetXUnitsInBehind(nUnits)
-    return self:GetLocation() - self:GetForwardVector() * nUnits
-end
-
--- 判断英雄是否为肉山（Roshan)
-function CDOTA_Bot_Script:IsRoshan()
-    return string.find(self:GetUnitName(), "roshan")
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -200,7 +157,7 @@ function utilityModule.GetEnemiesNearLocation(loc, dist)
     return Enemies
 end
 
--- 获取某个位置附近的友方英雄列表（基于最后一次看到的信息
+-- 获取某个位置附近的友方英雄列表
 function utilityModule.GetAlliesNearLocation(loc, dist)
     if loc == nil then
         return {}
@@ -237,9 +194,22 @@ function utilityModule.IsItemAvailable(item_name)
     return nil
 end
 
+local function GetAbilityNames(npcBot)
+    local g = NewTable()
+    for i = 0, 25 do
+        local ability = npcBot:GetAbilityInSlot(i)
+        if ability ~= nil and ability:GetName() ~= "generic_hidden" then
+            table.insert(g, ability:GetName())
+        end
+    end
+    return g
+end
+
+local specialBonusAttributes = "special_bonus_attributes"
+local incorrectAbilityName = "incorrect_name"
 -- 填充技能加点表：验证并修正每个等级的技能名称，补充天赋槽位
 utilityModule.FillInAbilities = function(npcBot, abilityTable)
-    local abilities = AbilityExtensions:GetAbilityNames(npcBot)
+    local abilitiesNames = GetAbilityNames(npcBot)
     if #abilityTable == 25 then
         table.insert(abilityTable, "nil")
         for i = 27, 30 do
@@ -248,27 +218,26 @@ utilityModule.FillInAbilities = function(npcBot, abilityTable)
     end
     for i = 1, 30 do
         if abilityTable[i] == "nil" then
-            abilityTable[i] = AbilityExtensions.SpecialBonusAttributes
+            abilityTable[i] = specialBonusAttributes
         elseif abilityTable[i] == "talent" then
         elseif abilityTable[i] == nil then
-            print("Bot script " .. npcBot:GetUnitName() .. " 在等�?" .. i .. " 包含错误的技能名: nil")
-            abilityTable[i] = AbilityExtensions.IncorrectAbilityName
-        elseif not AbilityExtensions:Contains(abilities, abilityTable[i]) then
-            print("Bot script " .. npcBot:GetUnitName() .. " 在等�?" .. i .. " 包含错误的技能名: " ..
+            print("Bot script " .. npcBot:GetUnitName() .. " 在等待" .. i .. " 包含错误的技能名: nil")
+            abilityTable[i] = incorrectAbilityName
+        elseif not Func:Contains(abilitiesNames, abilityTable[i]) then
+            print("Bot script " .. npcBot:GetUnitName() .. " 在等待" .. i .. " 包含错误的技能名: " ..
                 abilityTable[i])
-            abilityTable[i] = AbilityExtensions.IncorrectAbilityName
+            abilityTable[i] = incorrectAbilityName
         end
     end
-    abilityTable.incorrectAbilityLevelUpNumber = AbilityExtensions:Count(abilityTable, function(abilityName, index)
+    abilityTable.incorrectAbilityLevelUpNumber = Func:Count(abilityTable, function(abilityName, index)
         if abilityName == "talent" then
             return false
         end
-        local ability = npcBot:GetAbilityByName(abilityName)
         local result = index < npcBot:GetLevel() - npcBot:GetAbilityPoints() + 1 and
-            (abilityName == AbilityExtensions.IncorrectAbilityName)
+            (abilityName == incorrectAbilityName)
         return result
     end)
-    abilityTable.talentTreeIndex = AbilityExtensions:Count(abilityTable, function(abilityName, index)
+    abilityTable.talentTreeIndex = Func:Count(abilityTable, function(abilityName, index)
         return
             index < npcBot:GetLevel() - npcBot:GetAbilityPoints() + 1 - abilityTable.incorrectAbilityLevelUpNumber and
             abilityName == "talent"
@@ -281,19 +250,15 @@ function utilityModule.CheckAbilityBuild(AbilityToLevelUp)
     utilityModule.FillInAbilities(npcBot, AbilityToLevelUp)
 end
 
-----------------------------------------------------------------------------------------------------
-----------------------------------------------------------------------------------------------------
---
-----------------------------------------------------------------------------------------------------
--- 获取泉水的位置坐�?
+-- 获取泉水的位置坐标
 function utilityModule.Fountain(team)
     if team == TEAM_RADIANT then
-        return Vector(-7093, -6542) -- 天辉泉水坐标
+        return utilityModule.Const.FOUNTAIN_RADIANT
     end
-    return Vector(7015, 6534)       -- 夜魇泉水坐标
+    return utilityModule.Const.FOUNTAIN_DIRE
 end
 
--- 获取敌对队伍的枚�?
+-- 获取敌对队伍的枚举
 function utilityModule.GetOtherTeam()
     if GetTeam() == TEAM_RADIANT then
         return TEAM_DIRE
@@ -302,44 +267,14 @@ function utilityModule.GetOtherTeam()
     end
 end
 
--- 从单位列表中找出血量最低的单位
+-- 从单位列表中找出血量最低的单位（委托至 HeroUtility）
 function utilityModule.GetWeakestUnit(EnemyUnits)
-    if EnemyUnits == nil or #EnemyUnits == 0 then
-        return nil, 10000
-    end
-
-    local WeakestUnit = nil
-    local LowestHealth = 10000
-    for _, unit in pairs(EnemyUnits) do
-        if unit ~= nil and unit:IsAlive() and unit:CanBeSeen() then
-            if unit:GetHealth() < LowestHealth then
-                LowestHealth = unit:GetHealth()
-                WeakestUnit = unit
-            end
-        end
-    end
-
-    return WeakestUnit, LowestHealth
+    return heroUnit.GetWeakestUnit(EnemyUnits)
 end
 
--- 从单位列表中找出血量最高的单位
+-- 从单位列表中找出血量最高的单位（委托至 HeroUtility）
 function utilityModule.GetStrongestUnit(EnemyUnits)
-    if EnemyUnits == nil or #EnemyUnits == 0 then
-        return nil, 0
-    end
-
-    local StrongestUnit = nil
-    local HighestHealth = 0
-    for _, unit in pairs(EnemyUnits) do
-        if unit ~= nil and unit:IsAlive() and unit:CanBeSeen() then
-            if unit:GetHealth() > HighestHealth then
-                HighestHealth = unit:GetHealth()
-                StrongestUnit = unit
-            end
-        end
-    end
-
-    return StrongestUnit, HighestHealth
+    return heroUnit.GetStrongestUnit(EnemyUnits)
 end
 
 -- 获取距离指定位置最近的建筑
@@ -357,7 +292,8 @@ function utilityModule.GetNearestBuilding(team, location)
     return nearestBuilding
 end
 
--- 获取指定队伍的所有建筑（防御塔、兵营、神龛、遗迹）
+-- 获取指定队伍的所有存活建筑（防御塔、兵营、遗迹）
+-- 注意：7.33 版本已移除神龛，故不再收集
 function utilityModule.GetAllBuilding(team)
     local buildings = {}
     for i = 0, 10 do
@@ -371,13 +307,6 @@ function utilityModule.GetAllBuilding(team)
         local barrack = GetBarracks(team, i)
         if utilityModule.NotNilOrDead(barrack) then
             table.insert(buildings, barrack)
-        end
-    end
-
-    for i = 0, 4 do
-        local shrine = GetShrine(team, i)
-        if utilityModule.NotNilOrDead(shrine) then
-            table.insert(buildings, shrine)
         end
     end
 
@@ -397,51 +326,15 @@ function utilityModule.NotNilOrDead(unit)
     return false
 end
 
--- 调试用：发送聊天消息（仅在 debug_mode 开启时生效
+-- 调试用：发送聊天消息（仅在 config.debugMode 开启时生效）
 function utilityModule.DebugTalk(message)
-    local debug_mode = false
-
-    if (debug_mode == true) then
+    if config.debugMode then
         local npcBot = GetBot()
         npcBot:ActionImmediate_Chat(message, true)
     end
 end
 
-function utilityModule.DebugTable(tb)
-    local msg = "{ "
-    local DebugRec
-    DebugRec = function(tb)
-        for k, v in pairs(tb) do
-            if type(v) == "number" or type(v) == "string" then
-                msg = msg .. k .. " = " .. v
-                msg = msg .. ", "
-            end
-            if type(v) == "table" then
-                msg = msg .. k .. " = " .. "{ "
-                DebugRec(v)
-                msg = msg .. "}, "
-            end
-        end
-    end
-    DebugRec(tb)
-    msg = msg .. " }"
-
-    local npcBot = GetBot()
-    npcBot:ActionImmediate_Chat(msg, true)
-end
-
--- 反转键值对
-function utilityModule.ReverseTable(tb)
-    local g = {}
-    for k, v in pairs(tb) do
-        if type(v) == "number" or type(v) == "string" then
-            g[v] = k
-        end
-    end
-    return g
-end
-
--- 调试用：打印技能名称列�?
+-- 调试用：打印技能名称列表
 function utilityModule.PrintAbilityName(abilities)
     local msg = "{ "
     for k, v in ipairs(abilities) do
@@ -465,7 +358,7 @@ function utilityModule.DebugTalk_Delay(message)
     end
 end
 
--- 检测英雄与目标位置之间是否有树木阻�?
+-- 检测英雄与目标位置之间是否有树木阻挡
 function utilityModule.AreTreesBetween(loc, r)
     local npcBot = GetBot()
 
@@ -503,9 +396,6 @@ function utilityModule.VectorTowards(s, t, d)
     return s + (f * d)
 end
 
-local RadiantBase = Vector(-7174.000000, -6671.00000, 0.000000) -- 天辉基地深处坐标
-local DireBase = Vector(7023.000000, 6450.000000, 0.000000)     -- 夜魇基地深处坐标
-
 -- 获取逃生位置（远离泉水则回基地，否则回泉水深处）
 function utilityModule.GetEscapeLoc()
     local bot = GetBot()
@@ -514,34 +404,28 @@ function utilityModule.GetEscapeLoc()
         return GetAncient(team):GetLocation()
     else
         if team == TEAM_DIRE then
-            return DireBase
+            return DIRE_BASE
         else
-            return RadiantBase
+            return RADIANT_BASE
         end
     end
 end
 
--- 检测英雄是否卡住（长时间在同一个位置移动但无法前进
-function utilityModule.IsStuck(npcBot)
-    if npcBot.stuckLoc ~= nil and npcBot.stuckTime ~= nil then
-        local attackTarget = npcBot:GetAttackTarget()
-        local EAd = GetUnitToUnitDistance(npcBot, GetAncient(GetOpposingTeam()))
-        local TAd = GetUnitToUnitDistance(npcBot, GetAncient(GetTeam()))
-        local Et = npcBot:GetNearbyTowers(450, true)
-        local At = npcBot:GetNearbyTowers(450, false)
-        if npcBot:GetCurrentActionType() == BOT_ACTION_TYPE_MOVE_TO and attackTarget == nil and EAd > 2200 and TAd >
-            2200 and #Et == 0 and #At == 0 and DotaTime() > npcBot.stuckTime + 5.0 and
-            GetUnitToLocationDistance(npcBot, npcBot.stuckLoc) < 25 then
-            print(npcBot:GetUnitName() .. " is stuck")
-            return true
-        end
-    end
-    return false
-end
-
--- 安全获取附近可见英雄列表（自动过滤不可见单位，避免引擎警告）
-function utilityModule.GetNearbyVisibleHeroes(npcBot, radius, teamFilter, modeFilter)
-    local heroes = utility.GetNearbyVisibleHeroes(npcBot, radius, teamFilter, modeFilter)
+-- 安全获取 unit 附近可见英雄列表
+--
+-- 封装 npcBot:GetNearbyHeroes(radius, isEnemy, mode) 并过滤不可见单位，
+-- 避免对战争迷雾中的单位操作时触发引擎警告。
+--
+-- 参数：
+--   unit    - 搜索中心的单位（bot、敌方英雄、塔、建筑等任何 CDOTA_Bot_Script 对象）
+--   radius  - 搜索半径
+--   isEnemy - true 返回敌方英雄，false 返回友方英雄（相对于 unit 所属队伍）
+--   mode    - 行为模式过滤（通常传 BOT_MODE_NONE 获取所有，也可只获取特定模式的英雄）
+--
+-- 返回：
+--   可见英雄的列表（可能为空表）
+function utilityModule.GetNearbyVisibleHeroes(unit, radius, isEnemy, mode)
+    local heroes = unit:GetNearbyHeroes(radius, isEnemy, mode)
     if heroes == nil then
         return {}
     end
@@ -554,16 +438,6 @@ function utilityModule.GetNearbyVisibleHeroes(npcBot, radius, teamFilter, modeFi
     return visible
 end
 
--- ========== 以下函数从 AbilityHelper 合并而来 ==========
-
--- 常量定义
-utilityModule.Const = {
-    MAX_SEARCH_DISTANCE = 1600,
-    MAX_ALLY_SEARCH_DISTANCE = 1200,
-    EXTRA_SEARCH_DISTANCE = 300,
-    WARNING_DISTANCE = 600
-}
-
 -- 检查技能加点表是否需要裁剪（当等级较低时移除多余的加点项目）
 function utilityModule.CheckAbilityBuildSimple(abilityTree)
     local npcBot = GetBot()
@@ -575,73 +449,39 @@ function utilityModule.CheckAbilityBuildSimple(abilityTree)
     end
 end
 
--- 判断目标是否为有效的敌方英雄目标
+-- 判断目标是否为有效的敌方英雄目标（委托至 HeroUtility）
 function utilityModule.IsValidTarget(npcTarget)
-    return npcTarget ~= nil and npcTarget:IsAlive() and npcTarget:IsHero()
+    return heroUnit.IsValidTarget(npcTarget)
 end
 
--- 检查目标是否有林肯法球/法术反射状态
+-- 检查目标是否有林肯法球/法术反射状态（委托至 HeroUtility）
 function utilityModule.HasSphere(npcTarget)
-    local modifier = { "modifier_item_sphere", "modifier_item_sphere_target" }
-    for _, mod in pairs(modifier) do
-        if npcTarget:HasModifier(mod) then
-            return true
-        end
-    end
-    return false
+    return heroUnit.HasSphere(npcTarget)
 end
 
--- 判断目标是否为可疑的幻象
+-- 判断目标是否为可疑的幻象（委托至 HeroUtility）
 function utilityModule.IsSuspiciousIllusion(npcTarget)
-    local bot = GetBot()
-    if npcTarget:IsIllusion() or npcTarget:HasModifier("modifier_illusion") or
-        npcTarget:HasModifier("modifier_phantom_lancer_doppelwalk_illusion") or
-        npcTarget:HasModifier("modifier_phantom_lancer_juxtapose_illusion") or
-        npcTarget:HasModifier("modifier_darkseer_wallofreplica_illusion") or
-        npcTarget:HasModifier("modifier_terrorblade_conjureimage") then
-        return true
-    else
-        if GetGameMode() ~= GAMEMODE_MO then
-            if npcTarget:GetTeam() ~= bot:GetTeam() then
-                local TeamMember = GetTeamPlayers(GetTeam())
-                for i = 1, #TeamMember do
-                    local ally = GetTeamMember(i)
-                    if ally ~= nil and ally:GetUnitName() == npcTarget:GetUnitName() then
-                        return true
-                    end
-                end
-            end
-        end
-        return false
-    end
+    return heroUnit.IsSuspiciousIllusion(npcTarget)
 end
 
--- 常规施法判定（可见、非无敌、非幻象、无禁止效果、非魔免）
+-- 常规施法判定（委托至 HeroUtility）
 function utilityModule.NormalCanCast(npcTarget)
-    return npcTarget:CanBeSeen() and not npcTarget:IsInvulnerable() and
-        not utilityModule.IsSuspiciousIllusion(npcTarget) and
-        not utilityModule.HasImmuneDebuff(npcTarget) and not npcTarget:IsMagicImmune()
+    return heroUnit.NormalCanCast(npcTarget)
 end
 
--- Roshan 施法判定（无视魔免）
+-- Roshan 施法判定（委托至 HeroUtility）
 function utilityModule.RoshanCanCast(npcTarget)
-    return npcTarget:CanBeSeen() and not npcTarget:IsInvulnerable() and
-        not utilityModule.IsSuspiciousIllusion(npcTarget) and
-        not utilityModule.HasImmuneDebuff(npcTarget)
+    return heroUnit.RoshanCanCast(npcTarget)
 end
 
--- 大招施法判定（含林肯检测）
+-- 大招施法判定（委托至 HeroUtility）
 function utilityModule.UltimateCanCast(npcTarget)
-    return npcTarget:CanBeSeen() and not npcTarget:IsInvulnerable() and
-        not utilityModule.IsSuspiciousIllusion(npcTarget) and
-        not utilityModule.HasImmuneDebuff(npcTarget) and not utilityModule.HasSphere(npcTarget)
+    return heroUnit.UltimateCanCast(npcTarget)
 end
 
--- AOE 施法判定（不检测幻象和林肯）
+-- AOE 施法判定（委托至 HeroUtility）
 function utilityModule.AoeCanCast(npcTarget)
-    return npcTarget:CanBeSeen() and not npcTarget:IsMagicImmune() and
-        not npcTarget:IsInvulnerable() and
-        not utilityModule.HasImmuneDebuff(npcTarget)
+    return heroUnit.AoeCanCast(npcTarget)
 end
 
 -- 计算连招耗蓝

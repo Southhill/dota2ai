@@ -19,18 +19,6 @@ local AbilitiesReal = {}
 
 ability_item_usage_generic.InitAbility(Abilities, AbilitiesReal, Talents)
 
--- utility.PrintAbilityName(Abilities)
-local abilityName = {
-	"tusk_ice_shards",
-	"tusk_snowball",
-	"tusk_tag_team",
-	"tusk_walrus_kick",
-	"tusk_frozen_sigil",
-	"tusk_walrus_punch",
-	"tusk_launch_snowball"
-}
-local abilityIndex = utility.ReverseTable(abilityName)
-
 local AbilityToLevelUp = {
 	Abilities[1],
 	Abilities[2],
@@ -77,7 +65,7 @@ local TalentTree = {
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-	ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+	ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
@@ -88,7 +76,7 @@ cast.Desire = {}
 cast.Target = {}
 cast.Type = {}
 local Consider = {}
-local CanCast = {utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.UCanCast}
+local CanCast = { utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.UCanCast }
 local enemyDisabled = utility.enemyDisabled
 
 function GetComboDamage()
@@ -135,7 +123,7 @@ Consider[1] = function()
 						(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 							npcBot:GetMana() > ComboMana) or
 						HeroHealth / WeakestEnemy:GetMaxHealth() < 0.65)
-				 then
+				then
 					local dist = GetUnitToUnitDistance(npcBot, WeakestEnemy)
 					return BOT_ACTION_DESIRE_HIGH, npcBot:GetXUnitsTowardsLocation(
 						WeakestEnemy:GetLocation(),
@@ -168,7 +156,7 @@ Consider[1] = function()
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_TOP or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_MID or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_BOT)
-	 then
+	then
 		if (ManaPercentage > 0.4 or npcBot:GetMana() > ComboMana) then
 			local locationAoE = npcBot:FindAoELocation(true, false, npcBot:GetLocation(), CastRange, Radius, CastPoint, 0)
 			if (locationAoE.count >= 5) then
@@ -182,7 +170,7 @@ Consider[1] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcTarget = npcBot:GetTarget()
 		if (npcTarget ~= nil) then
 			if (CanCast[abilityNumber](npcTarget)) then
@@ -201,7 +189,7 @@ Consider[1] = function()
 end
 
 --[[function Timer()
-	
+
 	local desire=Consider[2]
 	if(desire>0)
 	then
@@ -242,19 +230,19 @@ Consider[2] = function()
 		local CanCast = function(ally)
 			return ally:IsIllusion() or
 				not ally:IsInvulnerable() and not AbilityExtensions:CannotBeTargetted(ally) and
-					not AbilityExtensions:MayNotBeSeen(ally) and
-					not AbilityExtensions:DontInterruptAlly(ally) and
-					(not IsLongRanger(ally) or AbilityExtensions:IsSeverelyDisabled(ally))
+				not AbilityExtensions:MayNotBeSeen(ally) and
+				not AbilityExtensions:DontInterruptAlly(ally) and
+				(not IsLongRanger(ally) or AbilityExtensions:IsSeverelyDisabled(ally))
 		end
 		local radius = ability:GetSpecialValueInt("snowball_windup_radius")
 		local allys = utility.GetNearbyVisibleHeroes(npcBot, radius, false, BOT_MODE_NONE)
 		allys =
 			AbilityExtensions:Filter(
-			allys,
-			function(t)
-				return not t:IsBot() or AbilityExtensions:NotRetreating(t)
-			end
-		)
+				allys,
+				function(t)
+					return not t:IsBot() or AbilityExtensions:NotRetreating(t)
+				end
+			)
 		allys = AbilityExtensions:Filter(allys, CanCast)
 		if allys[1] then
 			return BOT_ACTION_DESIRE_HIGH, allys[1]
@@ -299,7 +287,7 @@ Consider[2] = function()
 						(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 							npcBot:GetMana() > ComboMana) or
 						HeroHealth / WeakestEnemy:GetMaxHealth() < 0.4)
-				 then
+				then
 					return BOT_ACTION_DESIRE_MODERATE + 0.1, WeakestEnemy
 				end
 			end
@@ -325,7 +313,7 @@ Consider[2] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcTarget = npcBot:GetTarget()
 
 		if (npcTarget ~= nil) then
@@ -350,7 +338,7 @@ end
 		return BOT_ACTION_DESIRE_NONE, 0;
 	end
 
-	
+
 	if(snowTimer ~= nil)
 	then
 		local TimeSinceCast = DotaTime()-snowTimer;
@@ -388,7 +376,7 @@ Consider[3] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcTarget = npcBot:GetTarget()
 
 		if (npcTarget ~= nil) then
@@ -484,7 +472,7 @@ Consider[6] = function()
 				(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) or
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 						npcBot:GetMana() > ComboMana))
-			 then
+			then
 				return BOT_ACTION_DESIRE_LOW + 0.1, WeakestEnemy
 			end
 		end
@@ -499,7 +487,7 @@ Consider[6] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcTarget = AbilityExtensions:GetTargetIfGood(npcBot)
 
 		if (npcTarget ~= nil) then
@@ -539,21 +527,21 @@ Consider[7] = function()
 	local snowballFriends = utility.GetNearbyVisibleHeroes(npcBot, 100, false, BOT_MODE_NONE)
 	snowballFriends =
 		AbilityExtensions:Filter(
-		snowballFriends,
-		function(t)
-			return t:HasModifier("modifier_tusk_snowball_movement_friendly")
-		end
-	)
+			snowballFriends,
+			function(t)
+				return t:HasModifier("modifier_tusk_snowball_movement_friendly")
+			end
+		)
 	if
 		#snowballFriends > 0 and
-			AbilityExtensions:All(
-				snowballFriends,
-				function(t)
-					return AbilityExtensions:MustBeIllusion(npcBot, t) or
-						AbilityExtensions:GetHealthPercent(t) >= AbilityExtensions:GetHealthPercent(snowballTarget) * 1.5
-				end
-			)
-	 then
+		AbilityExtensions:All(
+			snowballFriends,
+			function(t)
+				return AbilityExtensions:MustBeIllusion(npcBot, t) or
+					AbilityExtensions:GetHealthPercent(t) >= AbilityExtensions:GetHealthPercent(snowballTarget) * 1.5
+			end
+		)
+	then
 		return BOT_ACTION_DESIRE_HIGH
 	end
 	return 0
@@ -611,7 +599,7 @@ Consider[4] = function()
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) or
 						(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 							npcBot:GetMana() > ComboMana))
-				 then
+				then
 					return BOT_ACTION_DESIRE_LOW - 0.1, WeakestEnemy
 				end
 			end

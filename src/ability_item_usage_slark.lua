@@ -8,6 +8,7 @@
 local utility = require(GetScriptDirectory() .. "/base/Utility")
 require(GetScriptDirectory() .. "/ability_item_usage_generic")
 local AbilityExtensions = require(GetScriptDirectory() .. "/base/AbilityAbstraction")
+local heroUnit = require(GetScriptDirectory() .. "/base/HeroUtility")
 
 local debugmode = false
 local npcBot = GetBot()
@@ -16,10 +17,6 @@ local Abilities = {}
 local AbilitiesReal = {}
 
 ability_item_usage_generic.InitAbility(Abilities, AbilitiesReal, Talents)
-
--- utility.PrintAbilityName(Abilities)
-local abilityName = {"slark_dark_pact", "slark_pounce", "slark_essence_shift", "slark_fish_bait", "slark_shadow_dance"}
-local abilityIndex = utility.ReverseTable(abilityName)
 
 local AbilityToLevelUp = {
 	Abilities[3],
@@ -67,7 +64,7 @@ local TalentTree = {
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-	ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+	ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
@@ -78,7 +75,7 @@ cast.Desire = {}
 cast.Target = {}
 cast.Type = {}
 local Consider = {}
-local CanCast = {utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.UCanCast}
+local CanCast = { utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.UCanCast }
 local enemyDisabled = utility.enemyDisabled
 
 function GetComboDamage()
@@ -119,7 +116,7 @@ Consider[1] = function()
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) or
 						(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 							npcBot:GetMana() > ComboMana))
-				 then
+				then
 					return BOT_ACTION_DESIRE_HIGH
 				end
 			end
@@ -140,9 +137,10 @@ Consider[1] = function()
 				return BOT_ACTION_DESIRE_HIGH
 			end
 		end
-	end]] if
+	end]]
+	if
 		(npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH)
-	 then
+	then
 		if (npcBot:WasRecentlyDamagedByAnyHero(2.0)) then
 			return BOT_ACTION_DESIRE_HIGH
 		end
@@ -161,23 +159,24 @@ Consider[1] = function()
 	--
 
 	--[[Last hit
-	if ( npcBot:GetActiveMode() == BOT_MODE_LANING ) 
+	if ( npcBot:GetActiveMode() == BOT_MODE_LANING )
 	then
 		if(WeakestCreep~=nil)
 		then
 			if((ManaPercentage>0.5 or npcBot:GetMana()>ComboMana))
 			then
 				if(CreepHealth<=WeakestCreep:GetActualIncomingDamage(Damage,DAMAGE_TYPE_MAGICAL))
-				then					
+				then
 					return BOT_ACTION_DESIRE_LOW
 				end
-			end		
+			end
 		end
-	end]] if
+	end]]
+	if
 		(npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_TOP or npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_MID or
 			npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_BOT or
 			npcBot:GetActiveMode() == BOT_MODE_FARM)
-	 then
+	then
 		if (#creeps >= 3) then
 			if (ManaPercentage > 0.5 or npcBot:GetMana() > ComboMana) then
 				return BOT_ACTION_DESIRE_LOW
@@ -190,14 +189,14 @@ Consider[1] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = npcBot:GetTarget()
 
 		if (npcEnemy ~= nil) then
 			if
 				(CanCast[abilityNumber](npcEnemy) and not enemyDisabled(npcEnemy) and
 					GetUnitToUnitDistance(npcBot, npcEnemy) < Radius + 300)
-			 then
+			then
 				return BOT_ACTION_DESIRE_MODERATE
 			end
 		end
@@ -227,7 +226,7 @@ Consider[2] = function()
 	local WeakestCreep, CreepHealth = utility.GetWeakestUnit(creeps)
 
 	-- If we get stuck
-	if utility.IsStuck(npcBot) then
+	if heroUnit.IsStuck(npcBot) then
 		local loc = utility.GetEscapeLoc()
 		return BOT_ACTION_DESIRE_HIGH
 	end
@@ -238,12 +237,12 @@ Consider[2] = function()
 			if
 				(CanCast[abilityNumber](WeakestEnemy) and npcBot:IsFacingUnit(WeakestEnemy, 10) and
 					GetUnitToUnitDistance(npcBot, WeakestEnemy) < CastRange)
-			 then
+			then
 				if
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) or
 						(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 							npcBot:GetMana() > ComboMana))
-				 then
+				then
 					return BOT_ACTION_DESIRE_HIGH
 				end
 			end
@@ -257,7 +256,7 @@ Consider[2] = function()
 	if
 		(npcBot:GetActiveMode() == BOT_MODE_RETREAT and
 			(npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH or HealthPercentage <= 0.5))
-	 then
+	then
 		return BOT_ACTION_DESIRE_HIGH
 	end
 
@@ -268,7 +267,7 @@ Consider[2] = function()
 				if
 					(CanCast[abilityNumber](WeakestEnemy) and GetUnitToUnitDistance(npcBot, WeakestEnemy) < CastRange and
 						npcBot:IsFacingUnit(WeakestEnemy, 10))
-				 then
+				then
 					return BOT_ACTION_DESIRE_LOW
 				end
 			end
@@ -280,14 +279,14 @@ Consider[2] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = npcBot:GetTarget()
 
 		if (npcEnemy ~= nil) then
 			if
 				(CanCast[abilityNumber](npcEnemy) and GetUnitToUnitDistance(npcBot, npcEnemy) < CastRange and
 					npcBot:IsFacingUnit(npcEnemy, 10))
-			 then
+			then
 				return BOT_ACTION_DESIRE_MODERATE
 			end
 		end
@@ -323,7 +322,7 @@ Consider[5] = function()
 				(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) and
 					HealthPercentage <= 0.40 + 0.05 * #enemys and
 					GetUnitToUnitDistance(npcBot, WeakestEnemy) < CastRange)
-			 then
+			then
 				return BOT_ACTION_DESIRE_HIGH
 			end
 		end
@@ -344,7 +343,7 @@ Consider[5] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = npcBot:GetTarget()
 
 		if (HealthPercentage <= 0.40 + 0.05 * #enemys and GetUnitToUnitDistance(npcBot, npcEnemy) < CastRange) then

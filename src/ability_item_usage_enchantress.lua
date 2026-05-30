@@ -64,7 +64,7 @@ local TalentTree = {
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-    ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+    ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
@@ -93,15 +93,15 @@ function GetComboMana()
 end
 
 local goodNeutral = {
-    "npc_dota_neutral_alpha_wolf", -- 头狼
-    "npc_dota_neutral_centaur_khan", -- 半人马征服�?
-    "npc_dota_neutral_dark_troll_warlord", -- 黑暗巨魔召唤法师
-    "npc_dota_neutral_polar_furbolg_ursa_warrior", -- 地狱熊怪粉碎�?
+    "npc_dota_neutral_alpha_wolf",                 -- 头狼
+    "npc_dota_neutral_centaur_khan",               -- 半人马征服�?
+    "npc_dota_neutral_dark_troll_warlord",         -- 黑暗巨魔召唤法师
+    "npc_dota_neutral_polar_furbolg_ursa_warrior", -- 地狱熊怪粉碎�?
     -- "npc_dota_neutral_forest_troll_high_priest",			-- 丘陵巨魔牧师
-    -- "npc_dota_neutral_mud_golem",			-- 泥土傀�?
-    -- "npc_dota_neutral_ogre_magi",		-- 食人魔冰霜法�?
-    "npc_dota_neutral_satyr_hellcaller", -- 萨特苦难使�?
-    "npc_dota_neutral_enraged_wildkin" -- 枭兽撕裂�?
+    -- "npc_dota_neutral_mud_golem",			-- 泥土傀�?
+    -- "npc_dota_neutral_ogre_magi",		-- 食人魔冰霜法�?
+    "npc_dota_neutral_satyr_hellcaller", -- 萨特苦难使�?
+    "npc_dota_neutral_enraged_wildkin"   -- 枭兽撕裂�?
 }
 
 local function IsGoodNeutralCreeps(npcCreep)
@@ -143,32 +143,32 @@ Consider[2] = function()
     -- dispell
     local buffedEnemies =
         AbilityExtensions:Filter(
-        enemys,
-        function(t)
-            return CanCast[2](t)
-        end
-    )
+            enemys,
+            function(t)
+                return CanCast[2](t)
+            end
+        )
     buffedEnemies =
         AbilityExtensions:Map(
-        enemys,
-        function(t)
-            return {t, AbilityExtensions:IndexOfBasicDispellablePositiveModifier(t)}
-        end
-    )
+            enemys,
+            function(t)
+                return { t, AbilityExtensions:IndexOfBasicDispellablePositiveModifier(t) }
+            end
+        )
     buffedEnemies =
         AbilityExtensions:Filter(
-        buffedEnemies,
-        function(t)
-            return t[2] ~= -1
-        end
-    )
+            buffedEnemies,
+            function(t)
+                return t[2] ~= -1
+            end
+        )
     buffedEnemies =
         AbilityExtensions:SortByMinFirst(
-        buffedEnemies,
-        function(t)
-            return t[2]
-        end
-    )
+            buffedEnemies,
+            function(t)
+                return t[2]
+            end
+        )
     if AbilityExtensions:Any(buffedEnemies) then
         return BOT_ACTION_DESIRE_MODERATE, buffedEnemies[1][1]
     end
@@ -188,12 +188,12 @@ Consider[2] = function()
     if
         ((npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH) or
             #enemys2 > 0)
-     then
+    then
         for _, npcEnemy in pairs(enemys) do
             if
                 ((npcBot:WasRecentlyDamagedByHero(npcEnemy, 2.0) and CanCast[abilityNumber](npcEnemy)) or
                     GetUnitToUnitDistance(npcBot, npcEnemy) < 400)
-             then
+            then
                 return BOT_ACTION_DESIRE_HIGH, npcEnemy
             end
         end
@@ -204,7 +204,7 @@ Consider[2] = function()
         (npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
             npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
             npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-     then
+    then
         local npcEnemy = npcBot:GetTarget()
 
         if (npcEnemy ~= nil) then
@@ -234,11 +234,11 @@ Consider[3] = function()
     local allys = AbilityExtensions:GetNearbyNonIllusionHeroes(npcBot, Radius + 100, false)
     allys =
         AbilityExtensions:Filter(
-        npcBot,
-        function(t)
-            return not t:HasModifier("modifier_ice_blast")
-        end
-    )
+            npcBot,
+            function(t)
+                return not t:HasModifier("modifier_ice_blast")
+            end
+        )
     local WeakestAlly, AllyHealth = utility.GetWeakestUnit(allys)
     local enemys = utility.GetNearbyVisibleHeroes(npcBot, Radius + 300, true, BOT_MODE_NONE)
     local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
@@ -251,8 +251,8 @@ Consider[3] = function()
     if (npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH) then
         if
             HealthPercentage <= 0.5 and npcBot:WasRecentlyDamagedByAnyHero(2.0) and
-                not npcBot:HasModifier("modifier_ice_blast")
-         then
+            not npcBot:HasModifier("modifier_ice_blast")
+        then
             return BOT_ACTION_DESIRE_HIGH
         end
     end
@@ -262,7 +262,7 @@ Consider[3] = function()
         (npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
             npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
             npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-     then
+    then
         if (WeakestAlly ~= nil) then
             if (AllyHealth / WeakestAlly:GetMaxHealth() < 0.4 + 0.4 * ManaPercentage) then
                 return BOT_ACTION_DESIRE_MODERATE
@@ -279,13 +279,13 @@ Consider[3] = function()
             npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_TOP or
             npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_MID or
             npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_BOT)
-     then
+    then
         if #creeps2 <= 1 then
             for _, npcTarget in pairs(allys) do
                 if
                     (npcTarget:GetHealth() / npcTarget:GetMaxHealth() < (0.4 + 0.4 * ManaPercentage)) and
-                        not npcTarget:HasModifier("modifier_ice_blast")
-                 then
+                    not npcTarget:HasModifier("modifier_ice_blast")
+                then
                     return BOT_ACTION_DESIRE_MODERATE
                 end
             end
@@ -320,7 +320,7 @@ Consider[1] = function()
         if target:IsHero() then
             if AbilityExtensions:MustBeIllusion(npcBot, target) then
                 return (AbilityExtensions:GetManaPercent(npcBot) >= 0.6 or
-                    AbilityExtensions:GetHealthPercent(target) <= 0.4) and
+                        AbilityExtensions:GetHealthPercent(target) <= 0.4) and
                     GetUnitToUnitDistance(npcBot, target) >= 400
             else
                 return AbilityExtensions:GetManaPercent(npcBot) >= 0.4 or GetUnitToUnitDistance(npcBot, target) >= 250
@@ -366,10 +366,10 @@ Consider[4] = function()
         local dis = GetUnitToUnitDistance(npcBot, t)
         if
             dis <=
-                npcBot:GetAttackRange() + ability:GetSpecialValueInt("impetus_attacks_range_buffer") -
-                    ability:GetSpecialValueInt("leap_distance") +
-                    100 and npcBot:IsFacingLocation(t:GetLocation(), 40)
-         then
+            npcBot:GetAttackRange() + ability:GetSpecialValueInt("impetus_attacks_range_buffer") -
+            ability:GetSpecialValueInt("leap_distance") +
+            100 and npcBot:IsFacingLocation(t:GetLocation(), 40)
+        then
             return true
         else
             return false
@@ -389,18 +389,18 @@ Consider[4] = function()
     end
     enemies =
         AbilityExtensions:SortByMinFirst(
-        enemies,
-        function(t)
-            return GetUnitToUnitDistance(npcBot, t)
-        end
-    )
+            enemies,
+            function(t)
+                return GetUnitToUnitDistance(npcBot, t)
+            end
+        )
     enemies =
         AbilityExtensions:Filter(
-        enemies,
-        function(t)
-            return TrySproink(t)
-        end
-    )
+            enemies,
+            function(t)
+                return TrySproink(t)
+            end
+        )
     if
         AbilityExtensions:Any(
             enemies,
@@ -408,7 +408,7 @@ Consider[4] = function()
                 return npcBot:WasRecentlyDamagedByHero(t, 2)
             end
         )
-     then
+    then
         return BOT_ACTION_DESIRE_HIGH
     end
     return 0

@@ -63,7 +63,7 @@ local TalentTree = {
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-	ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+	ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
@@ -74,7 +74,7 @@ cast.Desire = {}
 cast.Target = {}
 cast.Type = {}
 local Consider = {}
-local CanCast = {utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.UCanCast}
+local CanCast = { utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.UCanCast }
 local enemyDisabled = utility.enemyDisabled
 
 function GetComboDamage()
@@ -142,7 +142,7 @@ Consider[1] = function()
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) or
 						(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 							npcBot:GetMana() > ComboMana))
-				 then
+				then
 					return BOT_ACTION_DESIRE_HIGH, WeakestEnemy
 				end
 			end
@@ -169,7 +169,7 @@ Consider[1] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcTarget = npcBot:GetTarget()
 
 		if (npcTarget ~= nil) then
@@ -214,7 +214,7 @@ Consider[2] = function()
 			if
 				(CanCast[abilityNumber](WeakestEnemy) and npcBot:HasModifier("modifier_skeleton_king_mortal_strike") and
 					npcBot:GetModifierStackCount(npcBot:GetModifierByName("modifier_skeleton_king_mortal_strike")) > ability:GetLevel())
-			 then
+			then
 				if (HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) or npcBot:GetMana() > ComboMana) then
 					return BOT_ACTION_DESIRE_HIGH
 				end
@@ -230,8 +230,8 @@ Consider[2] = function()
 		if
 			(#creeps >= 3 and npcBot:HasModifier("modifier_skeleton_king_vampiric_spirit") and
 				npcBot:GetModifierStackCount(npcBot:GetModifierByName("modifier_skeleton_king_vampiric_spirit")) >
-					ability:GetLevel())
-		 then
+				ability:GetLevel())
+		then
 			if (CreepHealth <= WeakestCreep:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) or npcBot:GetMana() > ComboMana) then
 				return BOT_ACTION_DESIRE_LOW
 			end
@@ -243,18 +243,18 @@ Consider[2] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = npcBot:GetTarget()
 
 		if
 			(npcEnemy ~= nil and npcBot:HasModifier("modifier_skeleton_king_mortal_strike") and
 				npcBot:GetModifierStackCount(npcBot:GetModifierByName("modifier_skeleton_king_mortal_strike")) >
-					ability:GetLevel() + 2)
-		 then
+				ability:GetLevel() + 2)
+		then
 			if
 				(CanCast[abilityNumber](npcEnemy) and not enemyDisabled(npcEnemy) and
 					GetUnitToUnitDistance(npcBot, npcEnemy) <= 1200 - CastPoint * npcEnemy:GetCurrentMovementSpeed())
-			 then
+			then
 				return BOT_ACTION_DESIRE_MODERATE
 			end
 		end

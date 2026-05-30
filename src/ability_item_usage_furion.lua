@@ -76,7 +76,7 @@ local TalentTree = {
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-	ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+	ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
@@ -87,7 +87,7 @@ cast.Desire = {}
 cast.Target = {}
 cast.Type = {}
 local Consider = {}
-local CanCast = {utility.UCanCast, utility.NCanCast, utility.NCanCast, utility.UCanCast}
+local CanCast = { utility.UCanCast, utility.NCanCast, utility.NCanCast, utility.UCanCast }
 local enemyDisabled = utility.enemyDisabled
 
 function GetComboDamage()
@@ -110,12 +110,12 @@ Consider[1] = function()
 	local function BlockFriendMeleeHeroes(enemy)
 		local friends = enemy:GetNearbyHeroes(330, true, BOT_MODE_NONE)
 		return AbilityExtensions:Any(
-			friends,
-			function(p)
-				return AbilityExtensions:MayNotBeIllusion(npcBot, p)
-				-- and enemy:WasRecentlyDamagedByHero(p, 1.5)
-			end
-		) or
+				friends,
+				function(p)
+					return AbilityExtensions:MayNotBeIllusion(npcBot, p)
+					-- and enemy:WasRecentlyDamagedByHero(p, 1.5)
+				end
+			) or
 			AbilityExtensions:Any(
 				utility.GetNearbyVisibleHeroes(npcBot, 350, false, BOT_MODE_NONE),
 				function(p)
@@ -156,7 +156,7 @@ Consider[1] = function()
 				(CanCast[abilityNumber](npcEnemy) and not enemyDisabled(npcEnemy) and
 					not AbilityExtensions:GetAvailableItem("item_quelling_blade") and
 					not AbilityExtensions:GetAvailableItem("bfury"))
-			 then
+			then
 				local Damage2 = npcEnemy:GetEstimatedDamageToTarget(false, npcBot, 3.0, DAMAGE_TYPE_ALL)
 				if (Damage2 > nMostDangerousDamage) then
 					nMostDangerousDamage = Damage2
@@ -177,7 +177,7 @@ Consider[1] = function()
 				(CanCast[abilityNumber](WeakestEnemy) and
 					not AbilityExtensions:GetAvailableItem(WeakestEnemy, "item_quelling_blade") and
 					not AbilityExtensions:GetAvailableItem(WeakestEnemy, "bfury"))
-			 then
+			then
 				local tt = WeakestEnemy:GetNearbyHeroes(150, true, BOT_MODE_NONE)
 				if BlockFriendMeleeHeroes(WeakestEnemy) then
 					return 0
@@ -212,14 +212,14 @@ Consider[1] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcTarget = npcBot:GetTarget()
 
 		if (npcTarget ~= nil) then
 			if
 				(CanCast[abilityNumber](npcTarget) and not enemyDisabled(npcTarget) and
 					GetUnitToUnitDistance(npcBot, npcTarget) < CastRange + 75 * #allys)
-			 then
+			then
 				local tt = npcTarget:GetNearbyHeroes(150, true, BOT_MODE_NONE)
 				if BlockFriendMeleeHeroes(npcTarget) then
 					return 0
@@ -278,7 +278,7 @@ Consider[2] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcTarget = npcBot:GetTarget()
 
 		if (npcTarget ~= nil) then
@@ -288,7 +288,7 @@ Consider[2] = function()
 				(enemys2 ~= nil and allys2 ~= nil and #enemys2 < #allys2 and GetUnitToUnitDistance(npcBot, npcTarget) > 1600 and
 					HealthPercentage > 0.75 and
 					ManaPercentage > 0.45)
-			 then
+			then
 				return BOT_ACTION_DESIRE_MODERATE, npcTarget:GetExtrapolatedLocation(3) + RandomVector(250)
 			end
 		end
@@ -325,7 +325,7 @@ Consider[3] = function()
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_TOP or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_MID or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_BOT)
-	 then
+	then
 		local locationAoE = npcBot:FindAoELocation(true, false, npcBot:GetLocation(), CastRange, Radius, 0, 0)
 		if (locationAoE.count >= 4 and npcBot:GetMana() / npcBot:GetMaxMana() > 0.65) then
 			local nearbyTrees = npcBot:GetNearbyTrees(CastRange + Radius)
@@ -376,7 +376,7 @@ Consider[4] = function()
 				(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) * 3 or
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 						npcBot:GetMana() > ComboMana))
-			 then
+			then
 				return BOT_ACTION_DESIRE_HIGH, WeakestEnemy, "Target"
 			end
 		end
@@ -405,7 +405,7 @@ Consider[4] = function()
 			if
 				((ManaPercentage > 0.45 or npcBot:GetMana() > ComboMana) and
 					GetUnitToUnitDistance(npcBot, WeakestCreep) >= AttackRange - ManaPercentage)
-			 then
+			then
 				if (CreepHealth <= WeakestCreep:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL)) then
 					return BOT_ACTION_DESIRE_MODERATE + 0.05, WeakestCreep, "Target"
 				end
@@ -420,7 +420,7 @@ Consider[4] = function()
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_TOP or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_MID or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_BOT)
-	 then
+	then
 		if (#enemys + #creeps >= 3 and ManaPercentage > 0.4 or npcBot:GetMana() > ComboMana) then
 			if (WeakestEnemy ~= nil) then
 				if (CanCast[abilityNumber](WeakestEnemy) and GetUnitToUnitDistance(npcBot, WeakestEnemy) < CastRange + 75 * #allys) then
@@ -440,7 +440,7 @@ Consider[4] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcTarget = npcBot:GetTarget()
 
 		if (ManaPercentage > 0.4 or npcBot:GetMana() > ComboMana) then
@@ -480,7 +480,7 @@ end
 --[[if mutil.IsDefending(npcBot) or mutil.IsPushing(npcBot)
 	then
 		local locationAoE = npcBot:FindAoELocation( true, false, npcBot:GetLocation(), nCastRange, nRadius, 0, 0 );
-		if ( locationAoE.count >= 4 and npcBot:GetMana() / npcBot:GetMaxMana() > 0.65 ) 
+		if ( locationAoE.count >= 4 and npcBot:GetMana() / npcBot:GetMaxMana() > 0.65 )
 		then
 			local nearbyTrees = npcBot:GetNearbyTrees(nCastRange + nRadius)
 			if nearbyTrees[1] ~= nil then
@@ -489,7 +489,7 @@ end
 		end
 	end
 
-	
+
 	-- If we're going after someone
 	if mutil.IsGoingOnSomeone(npcBot)
 	then

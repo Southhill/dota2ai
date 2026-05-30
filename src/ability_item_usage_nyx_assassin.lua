@@ -64,7 +64,7 @@ local TalentTree = {
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-	ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+	ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
@@ -125,7 +125,7 @@ Consider[1] = function()
 				if
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 						npcBot:GetMana() > ComboMana)
-				 then
+				then
 					return BOT_ACTION_DESIRE_MODERATE, WeakestEnemy:GetExtrapolatedLocation(CastPoint)
 				end
 			end
@@ -180,7 +180,7 @@ Consider[1] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = AbilityExtensions:GetTargetIfGood(npcBot)
 
 		if (npcEnemy ~= nil) then
@@ -217,7 +217,7 @@ Consider[2] = function()
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) or
 						(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 							npcBot:GetMana() > ComboMana))
-				 then
+				then
 					return BOT_ACTION_DESIRE_MODERATE, WeakestEnemy
 				end
 			end
@@ -243,7 +243,7 @@ Consider[2] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcTarget = AbilityExtensions:GetTargetIfGood(npcBot)
 
 		if (ManaPercentage > 0.4 or npcBot:GetMana() > ComboMana) then
@@ -297,12 +297,12 @@ Consider[3] = function()
 	-- If we're seriously retreating, see if we can land a stun on someone who's damaged us recently
 	if
 		((npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH) or #enemys2 > 0)
-	 then
+	then
 		for _, npcEnemy in pairs(enemys) do
 			if
 				((npcBot:WasRecentlyDamagedByHero(npcEnemy, 2.0) and HealthPercentage < 0.4) or
 					GetUnitToUnitDistance(npcBot, npcEnemy) < 400)
-			 then
+			then
 				return BOT_ACTION_DESIRE_HIGH
 			end
 		end
@@ -313,7 +313,7 @@ Consider[3] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = npcBot:GetTarget()
 
 		if (npcEnemy ~= nil) then
@@ -366,7 +366,7 @@ Consider[5] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = AbilityExtensions:GetTargetIfGood(npcBot)
 		if (npcEnemy ~= nil) then
 			if (GetUnitToUnitDistance(npcBot, npcEnemy) <= 2000) then

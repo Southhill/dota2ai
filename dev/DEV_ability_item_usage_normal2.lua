@@ -89,7 +89,7 @@ local TalentTree = {
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-	ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+	ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
@@ -213,8 +213,9 @@ function AbilityUsageThink()
 					if (castType[i] == nil or castType[i] == "target") and castTarget[i] ~= nil
 					then
 						npcBot:ActionImmediate_Chat(
-						"try to use skill " .. i .. " at " .. castTarget[i]:GetUnitName() .. " Desire= " .. castDesire
-						[i], true)
+							"try to use skill " ..
+							i .. " at " .. castTarget[i]:GetUnitName() .. " Desire= " .. castDesire
+							[i], true)
 					else
 						npcBot:ActionImmediate_Chat("try to use skill " .. i .. " Desire= " .. castDesire[i], true)
 					end

@@ -28,21 +28,21 @@ local AbilityToLevelUp = {
 	Abilities[3], --8
 	Abilities[3], --9
 	Abilities[2], --10
-	"talent", --11
+	"talent",  --11
 	Abilities[6], --12
 	Abilities[2], --13
 	Abilities[2], --14
-	"talent", --15
+	"talent",  --15
 	Abilities[2], --16
-	"nil", --17
+	"nil",     --17
 	Abilities[6], --18
-	"nil", --19
-	"talent", --20
-	"nil", --21
-	"nil", --22
-	"nil", --23
-	"nil", --24
-	"talent" --25
+	"nil",     --19
+	"talent",  --20
+	"nil",     --21
+	"nil",     --22
+	"nil",     --23
+	"nil",     --24
+	"talent"   --25
 }
 
 local TalentTree = {
@@ -64,7 +64,7 @@ local TalentTree = {
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-	ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+	ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
@@ -122,7 +122,7 @@ Consider[1] = function()
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) or
 						(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 							npcBot:GetMana() > ComboMana))
-				 then
+				then
 					return BOT_ACTION_DESIRE_HIGH, WeakestEnemy:GetLocation(), "Location"
 				end
 			end
@@ -135,7 +135,8 @@ Consider[1] = function()
 	if (npcBot:GetActiveMode() == BOT_MODE_LANING) then
 		if (WeakestCreep ~= nil) then
 			if ((ManaPercentage > 0.5 or npcBot:GetMana() > ComboMana) and GetUnitToUnitDistance(npcBot, WeakestCreep) >= 300) then
-				local locationAoE = npcBot:FindAoELocation(true, false, npcBot:GetLocation(), CastRange, Radius, 0, Damage)
+				local locationAoE = npcBot:FindAoELocation(true, false, npcBot:GetLocation(), CastRange, Radius, 0,
+					Damage)
 				if (locationAoE.count >= 1) then
 					return BOT_ACTION_DESIRE_LOW - 0.02, locationAoE.targetloc, "Location"
 				end
@@ -168,7 +169,7 @@ Consider[1] = function()
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_TOP or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_MID or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_BOT)
-	 then
+	then
 		local locationAoE = npcBot:FindAoELocation(true, false, npcBot:GetLocation(), CastRange, Radius, 0, 0)
 
 		if (locationAoE.count >= 4) then
@@ -181,7 +182,7 @@ Consider[1] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcTarget = npcBot:GetTarget()
 
 		if (npcTarget ~= nil) then
@@ -222,7 +223,7 @@ Consider[2] = function()
 			npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_TOP or
 			npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_MID or
 			npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_BOTTOM)
-	 then
+	then
 		if (ManaPercentage > 0.6) then
 			for _, myFriend in pairs(allys) do
 				if (GetUnitToUnitDistance(myFriend, npcBot) < CastRange and not myFriend:HasModifier(modifierName)) then
@@ -293,7 +294,7 @@ Consider[3] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local locationAoE = npcBot:FindAoELocation(true, true, npcBot:GetLocation(), CastRange, Radius, 0, 0)
 		if (locationAoE.count >= 2) then
 			return BOT_ACTION_DESIRE_LOW
@@ -354,7 +355,7 @@ Consider[6] = function()
 				(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) or
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 						npcBot:GetMana() > ComboMana))
-			 then
+			then
 				return BOT_ACTION_DESIRE_HIGH
 			end
 		end
@@ -385,7 +386,7 @@ Consider[6] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = npcBot:GetTarget()
 
 		if (npcEnemy ~= nil) then

@@ -7,8 +7,8 @@
 --------------------------------------
 if
 	GetBot():IsInvulnerable() or not GetBot():IsHero() or not string.find(GetBot():GetUnitName(), "hero") or
-		GetBot():IsIllusion()
- then
+	GetBot():IsIllusion()
+then
 	return
 end
 
@@ -71,7 +71,7 @@ local TalentTree = {
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-	ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+	ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
@@ -82,7 +82,7 @@ cast.Desire = {}
 cast.Target = {}
 cast.Type = {}
 local Consider = {}
-local CanCast = {utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.UCanCast}
+local CanCast = { utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.UCanCast }
 local enemyDisabled = utility.enemyDisabled
 
 function GetComboDamage()
@@ -161,7 +161,7 @@ Consider[1] = function()
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) or
 						(npcBot:HasModifier("modifier_monkey_king_quadruple_tap_bonuses") or
 							IsTargetDebuffStackEnough(WeakestEnemy, "modifier_monkey_king_quadruple_tap_counter", 4)))
-				 then
+				then
 					return BOT_ACTION_DESIRE_HIGH, WeakestEnemy:GetExtrapolatedLocation(CastPoint)
 				end
 			end
@@ -197,7 +197,7 @@ Consider[1] = function()
 				(WeakestEnemy ~= nil and CanCast[abilityNumber](WeakestEnemy) and not enemyDisabled(WeakestEnemy) and
 					(npcBot:HasModifier("modifier_monkey_king_quadruple_tap_bonuses") or
 						IsTargetDebuffStackEnough(WeakestEnemy, "modifier_monkey_king_quadruple_tap_counter", 4)))
-			 then
+			then
 				return BOT_ACTION_DESIRE_LOW, WeakestEnemy:GetExtrapolatedLocation(CastPoint)
 			end
 		end
@@ -210,7 +210,7 @@ Consider[1] = function()
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_TOP or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_MID or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_BOT)
-	 then
+	then
 		if (ManaPercentage > 0.7 or npcBot:GetMana() > ComboMana) then
 			local locationAoE = npcBot:FindAoELocation(true, false, npcBot:GetLocation(), CastRange, Radius, CastPoint, 0)
 			if (locationAoE.count >= 5 and #enemys >= 2 and npcBot:HasModifier("modifier_monkey_king_quadruple_tap_bonuses")) then
@@ -224,7 +224,7 @@ Consider[1] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local locationAoE = npcBot:FindAoELocation(true, true, npcBot:GetLocation(), CastRange, Radius, CastPoint, 0)
 		if (locationAoE.count >= 2 and npcBot:HasModifier("modifier_monkey_king_quadruple_tap_bonuses")) then
 			return BOT_ACTION_DESIRE_MODERATE, locationAoE.targetloc
@@ -235,11 +235,11 @@ Consider[1] = function()
 			if
 				(npcBot:HasModifier("modifier_monkey_king_quadruple_tap_bonuses") or
 					IsTargetDebuffStackEnough(npcTarget, "modifier_monkey_king_quadruple_tap_counter", 4))
-			 then
+			then
 				if
 					(CanCast[abilityNumber](npcTarget) and not enemyDisabled(npcTarget) and
 						GetUnitToUnitDistance(npcBot, npcEnemy) <= CastRange)
-				 then
+				then
 					return BOT_ACTION_DESIRE_MODERATE, npcTarget:GetExtrapolatedLocation(CastPoint)
 				end
 			end
@@ -270,9 +270,9 @@ Consider[2] = function()
 	-- If we're seriously retreating, see if we can land a stun on someone who's damaged us recently
 	if
 		npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH and
-			npcBot:DistanceFromFountain() > 1000 and
-			#tableNearbyEnemyHeroes >= 1
-	 then
+		npcBot:DistanceFromFountain() > 1000 and
+		#tableNearbyEnemyHeroes >= 1
+	then
 		local tableNearbyTrees = npcBot:GetNearbyTrees(CastRange)
 		local furthest = GetFurthestTree(tableNearbyTrees)
 		if furthest ~= nil then
@@ -299,7 +299,7 @@ Consider[2] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcTarget = npcBot:GetTarget()
 		if (npcTarget ~= nil and CanCast[abilityNumber](npcTarget) and GetUnitToUnitDistance(npcBot, npcTarget) <= CastRange) then
 			local tableNearbyTrees = npcTarget:GetNearbyTrees(CastRange)
@@ -339,8 +339,8 @@ Consider[3] = function()
 	-- If we're seriously retreating, see if we can land a stun on someone who's damaged us recently
 	if
 		npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH and
-			#tableNearbyEnemyHeroes >= 1
-	 then
+		#tableNearbyEnemyHeroes >= 1
+	then
 		local location = npcBot:GetXUnitsTowardsLocation(GetAncient(GetTeam()):GetLocation(), CastRange)
 		return BOT_ACTION_DESIRE_MODERATE, location
 	end
@@ -359,7 +359,7 @@ Consider[3] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcTarget = npcBot:GetTarget()
 		if npcTarget ~= nil and CanCast[abilityNumber](npcTarget) and GetUnitToUnitDistance(npcBot, npcTarget) <= CastRange then
 			if enemyDisabled(npcTarget) or npcTarget:GetMovementDirectionStability() < 1.0 then
@@ -401,12 +401,12 @@ Consider[7] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcTarget = npcBot:GetTarget()
 		if
 			npcTarget ~= nil and CanCast[abilityNumber](npcTarget) and
-				(GetUnitToLocationDistance(npcTarget, PSLoc) >= (375 - 125) or npcTarget:GetHealth() <= 175)
-		 then
+			(GetUnitToLocationDistance(npcTarget, PSLoc) >= (375 - 125) or npcTarget:GetHealth() <= 175)
+		then
 			return BOT_ACTION_DESIRE_MODERATE
 		end
 	end
@@ -436,7 +436,7 @@ Consider[5] = function()
 	if
 		(npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_TOP or npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_MID or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_BOT)
-	 then
+	then
 		local tableNearbyAlly = utility.GetNearbyVisibleHeroes(npcBot, 1000, false, BOT_MODE_NONE)
 		local tower = npcBot:GetNearbyTowers(1000, false)
 		if tower ~= nil and tableNearbyAlly ~= nil and #tower >= 1 and #tableNearbyAlly >= 2 then
@@ -463,7 +463,7 @@ Consider[8] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcTarget = npcBot:GetTarget()
 		if npcTarget ~= nil and GetUnitToUnitDistance(npcBot, npcTarget) >= 1200 then
 			return BOT_ACTION_DESIRE_MODERATE
@@ -473,8 +473,8 @@ Consider[8] = function()
 	-- If we're seriously retreating, see if we can land a stun on someone who's damaged us recently
 	if
 		(npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH) and
-			not npcBot:WasRecentlyDamagedByAnyHero(4.0)
-	 then
+		not npcBot:WasRecentlyDamagedByAnyHero(4.0)
+	then
 		return BOT_ACTION_DESIRE_MODERATE
 	end
 
@@ -519,7 +519,7 @@ Consider[6] = function()
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_TOP or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_MID or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_BOT)
-	 then
+	then
 		local locationAoE = npcBot:FindAoELocation(true, true, npcBot:GetLocation(), CastRange, Radius, CastPoint, 0)
 		if (locationAoE.count >= 3) then
 			return BOT_ACTION_DESIRE_LOW, locationAoE.targetloc
@@ -531,7 +531,7 @@ Consider[6] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local locationAoE = npcBot:FindAoELocation(true, true, npcBot:GetLocation(), CastRange, Radius, CastPoint, 0)
 		if (locationAoE.count >= 2) then
 			return BOT_ACTION_DESIRE_LOW, locationAoE.targetloc

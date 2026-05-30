@@ -79,11 +79,11 @@ Consider[1] = function()
         local enemyCreeps = npcBot:GetNearbyCreeps(1200, true)
         local rangedCreep =
             AbilityExtensions:First(
-            enemyCreeps,
-            function(t)
-                return t:GetAttackRange() >= 500
-            end
-        )
+                enemyCreeps,
+                function(t)
+                    return t:GetAttackRange() >= 500
+                end
+            )
         local enemy = AbilityExtensions:First(utility.GetNearbyVisibleHeroes(npcBot, 1200, true, BOT_MODE_NONE))
         if rangedCreep ~= nil and enemy ~= nil then
             if ReadyForLastHit(npcBot, rangedCreep) and manaPercentage >= 0.6 then
@@ -101,11 +101,11 @@ Consider[1] = function()
                 AbilityExtensions:Concat(npcBot:GetNearbyCreeps(900, true), npcBot:GetNearbyCreeps(900, false))
             allCreeps =
                 AbilityExtensions:Filter(
-                allCreeps,
-                function(t)
-                    return t:GetHealth() <= enemy:GetAttackDamage() * 1.2
-                end
-            )
+                    allCreeps,
+                    function(t)
+                        return t:GetHealth() <= enemy:GetAttackDamage() * 1.2
+                    end
+                )
             if #allCreeps >= 2 and manaPercentage >= 0.4 then
                 return BOT_MODE_DESIRE_MODERATE, enemy
             end
@@ -121,7 +121,7 @@ Consider[1] = function()
 end
 
 function AbilityLevelUpThink()
-    ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+    ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 AbilityExtensions:AutoModifyConsiderFunction(npcBot, Consider, AbilitiesReal)

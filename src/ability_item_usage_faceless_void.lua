@@ -64,7 +64,7 @@ local TalentTree = {
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-	ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+	ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
@@ -75,7 +75,7 @@ cast.Desire = {}
 cast.Target = {}
 cast.Type = {}
 local Consider = {}
-local CanCast = {utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.CanCastNoTarget, utility.UCanCast}
+local CanCast = { utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.CanCastNoTarget, utility.UCanCast }
 local enemyDisabled = utility.enemyDisabled
 
 function GetComboDamage()
@@ -105,7 +105,7 @@ Consider[1] = function()
 	local trees = npcBot:GetNearbyTrees(300)
 
 	if (npcBot.FacelessVoidSkill1 == nil or DotaTime() - npcBot.FacelessVoidSkill1.Timer >= 2) then
-		npcBot.FacelessVoidSkill1 = {Hp = HealthPercentage, Timer = DotaTime()}
+		npcBot.FacelessVoidSkill1 = { Hp = HealthPercentage, Timer = DotaTime() }
 	end
 
 	--try to kill enemy hero
@@ -116,8 +116,9 @@ Consider[1] = function()
 				if
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 						npcBot:GetMana() > ComboMana)
-				 then
-					return BOT_ACTION_DESIRE_MODERATE, utility.GetUnitsTowardsLocation(npcBot, WeakestEnemy, CastRange + 200)
+				then
+					return BOT_ACTION_DESIRE_MODERATE,
+						utility.GetUnitsTowardsLocation(npcBot, WeakestEnemy, CastRange + 200)
 				end
 			end
 		end
@@ -136,9 +137,10 @@ Consider[1] = function()
 	for _, p in pairs(projectiles) do
 		if
 			GetUnitToLocationDistance(npcBot, p.location) <= 400 and p.is_attack == false and
-				not AbilityExtensions:IgnoreAbilityBlock(p.ability)
-		 then
-			return BOT_ACTION_DESIRE_HIGH, AbilityExtensions:GetPointFromLineByDistance(npcBot:GetLocation(), p.location, 450)
+			not AbilityExtensions:IgnoreAbilityBlock(p.ability)
+		then
+			return BOT_ACTION_DESIRE_HIGH,
+				AbilityExtensions:GetPointFromLineByDistance(npcBot:GetLocation(), p.location, 450)
 		end
 	end
 
@@ -146,7 +148,7 @@ Consider[1] = function()
 	if
 		(npcBot:GetActiveMode() == BOT_MODE_RETREAT or
 			npcBot.FacelessVoidSkill1.Hp - HealthPercentage >= 0.25 + 0.05 * #enemys)
-	 then
+	then
 		return BOT_ACTION_DESIRE_HIGH, utility.GetUnitsTowardsLocation(npcBot, GetAncient(GetTeam()), CastRange)
 	end
 
@@ -162,7 +164,7 @@ Consider[1] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = npcBot:GetTarget()
 
 		if (ManaPercentage > 0.4 or npcBot:GetMana() > ComboMana) then
@@ -172,8 +174,9 @@ Consider[1] = function()
 					if
 						(CanCast[abilityNumber](npcEnemy) and GetUnitToUnitDistance(npcBot, npcEnemy) > CastRange - 200 and
 							GetUnitToUnitDistance(npcBot, npcEnemy) < 1000)
-					 then
-						return BOT_ACTION_DESIRE_MODERATE, utility.GetUnitsTowardsLocation(npcBot, npcEnemy, CastRange + 200)
+					then
+						return BOT_ACTION_DESIRE_MODERATE,
+							utility.GetUnitsTowardsLocation(npcBot, npcEnemy, CastRange + 200)
 					end
 				end
 			end
@@ -214,7 +217,7 @@ Consider[2] = function()
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) or
 						(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 							npcBot:GetMana() > ComboMana))
-				 then
+				then
 					return BOT_ACTION_DESIRE_HIGH
 				end
 			end
@@ -239,7 +242,7 @@ Consider[2] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = AbilityExtensions:GetTargetIfGood(npcBot)
 
 		if (npcEnemy ~= nil and #enemys == 1) then
@@ -306,7 +309,7 @@ Consider[5] = function()
 				if
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 						npcBot:GetMana() > ComboMana)
-				 then
+				then
 					local TargetLocation = WeakestEnemy:GetExtrapolatedLocation(CastPoint)
 					local Allies = utility.GetAlliesNearLocation(TargetLocation, Radius)
 					if (#Allies == 0) then
@@ -337,10 +340,10 @@ Consider[5] = function()
 		 npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_BOT or
 		 npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_TOP or
 		 npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_MID or
-		 npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_BOT ) 
+		 npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_BOT )
 	then
 		local locationAoE = npcBot:FindAoELocation( true, true, npcBot:GetLocation(), CastRange, Radius, CastPoint, 0 );
-		if ( locationAoE.count >= 3 ) 
+		if ( locationAoE.count >= 3 )
 		then
 			local TargetLocation=locationAoE.targetloc;
 			local Allies = utility.GetAlliesNearLocation(TargetLocation,Radius)
@@ -355,7 +358,7 @@ Consider[5] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local locationAoE = npcBot:FindAoELocation(true, true, npcBot:GetLocation(), CastRange, Radius, CastPoint, 0)
 		if (locationAoE.count >= 3) then
 			local TargetLocation = locationAoE.targetloc

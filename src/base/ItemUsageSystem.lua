@@ -10,10 +10,6 @@ local function CanCastOnTarget(npcTarget)
         not npcTarget:IsIllusion()
 end
 
-local function CanCastOnMagicImmuneTarget(npcTarget)
-    return npcTarget:CanBeSeen() and not npcTarget:IsInvulnerable()
-end
-
 local function IsDisabled(npcTarget)
     if npcTarget:IsRooted() or npcTarget:IsStunned() or npcTarget:IsHexed() or npcTarget:IsSilenced() or
         npcTarget:IsNightmared() then
@@ -65,36 +61,12 @@ local function GiveToMidLaner()
     return nil
 end
 
-local function CanSwitchPTStat(pt)
-    local npcBot = GetBot()
-    if npcBot:GetPrimaryAttribute() == ATTRIBUTE_STRENGTH and pt:GetPowerTreadsStat() ~= ATTRIBUTE_STRENGTH then
-        return true
-    elseif npcBot:GetPrimaryAttribute() == ATTRIBUTE_AGILITY and pt:GetPowerTreadsStat() ~= ATTRIBUTE_INTELLECT then
-        return true
-    elseif npcBot:GetPrimaryAttribute() == ATTRIBUTE_INTELLECT and pt:GetPowerTreadsStat() ~= ATTRIBUTE_AGILITY then
-        return true
-    end
-    return false
-end
-
 local function IsItemAvailable(item_name)
     local npcBot = GetBot()
     for i = 0, 5 do
         local item = npcBot:GetItemInSlot(i)
         if (item ~= nil) then
             if (item:GetName() == item_name) and item:IsFullyCastable() then
-                return item
-            end
-        end
-    end
-    return nil
-end
-
-local function IsXItemAvailable(npcBot, item_name)
-    for i = 0, 5 do
-        local item = npcBot:GetItemInSlot(i)
-        if (item ~= nil) then
-            if (item:GetName() == item_name) then
                 return item
             end
         end
@@ -150,38 +122,6 @@ end
 
 local function GetPushTPLocation(nLane)
     return GetLaneFrontLocation(myTeam, nLane, 0)
-end
-
-local idlt = 0
-local idlm = 0
-local idlb = 0
-local function printDefendLaneDesire()
-    local npcBot = GetBot()
-
-    local md = npcBot:GetActiveMode()
-    local mdd = npcBot:GetActiveModeDesire()
-    local dlt = GetDefendLaneDesire(LANE_TOP)
-    local dlm = GetDefendLaneDesire(LANE_MID)
-    local dlb = GetDefendLaneDesire(LANE_BOT)
-    if npcBot:GetPlayerID() == 2 then
-        if idlt ~= dlt then
-            idlt = dlt
-            print("DefendLaneDesire TOP: " .. tostring(dlt))
-        elseif idlm ~= dlm then
-            idlm = dlm
-            print("DefendLaneDesire MID: " .. tostring(dlm))
-        elseif idlb ~= dlb then
-            idlb = dlb
-            print("DefendLaneDesire TOP: " .. tostring(dlb))
-        end
-        if md == BOT_MODE_DEFEND_TOWER_TOP then
-            print("Def Tower Des TOP: " .. tostring(mdd))
-        elseif md == BOT_MODE_DEFEND_TOWER_MID then
-            print("Def Tower Des MID: " .. tostring(mdd))
-        elseif md == BOT_MODE_DEFEND_TOWER_BOT then
-            print("Def Tower Des npcBot: " .. tostring(mdd))
-        end
-    end
 end
 
 local tpThreshold = 4500
@@ -554,60 +494,6 @@ function M.UnImplementedItemUsage()
         end
     end
 
-    --[[local IsUsingArmlet = npcBot:HasModifier("modifier_item_armlet_unholy_health")
-    local itemArmlet = IsItemAvailable("item_armlet")
-    if itemArmlet then
-        if itemArmlet.lastOpenTime == nil and IsUsingArmlet then
-            itemArmlet.lastOpenTime = DotaTime()
-            return
-        end
-        if not IsUsingArmlet then
-            itemArmlet.lastOpenTime = nil
-            return
-        end
-    end
-
-    if itemArmlet and itemArmlet:IsFullyCastable() and notBlasted then
-        if AbilityExtensions:IsFarmingOrPushing(npcBot) then
-            local target = npcBot:GetAttackTarget()
-            if target and target:IsAlive() and (AbilityExtensions:GetHealthPercent(npcBot) >= 0.45 or npcBot:GetHealth() <= 400 or npcBot:GetUnitName() == "npc_bot_hero_huskar" and npcBot:GetLevel() >= 7) then
-                if not IsUsingArmlet then
-                    npcBot:Action_UseAbility(itemArmlet)
-                    itemArmlet.lastOpenTime = DotaTime()
-                    return
-                else
-                    if npcBot:GetHealth() <= 250 and not npcBot:WasRecentlyDamagedByAnyHero(0.8) then
-                        npcBot:Action_UseAbility(itemArmlet)
-                        itemArmlet.lastOpenTime = DotaTime()
-                    end
-                end
-            else
-                if IsUsingArmlet then
-                    npcBot:Action_UseAbility(itemArmlet)
-                    itemArmlet.lastOpenTime = nil
-                    return
-                end
-            end
-        elseif AbilityExtensions:IsAttackingEnemies(npcBot) or AbilityExtensions:IsRetreating(npcBot) then
-            if not IsUsingArmlet then
-                if #utility.GetNearbyVisibleHeroes(npcBot, 1599, true, BOT_MODE_NONE) > 0 or npcBot:WasRecentlyDamagedByAnyHero(2.5) then
-                    npcBot:Action_UseAbility(itemArmlet)
-                    itemArmlet.lastOpenTime = DotaTime()
-                    return
-                end
-            else
-                if npcBot:GetHealth() <= 300 then
-                    local projectiles = npcBot:GetIncomingTrackingProjectiles()
-                    if (#projectiles == 0 or AbilityExtensions:CannotBeKilledNormally(npcBot)) and DotaTime() - itemArmlet.lastOpenTime >= 0.6 then
-                        npcBot:Action_UseAbility(itemArmlet)
-                        npcBot:ActionQueue_UseAbility(itemArmlet)
-                        itemArmlet.lastOpenTime = DotaTime()
-                        return
-                    end
-                end
-            end
-        end
-    end]]
     local sc = IsItemAvailable("item_solar_crest") or IsItemAvailable("item_medallion_of_courage")
     if sc ~= nil and sc:IsFullyCastable() then
         if npcBot:GetActiveMode() == BOT_MODE_ROSHAN then

@@ -65,7 +65,7 @@ local TalentTree = {
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-	ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+	ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
@@ -146,7 +146,7 @@ Consider[1] = function()
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_TOP or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_MID or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_BOT)
-	 then
+	then
 		if (#enemys >= 3) then
 			if (ManaPercentage > 0.3 or npcBot:GetMana() > ComboMana) then
 				return BOT_ACTION_DESIRE_LOW
@@ -154,7 +154,7 @@ Consider[1] = function()
 		end
 	end
 
-	--消�?
+	--消�?
 	if (npcBot:GetActiveMode() == BOT_MODE_LANING) then
 		if (ManaPercentage > 0.45 or npcBot:GetMana() > ComboMana) then
 			if (WeakestEnemy ~= nil) then
@@ -170,7 +170,7 @@ Consider[1] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = npcBot:GetTarget()
 
 		if (npcEnemy ~= nil) then
@@ -210,7 +210,7 @@ Consider[2] = function()
 			if
 				(WeakestEnemy:GetHealth() <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_ALL) and
 					GetUnitToUnitDistance(npcBot, WeakestEnemy) < AttackRange - 50)
-			 then
+			then
 				return BOT_ACTION_DESIRE_HIGH
 			end
 		end
@@ -232,7 +232,7 @@ Consider[2] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = npcBot:GetTarget()
 
 		if (npcEnemy ~= nil) then
@@ -254,11 +254,11 @@ end
 npcBot.trapTable = {}
 local findSetTraps =
 	AbilityExtensions:Filter(
-	GetUnitList(UNIT_LIST_ALLIES),
-	function(t)
-		return t:GetUnitName() == "npc_dota_templar_assassin_psionic_trap" and t:GetTeam() == npcBot:GetTeam()
-	end
-)
+		GetUnitList(UNIT_LIST_ALLIES),
+		function(t)
+			return t:GetUnitName() == "npc_dota_templar_assassin_psionic_trap" and t:GetTeam() == npcBot:GetTeam()
+		end
+	)
 AbilityExtensions:ForEach(
 	findSetTraps,
 	function(t)
@@ -329,7 +329,7 @@ Consider[6] = function()
 			if
 				((ManaPercentage > 0.4 and GetUnitToUnitDistance(npcBot, WeakestEnemy) < 1600) or
 					GetUnitToUnitDistance(npcBot, WeakestEnemy) < AttackRange)
-			 then
+			then
 				return BOT_ACTION_DESIRE_HIGH, WeakestEnemy:GetLocation()
 			end
 		end
@@ -352,12 +352,12 @@ Consider[6] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcTarget = npcBot:GetTarget()
 		if
 			(npcTarget ~= nil and GetUnitToUnitDistance(npcBot, npcTarget) <= 1400 and #enemys >= 2 and
 				CanCast[abilityNumber](npcTarget))
-		 then
+		then
 			return BOT_ACTION_DESIRE_HIGH, npcTarget:GetLocation()
 		end
 	end

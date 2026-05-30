@@ -90,7 +90,6 @@ dota2ai/
 │   ├── deploy_agent2026.bat      #   Batch deployment
 │   └── deploy_agent2026.ps1      #   PowerShell deployment (recommended)
 ├── dev/                          # Development/test scripts
-├── changelog/                    # Version changelog (EN & CN)
 ├── docs/                         # Documentation
 │   ├── ARCHITECTURE.md           #   Architecture overview
 │   ├── BEGINNER_GUIDE.md         #   Beginner's guide
@@ -191,26 +190,9 @@ Team Chat: top mid bot bot bot
 
 ---
 
-## 📜 Changelog
+## � Version Notes
 
-See [changelog/changelog_en.txt](./changelog/changelog_en.txt) for the full version history.
-
-**Latest version: v1.7.5-dev** (agent branch, updated 2026.05)
-- Restructured project: separated deploy scripts to `scripts/`, added documentation
-- Added `LOCAL_DEV_GUIDE.md` and `UPGRADE_GUIDE.md` (7.29 → 7.41c migration plan)
-- Refactored `hero_selection.lua` — role-aware pick system overhaul
-- Added debug mode, enum constants, code cleanup
-- See [UPGRADE_GUIDE.md](./docs/UPGRADE_GUIDE.md) for the 7.41c roadmap
-
-Key past milestones:
-- **v1.7.0-1.7.5** — Updated to 7.28c-7.29, added Ember Spirit, fixed numerous bugs
-- **v1.6.0-1.6f** — Full 7.20-7.23 support, chat commands, new rune/farming systems
-- **v1.5.0-1.5h** — Added 15+ new heroes, optimized retreat/ability logic
-- **v1.4.0-1.4i** — Added 20 new heroes, improved push system, role-based hero selection
-- **v1.3.0-1.3c** — New push system, warding improvements, Captain Mode support
-- **v1.2.0-1.2b** — Team gank system, improved rune/lane/courier systems
-- **v1.1.0-1.1h** — 30+ heroes added, shrine usage, courier optimization
-- **v1.0 (2017.2.3)** — Initial beta release
+This repository does not include a separate `changelog/` directory. For detailed updates, please refer to the commit history and the documentation in `docs/`.
 
 ---
 

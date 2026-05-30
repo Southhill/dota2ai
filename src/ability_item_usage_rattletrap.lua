@@ -54,7 +54,7 @@ local TalentTree = {
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-	ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+	ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 local cast = {}
@@ -104,18 +104,18 @@ Consider[1] = function()
 	local enemies = AbilityExtensions:GetNearbyHeroes(npcBot, castRange)
 	local realEnemies =
 		AbilityExtensions:Filter(
-		enemies,
-		function(t)
-			return AbilityExtensions:MayNotBeIllusion(npcBot, t)
-		end
-	)
+			enemies,
+			function(t)
+				return AbilityExtensions:MayNotBeIllusion(npcBot, t)
+			end
+		)
 	local targettableEnemies =
 		AbilityExtensions:Filter(
-		realEnemies,
-		function(t)
-			return AbilityExtensions:NormalCanCast(t, true)
-		end
-	)
+			realEnemies,
+			function(t)
+				return AbilityExtensions:NormalCanCast(t, true)
+			end
+		)
 	local friends = AbilityExtensions:GetNearbyHeroes(npcBot, 1200, true)
 	local friendCount = AbilityExtensions:GetEnemyHeroNumber(npcBot, friends)
 	local enemyCreeps = AbilityExtensions:GetNearbyAttackableCreeps(npcBot, castRange)
@@ -125,22 +125,22 @@ Consider[1] = function()
 	local weakestEnemy, enemyHealth = utility.GetWeakestUnit(targettableEnemies)
 	local weakCreeps =
 		AbilityExtensions:Filter(
-		enemyCreeps,
-		function(t)
-			return t:GetHealth() < t:GetActualIncomingDamage(damage, DAMAGE_TYPE_MAGICAL)
-		end
-	)
+			enemyCreeps,
+			function(t)
+				return t:GetHealth() < t:GetActualIncomingDamage(damage, DAMAGE_TYPE_MAGICAL)
+			end
+		)
 	local weakestCreep = utility.GetWeakestUnit(weakCreeps)
 	local forbiddenCreeps =
 		AbilityExtensions:Filter(
-		enemyCreeps,
-		function(t)
-			return t:GetHealth() > t:GetActualIncomingDamage(damage, DAMAGE_TYPE_MAGICAL) and
-				t:GetHealth() <=
+			enemyCreeps,
+			function(t)
+				return t:GetHealth() > t:GetActualIncomingDamage(damage, DAMAGE_TYPE_MAGICAL) and
+					t:GetHealth() <=
 					t:GetActualIncomingDamage(damage, DAMAGE_TYPE_MAGICAL) +
-						AbilityExtensions:AttackOnceDamage(npcBot, t) * (0.9 + #enemyCreeps * 0.1)
-		end
-	)
+					AbilityExtensions:AttackOnceDamage(npcBot, t) * (0.9 + #enemyCreeps * 0.1)
+			end
+		)
 	if #friendCreeps == 0 then
 		forbiddenCreeps = {}
 	end

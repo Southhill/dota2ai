@@ -64,7 +64,7 @@ local TalentTree = {
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-	ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+	ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
@@ -75,7 +75,7 @@ cast.Desire = {}
 cast.Target = {}
 cast.Type = {}
 local Consider = {}
-local CanCast = {utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.UCanCast}
+local CanCast = { utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.UCanCast }
 local enemyDisabled = utility.enemyDisabled
 
 function GetComboDamage()
@@ -121,7 +121,8 @@ function ComputeFactor(UnitGroup)
 			if (enemys2 == nil) then
 				enemys2 = {}
 			end
-			local healingFactor = 0.3 + #enemys2 * 0.1 + 0.2 * ManaPercentage - npcTarget:GetHealth() / npcTarget:GetMaxHealth()
+			local healingFactor = 0.3 + #enemys2 * 0.1 + 0.2 * ManaPercentage -
+			npcTarget:GetHealth() / npcTarget:GetMaxHealth()
 			if (enemyDisabled(npcTarget)) then
 				healingFactor = healingFactor + 0.1
 			end
@@ -132,7 +133,7 @@ function ComputeFactor(UnitGroup)
 		end
 	end
 	if (TempTarget ~= nil) then
-	--npcBot:ActionImmediate_Chat("omniknight.purify.Factor="..HighestFactor.." Target:"..TempTarget:GetUnitName(),true)
+		--npcBot:ActionImmediate_Chat("omniknight.purify.Factor="..HighestFactor.." Target:"..TempTarget:GetUnitName(),true)
 	end
 	return HighestFactor, TempTarget
 end
@@ -180,11 +181,11 @@ Consider[1] = function()
 	local allys = utility.GetNearbyVisibleHeroes(npcBot, 1200, false, BOT_MODE_NONE)
 	allys =
 		AbilityExtensions:Filter(
-		npcBot,
-		function(t)
-			return not t:HasModifier("modifier_ice_blast")
-		end
-	)
+			npcBot,
+			function(t)
+				return not t:HasModifier("modifier_ice_blast")
+			end
+		)
 	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange + 300, true, BOT_MODE_NONE)
 	local WeakestEnemy, HeroHealth = utility.GetWeakestUnit(enemys)
 	local creeps = npcBot:GetNearbyCreeps(CastRange + 300, true)
@@ -200,7 +201,7 @@ Consider[1] = function()
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) or
 						(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 							npcBot:GetMana() > ComboMana))
-				 then
+				then
 					local desire, target = GetAbilityTarget(WeakestEnemy)
 					if (desire > 0) then
 						return desire, target
@@ -219,8 +220,8 @@ Consider[1] = function()
 	if (npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH) then
 		if
 			(npcBot:WasRecentlyDamagedByAnyHero(2.0) and (#enemys3 >= 1 or #enemys == 0) or HealthPercentage <= 0.2) and
-				not npcBot:HasModifier("modifier_ice_blast")
-		 then
+			not npcBot:HasModifier("modifier_ice_blast")
+		then
 			return BOT_ACTION_DESIRE_HIGH + 0.08, npcBot
 		end
 	end
@@ -239,15 +240,15 @@ Consider[1] = function()
 	--Last hit
 	if
 		((npcBot:GetActiveMode() == BOT_MODE_LANING and WeakestCreep ~= nil and
-			CreepHealth <= WeakestCreep:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL)) or
+				CreepHealth <= WeakestCreep:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL)) or
 			((npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_TOP or npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_MID or
-				npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_BOT or
-				npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_TOP or
-				npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_MID or
-				npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_BOT or
-				npcBot:GetActiveMode() == BOT_MODE_FARM) and
+					npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_BOT or
+					npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_TOP or
+					npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_MID or
+					npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_BOT or
+					npcBot:GetActiveMode() == BOT_MODE_FARM) and
 				#creeps >= 3))
-	 then
+	then
 		if (WeakestCreep ~= nil and (ManaPercentage > 0.5 or npcBot:GetMana() > ComboMana)) then
 			local HighestFactor, TempTarget = GetTargetFactor2()
 			if (HighestFactor > -0.5 and TempTarget ~= nil) then
@@ -261,7 +262,7 @@ Consider[1] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = npcBot:GetTarget()
 
 		if (npcEnemy ~= nil) then
@@ -305,7 +306,7 @@ Consider[2] = function()
 			if
 				(allyHealth / weakestAlly:GetMaxHealth() < 0.4 + 0.4 * ManaPercentage + #allyNeaybyEnemys * 0.05 or
 					#allyNeaybyEnemys >= 2)
-			 then
+			then
 				return BOT_ACTION_DESIRE_MODERATE, weakestAlly
 			end
 		end
@@ -316,7 +317,7 @@ Consider[2] = function()
 				(npcTarget:GetHealth() / npcTarget:GetMaxHealth() < (0.6 + #enemys * 0.05 + 0.2 * ManaPercentage) or
 					npcTarget:WasRecentlyDamagedByAnyHero(5.0) or
 					#allyNeaybyEnemys >= 2)
-			 then
+			then
 				if (CanCast[abilityNumber](npcTarget)) then
 					return BOT_ACTION_DESIRE_MODERATE, npcTarget
 				end
@@ -350,7 +351,7 @@ Consider[2] = function()
 	if
 		(npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH or
 			(#enemys >= 2 and #allys <= 1))
-	 then
+	then
 		return BOT_ACTION_DESIRE_HIGH, npcBot
 	end
 
@@ -374,7 +375,8 @@ Consider[4] = function()
 		end
 		if target:IsHero() then
 			if AbilityExtensions:MustBeIllusion(npcBot, target) then
-				return AbilityExtensions:GetManaPercent(npcBot) >= 0.8 or AbilityExtensions:GetHealthPercent(target) <= 0.4
+				return AbilityExtensions:GetManaPercent(npcBot) >= 0.8 or
+				AbilityExtensions:GetHealthPercent(target) <= 0.4
 			else
 				return AbilityExtensions:GetManaPercent(npcBot) >= 0.4 or AbilityExtensions:GetManaPercent(npcBot) >= 0.2
 			end
@@ -428,7 +430,7 @@ Consider[5] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		if (#allys + #enemys >= 5) then
 			for i, npcTarget in pairs(allys) do
 				if (npcTarget:GetActiveMode() == BOT_MODE_RETREAT or npcTarget:GetHealth() / npcTarget:GetMaxHealth() <= 0.7) then

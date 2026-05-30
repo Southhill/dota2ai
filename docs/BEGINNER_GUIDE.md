@@ -68,12 +68,12 @@ Dota2 的 Bot 系统是**回调驱动**的。游戏引擎每帧调用特定的�
 
 ### 2.2 文件命名规则
 
-| 文件名 | 作用 |
-|--------|------|
-| `bot_<英雄内部名>.lua` | 英雄的行为逻辑 |
+| 文件名                                | 作用           |
+| ------------------------------------- | -------------- |
+| `bot_<英雄内部名>.lua`                | 英雄的行为逻辑 |
 | `ability_item_usage_<英雄内部名>.lua` | 技能和物品使用 |
-| `item_purchase_<英雄内部名>.lua` | 出装方案 |
-| `mode_<模式名>.lua` | 游戏模式行为 |
+| `item_purchase_<英雄内部名>.lua`      | 出装方案       |
+| `mode_<模式名>.lua`                   | 游戏模式行为   |
 
 > 英雄内部名可在 [Hero Names](https://dota2.gamepedia.com/Cheats#Hero_names) 查到，例如 `antimage`、`pudge`、`crystal_maiden`。
 
@@ -184,13 +184,13 @@ end
 
 每个行为模式返回一个数字告诉引擎："我多想做这件事"
 
-| 值 | 常量 | 含义 |
-|----|------|------|
-| 0 | `BOT_MODE_DESIRE_NONE` | 完全不想做 |
-| 0~0.3 | — | 有点想 |
+| 值      | 常量                       | 含义       |
+| ------- | -------------------------- | ---------- |
+| 0       | `BOT_MODE_DESIRE_NONE`     | 完全不想做 |
+| 0~0.3   | —                          | 有点想     |
 | 0.3~0.6 | `BOT_MODE_DESIRE_MODERATE` | 中等程度想 |
-| 0.6~0.8 | `BOT_MODE_DESIRE_HIGH` | 非常想 |
-| 0.8~1.0 | `BOT_MODE_DESIRE_ABSOLUTE` | 一定要做 |
+| 0.6~0.8 | `BOT_MODE_DESIRE_HIGH`     | 非常想     |
+| 0.8~1.0 | `BOT_MODE_DESIRE_ABSOLUTE` | 一定要做   |
 
 ### 4.2 引擎如何决策
 
@@ -326,7 +326,7 @@ utility.CheckAbilityBuild(AbilityToLevelUp)
 
 -- 加点入口
 function AbilityLevelUpThink()
-    ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+    ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 ----------------------------------------------------------------------------
@@ -505,25 +505,25 @@ end
 
 ### 6.3 常用物品的 Lua 名称
 
-| 游戏物品 | Lua 名称 |
-|---------|---------|
-| 吃树 | `item_tango` |
-| 大药膏 | `item_flask` |
-| 净化药水 | `item_clarity` |
-| 魔棒 | `item_magic_stick` |
-| 大魔棒 | `item_magic_wand` |
-| 鞋子 | `item_boots` |
-| 假腿 | `item_power_treads` |
-| 相位鞋 | `item_phase_boots` |
-| 秘法鞋 | `item_arcane_boots` |
-| 跳刀 | `item_blink` |
-| 黑皇杖 | `item_black_king_bar` |
-| 狂战斧 | `item_bfury` |
-| 分身斧 | `item_manta` |
-| 蝴蝶 | `item_butterfly` |
-| TP 卷轴 | `item_tpscroll` |
-| 侦查守卫 | `item_ward_observer` |
-| 显影之尘 | `item_dust` |
+| 游戏物品 | Lua 名称              |
+| -------- | --------------------- |
+| 吃树     | `item_tango`          |
+| 大药膏   | `item_flask`          |
+| 净化药水 | `item_clarity`        |
+| 魔棒     | `item_magic_stick`    |
+| 大魔棒   | `item_magic_wand`     |
+| 鞋子     | `item_boots`          |
+| 假腿     | `item_power_treads`   |
+| 相位鞋   | `item_phase_boots`    |
+| 秘法鞋   | `item_arcane_boots`   |
+| 跳刀     | `item_blink`          |
+| 黑皇杖   | `item_black_king_bar` |
+| 狂战斧   | `item_bfury`          |
+| 分身斧   | `item_manta`          |
+| 蝴蝶     | `item_butterfly`      |
+| TP 卷轴  | `item_tpscroll`       |
+| 侦查守卫 | `item_ward_observer`  |
+| 显影之尘 | `item_dust`           |
 
 ---
 
@@ -548,15 +548,15 @@ end
 
 ### 7.2 常用模式速查
 
-| 模式文件 | 用途 | 典型返回欲望的场景 |
-|---------|------|-------------------|
-| `mode_laning_generic.lua` | 对线 | 游戏时间 < 8 分钟 |
-| `mode_farm_generic.lua` | 打钱刷野 | 需要经济、附近有野怪 |
-| `mode_push_tower_*.lua` | 推塔 | 有兵线、有装备优势 |
-| `mode_retreat_*.lua` | 撤退 | 血量低、被围攻 |
-| `mode_team_roam_generic.lua` | 游走抓人 | 有烟雾、有团战机会 |
-| `mode_ward_generic.lua` | 插眼 | 有眼位需要补充 |
-| `mode_rune_generic.lua` | 捡符 | 神符刷新 |
+| 模式文件                     | 用途     | 典型返回欲望的场景   |
+| ---------------------------- | -------- | -------------------- |
+| `mode_laning_generic.lua`    | 对线     | 游戏时间 < 8 分钟    |
+| `mode_farm_generic.lua`      | 打钱刷野 | 需要经济、附近有野怪 |
+| `mode_push_tower_*.lua`      | 推塔     | 有兵线、有装备优势   |
+| `mode_retreat_*.lua`         | 撤退     | 血量低、被围攻       |
+| `mode_team_roam_generic.lua` | 游走抓人 | 有烟雾、有团战机会   |
+| `mode_ward_generic.lua`      | 插眼     | 有眼位需要补充       |
+| `mode_rune_generic.lua`      | 捡符     | 神符刷新             |
 
 ### 7.3 模式之间的协作
 

@@ -62,7 +62,7 @@ local TalentTree = {
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-	ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+	ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
@@ -77,7 +77,7 @@ cast.Desire = {}
 cast.Target = {}
 cast.Type = {}
 local Consider = {}
-local CanCast = {utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.UCanCast, utility.UCanCast}
+local CanCast = { utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.UCanCast, utility.UCanCast }
 local enemyDisabled = utility.enemyDisabled
 
 function GetComboDamage()
@@ -118,8 +118,8 @@ Consider[1] = function()
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) or
 						(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 							npcBot:GetMana() > ComboMana) and
-							GetUnitToUnitDistance(WeakestEnemy, npcBot) <= AttackRange + 100)
-				 then
+						GetUnitToUnitDistance(WeakestEnemy, npcBot) <= AttackRange + 100)
+				then
 					return BOT_ACTION_DESIRE_HIGH
 				end
 			end
@@ -133,7 +133,7 @@ Consider[1] = function()
 	if
 		(npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_TOP or npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_MID or
 			npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_BOT)
-	 then
+	then
 		local t = npcBot:GetAttackTarget()
 		if (t ~= nil) then
 			if (ManaPercentage > 0.4 and t:IsTower() and GetUnitToUnitDistance(t, npcBot) <= AttackRange + 100) then
@@ -154,7 +154,7 @@ Consider[1] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = npcBot:GetTarget()
 
 		if (npcEnemy ~= nil) then
@@ -248,7 +248,7 @@ Consider[2] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = npcBot:GetTarget()
 
 		if (npcEnemy ~= nil) then
@@ -309,12 +309,12 @@ Consider[3] = function()
 end
 
 local goodNeutral = {
-	"npc_dota_neutral_alpha_wolf", -- 头狼
-	"npc_dota_neutral_centaur_khan", -- 半人马征服�?
-	"npc_dota_neutral_dark_troll_warlord", -- 黑暗巨魔召唤法师
-	"npc_dota_neutral_polar_furbolg_ursa_warrior", -- 地狱熊怪粉碎�?
-	"npc_dota_neutral_satyr_hellcaller", -- 萨特苦难使�?
-	"npc_dota_neutral_enraged_wildkin" -- 枭兽撕裂�?
+	"npc_dota_neutral_alpha_wolf",              -- 头狼
+	"npc_dota_neutral_centaur_khan",            -- 半人马征服�?
+	"npc_dota_neutral_dark_troll_warlord",      -- 黑暗巨魔召唤法师
+	"npc_dota_neutral_polar_furbolg_ursa_warrior", -- 地狱熊怪粉碎�?
+	"npc_dota_neutral_satyr_hellcaller",        -- 萨特苦难使�?
+	"npc_dota_neutral_enraged_wildkin"          -- 枭兽撕裂�?
 }
 
 local function IsGoodNeutralCreeps(npcCreep)
@@ -364,7 +364,7 @@ Consider[4] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = npcBot:GetTarget()
 
 		if (ManaPercentage > 0.4 or npcBot:GetMana() > ComboMana) then

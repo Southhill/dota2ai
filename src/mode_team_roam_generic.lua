@@ -5,6 +5,7 @@
 local utility = require(GetScriptDirectory() .. "/base/Utility")
 local role = require(GetScriptDirectory() .. "/base/RoleUtility")
 local AbilityExtensions = require(GetScriptDirectory() .. "/base/AbilityAbstraction")
+local Timer = require(GetScriptDirectory() .. "/util/timer")
 local HeroMode
 
 function OnStart()
@@ -151,7 +152,7 @@ end
 --			npcBot.GoingToShrine=true
 --
 --			npcBot.ShrineTime=DotaTime()+max_distance
---			npcBot:ActionImmediate_Chat("I want to use Shrine,let's enjoy together! 我想要使用神泉，快来一起享�?,false)
+--			npcBot:ActionImmediate_Chat("I want to use Shrine,let's enjoy together! 我想要使用神泉，快来一起享�?,false)
 --			--npcBot:ActionImmediate_Ping(shrineLocation.x,shrineLocation.y,true)
 --
 --		end
@@ -292,8 +293,8 @@ function ConsiderTeamRoam()
 					npcAlly.TeamRoamLeader = npcBot
 					npcAlly.TeamRoamTimer = DotaTime()
 					npcAlly:SetTarget(target)
-				--npcBot:ActionImmediate_Chat(string.gsub(npcAlly:GetUnitName(),"npc_dota_hero_","").." come to Gank! Factor:"..factor2,false)
-				--print(npcBot:GetPlayerID().." @TeamRoam@"..npcAlly:GetUnitName().." want to Gank together!Factor:"..factor2)
+					--npcBot:ActionImmediate_Chat(string.gsub(npcAlly:GetUnitName(),"npc_dota_hero_","").." come to Gank! Factor:"..factor2,false)
+					--print(npcBot:GetPlayerID().." @TeamRoam@"..npcAlly:GetUnitName().." want to Gank together!Factor:"..factor2)
 				end
 			end
 		end
@@ -313,9 +314,9 @@ function GetAllyFactor(npcAlly)
 	local enemys = npcAlly:GetNearbyHeroes(1200, true, BOT_MODE_NONE)
 	if
 		((npcAlly:GetAssignedLane() == LANE_MID or role.IsCarry(npcAlly:GetUnitName()) or
-			role.IsSupport(npcAlly:GetUnitName()) == false) and
+				role.IsSupport(npcAlly:GetUnitName()) == false) and
 			npcAlly:GetLevel() <= 6)
-	 then
+	then
 		return 0
 	end
 
@@ -557,40 +558,41 @@ function TeamRoamThink()
 		local myTeam = npcBot:GetTeam()
 		if FindEnemyWardTargets == nil then
 			FindEnemyWardTargets =
-				AbilityExtensions:EveryManySeconds(
-				1,
-				function()
-					enemyStaticTargets = GetUnitList(UNIT_LIST_ALL)
-					enemyStaticTargets =
-						AbilityExtensions:Filter(
-						enemyStaticTargets,
-						function(t)
-							return t:GetTeam() ~= myTeam and GetUnitToUnitDistance(npcBot, t) <= npcBot:GetAttackRange() + 150
-						end
-					)
-					enemyStaticTargets =
-						AbilityExtensions:Map(
-						enemyStaticTargets,
-						function(t)
-							return {t, AbilityExtensions:IndexOf(wardTargets, t:GetUnitName())}
-						end
-					)
-					enemyStaticTargets =
-						AbilityExtensions:Filter(
-						enemyStaticTargets,
-						function(t)
-							return t[2] ~= -1
-						end
-					)
-					enemyStaticTargets =
-						AbilityExtensions:SortByMinFirst(
-						enemyStaticTargets,
-						function(t)
-							return t[2]
-						end
-					)
-				end
-			)
+				Timer.EveryManySeconds(
+					1,
+					function()
+						enemyStaticTargets = GetUnitList(UNIT_LIST_ALL)
+						enemyStaticTargets =
+							AbilityExtensions:Filter(
+								enemyStaticTargets,
+								function(t)
+									return t:GetTeam() ~= myTeam and
+										GetUnitToUnitDistance(npcBot, t) <= npcBot:GetAttackRange() + 150
+								end
+							)
+						enemyStaticTargets =
+							AbilityExtensions:Map(
+								enemyStaticTargets,
+								function(t)
+									return { t, AbilityExtensions:IndexOf(wardTargets, t:GetUnitName()) }
+								end
+							)
+						enemyStaticTargets =
+							AbilityExtensions:Filter(
+								enemyStaticTargets,
+								function(t)
+									return t[2] ~= -1
+								end
+							)
+						enemyStaticTargets =
+							AbilityExtensions:SortByMinFirst(
+								enemyStaticTargets,
+								function(t)
+									return t[2]
+								end
+							)
+					end
+				)
 		end
 		FindEnemyWardTargets()
 

@@ -18,11 +18,11 @@ local AbilitiesReal = {}
 
 ability_item_usage_generic.InitAbility(Abilities, AbilitiesReal, Talents)
 
-local AbilityToLevelUp = {Abilities[2], Abilities[1], Abilities[2], Abilities[3], Abilities[2], Abilities[6],
-                          Abilities[2], Abilities[3], Abilities[3], "talent", Abilities[3], Abilities[6], Abilities[1],
-                          Abilities[1], "talent", Abilities[1], "nil", Abilities[6], "nil", "talent", "nil", "nil",
-                          "nil", "nil", "talent"}
-local TalentTree = {function()
+local AbilityToLevelUp = { Abilities[2], Abilities[1], Abilities[2], Abilities[3], Abilities[2], Abilities[6],
+    Abilities[2], Abilities[3], Abilities[3], "talent", Abilities[3], Abilities[6], Abilities[1],
+    Abilities[1], "talent", Abilities[1], "nil", Abilities[6], "nil", "talent", "nil", "nil",
+    "nil", "nil", "talent" }
+local TalentTree = { function()
     return Talents[2]
 end, function()
     return Talents[3]
@@ -30,13 +30,13 @@ end, function()
     return Talents[6]
 end, function()
     return Talents[7]
-end}
+end }
 
 -- check skill build vs current level
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-    ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+    ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
@@ -47,8 +47,8 @@ cast.Desire = {}
 cast.Target = {}
 cast.Type = {}
 local Consider = {}
-local CanCast = {utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.NCanCast,
-                 utility.NCanCast}
+local CanCast = { utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.NCanCast,
+    utility.NCanCast }
 local enemyDisabled = utility.enemyDisabled
 
 function GetComboDamage()
@@ -109,7 +109,7 @@ Consider[1] = function()
 
     if XMarksEnemy() and CanCast[1](xMarkTarget) and DotaTime() - xMarkTime <= 0.8 then
         print("Torrent on x marked target: " .. xMarkTarget:GetUnitName() .. " at location " ..
-                  AbilityExtensions:ToStringVector(xMarkLocation) .. " at " .. DotaTime())
+            AbilityExtensions:ToStringVector(xMarkLocation) .. " at " .. DotaTime())
         return BOT_ACTION_DESIRE_VERYHIGH, xMarkLocation
     end
 
@@ -118,7 +118,7 @@ Consider[1] = function()
         if (WeakestEnemy ~= nil) then
             if (CanCast[abilityNumber](WeakestEnemy) and WeakestEnemy:HasModifier("modifier_kunkka_x_marks_the_spot")) then
                 if WeakestEnemy:GetModifierRemainingDuration(
-                    WeakestEnemy:GetModifierByName("modifier_kunkka_x_marks_the_spot")) < 1.6 then
+                        WeakestEnemy:GetModifierByName("modifier_kunkka_x_marks_the_spot")) < 1.6 then
                     return BOT_ACTION_DESIRE_HIGH + 0.15, WeakestEnemy:GetExtrapolatedLocation(-2.5)
                 end
             end
@@ -151,8 +151,8 @@ Consider[1] = function()
 
     -- If we're pushing or defending a lane and can hit 4+ creeps
     if (npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_TOP or npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_MID or
-        npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_BOT or npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_TOP or
-        npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_MID or npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_BOT) then
+            npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_BOT or npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_TOP or
+            npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_MID or npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_BOT) then
         if (ManaPercentage > 0.4 or npcBot:GetMana() > ComboMana) then
             local locationAoE = npcBot:FindAoELocation(true, false, npcBot:GetLocation(), CastRange, Radius, CastPoint,
                 0)
@@ -164,7 +164,7 @@ Consider[1] = function()
 
     -- If we're going after someone
     if (npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
-        npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or npcBot:GetActiveMode() == BOT_MODE_ATTACK) then
+            npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or npcBot:GetActiveMode() == BOT_MODE_ATTACK) then
         local locationAoE = npcBot:FindAoELocation(true, true, npcBot:GetLocation(), CastRange, Radius, CastPoint, 0)
         if (locationAoE.count >= 2) then
             return BOT_ACTION_DESIRE_MODERATE, locationAoE.targetloc
@@ -174,7 +174,7 @@ Consider[1] = function()
         if (npcTarget ~= nil) then
             if (CanCast[abilityNumber](npcTarget) and npcTarget:HasModifier("modifier_kunkka_x_marks_the_spot")) then
                 if npcTarget:GetModifierRemainingDuration(
-                    npcTarget:GetModifierByName("modifier_kunkka_x_marks_the_spot")) < 1.6 then
+                        npcTarget:GetModifierByName("modifier_kunkka_x_marks_the_spot")) < 1.6 then
                     return BOT_ACTION_DESIRE_HIGH + 0.15, npcTarget:GetExtrapolatedLocation(-2.5)
                 end
             end
@@ -241,7 +241,7 @@ Consider[3] = function()
         if (WeakestEnemy ~= nil) then
             if (CanCast[3](WeakestEnemy) and ManaPercentage > 0.5) then
                 if (HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) or
-                    npcBot:GetMana() > ComboMana) then
+                        npcBot:GetMana() > ComboMana) then
                     return BOT_ACTION_DESIRE_HIGH, WeakestEnemy
                 end
             end
@@ -253,7 +253,7 @@ Consider[3] = function()
     if (npcTarget ~= nil) then
         if (CanCast[3](npcTarget)) then
             if (GetComboDamage() * (0.85 + 0.15 * #allys) > npcTarget:GetHealth() and
-                GetUnitToUnitDistance(npcTarget, npcBot) < (CastRange + 200)) then
+                    GetUnitToUnitDistance(npcTarget, npcBot) < (CastRange + 200)) then
                 return BOT_ACTION_DESIRE_HIGH, npcTarget
             end
         end
@@ -283,12 +283,12 @@ Consider[3] = function()
 
     -- If we're going after someone
     if (npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
-        npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or npcBot:GetActiveMode() == BOT_MODE_ATTACK) then
+            npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or npcBot:GetActiveMode() == BOT_MODE_ATTACK) then
         local npcTarget = npcBot:GetTarget()
 
         if (npcTarget ~= nil) then
             if (CanCast[3](npcTarget) and not npcTarget:IsSilenced() and GetUnitToUnitDistance(npcBot, npcTarget) <
-                CastRange) then
+                    CastRange) then
                 return BOT_ACTION_DESIRE_HIGH, npcTarget
             end
         end
@@ -327,7 +327,7 @@ Consider[6] = function()
         if (WeakestEnemy ~= nil) then
             if (CanCast[abilityNumber](WeakestEnemy)) then
                 if (HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
-                    npcBot:GetMana() > ComboMana) then
+                        npcBot:GetMana() > ComboMana) then
                     if not AbilitiesReal[1]:IsFullyCastable() or
                         WeakestEnemy:GetModifierRemainingDuration(
                             WeakestEnemy:GetModifierByName("modifier_kunkka_x_marks_the_spot")) < 1.2 then
@@ -365,7 +365,7 @@ Consider[6] = function()
 
     -- If we're going after someone
     if (npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
-        npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or npcBot:GetActiveMode() == BOT_MODE_ATTACK) then
+            npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or npcBot:GetActiveMode() == BOT_MODE_ATTACK) then
         local npcEnemy = AbilityExtensions:GetTargetIfGood(npcBot)
 
         if (npcEnemy ~= nil) then

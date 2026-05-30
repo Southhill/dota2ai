@@ -62,7 +62,7 @@ local TalentTree = {
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-    ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+    ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
@@ -123,11 +123,11 @@ Consider[1] = function()
     local enemies = AbilityExtensions:GetNearbyNonIllusionHeroes(npcBot, range, true, BOT_MODE_NONE)
     enemies =
         AbilityExtensions:SortByMaxFirst(
-        enemies,
-        function(t)
-            return GetUnitToUnitDistance(npcBot, t)
-        end
-    )
+            enemies,
+            function(t)
+                return GetUnitToUnitDistance(npcBot, t)
+            end
+        )
     enemies = AbilityExtensions:Filter(enemies, T)
     if #enemies ~= 0 and CanCast[1](enemies[1]) then
         return BOT_MODE_DESIRE_HIGH, enemies[1]:GetExtrapolatedLocation(
@@ -138,11 +138,11 @@ Consider[1] = function()
     local allies = AbilityExtensions:GetNearbyNonIllusionHeroes(npcBot, range, false, BOT_MODE_NONE)
     allies =
         AbilityExtensions:Filter(
-        allies,
-        function(t)
-            return t:IsStunned() or t:IsRooted()
-        end
-    )
+            allies,
+            function(t)
+                return t:IsStunned() or t:IsRooted()
+            end
+        )
     allies = AbilityExtensions:Filter(allies, T)
     if #allies ~= 0 and CanCast[1](allies[1]) then
         return BOT_MODE_DESIRE_HIGH, allies[1]:GetExtrapolatedLocation(GetUnitToUnitDistance(npcBot, enemies[1]) / 1450)
@@ -210,12 +210,12 @@ Consider[5] = function()
     local range = ability:GetCastRange() + 100
     local hookedEnemy =
         AbilityExtensions:First(
-        AbilityExtensions:GetNearbyNonIllusionHeroes(npcBot, range, true, BOT_MODE_NONE),
-        function(t)
-            return t:IsHero() and AbilityExtensions:MayNotBeIllusion(npcBot, t) and
-                t:HasModifier("modifier_pudge_meat_hook")
-        end
-    )
+            AbilityExtensions:GetNearbyNonIllusionHeroes(npcBot, range, true, BOT_MODE_NONE),
+            function(t)
+                return t:IsHero() and AbilityExtensions:MayNotBeIllusion(npcBot, t) and
+                    t:HasModifier("modifier_pudge_meat_hook")
+            end
+        )
     if hookedEnemy ~= nil then
         return BOT_MODE_DESIRE_VERYHIGH, hookedEnemy
     end

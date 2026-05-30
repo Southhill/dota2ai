@@ -64,7 +64,7 @@ local TalentTree = {
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-	ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+	ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
@@ -75,7 +75,7 @@ cast.Desire = {}
 cast.Target = {}
 cast.Type = {}
 local Consider = {}
-local CanCast = {utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.UCanCast}
+local CanCast = { utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.UCanCast }
 local enemyDisabled = utility.enemyDisabled
 
 function GetComboDamage()
@@ -132,7 +132,7 @@ Consider[1] = function()
 	if
 		(npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_TOP or npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_MID or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_BOT)
-	 then
+	then
 		local locationAoE = npcBot:FindAoELocation(true, false, npcBot:GetLocation(), CastRange, Radius, 0, 0)
 
 		if (locationAoE.count >= 4) then
@@ -156,7 +156,7 @@ Consider[1] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local locationAoE = npcBot:FindAoELocation(true, true, npcBot:GetLocation(), CastRange, Radius, 0, 0)
 		if (locationAoE.count >= 3) then
 			return BOT_ACTION_DESIRE_LOW + 0.05, locationAoE.targetloc
@@ -245,7 +245,7 @@ Consider[2] = function()
 					(creep:GetAttackRange() <= 300 and CanCast[abilityNumber](creep) and
 						not creep:HasModifier("modifier_dark_seer_ion_shell") and
 						creep:GetHealth() / creep:GetMaxHealth() > 0.8)
-				 then
+				then
 					return BOT_ACTION_DESIRE_LOW, creep
 				end
 			end
@@ -268,29 +268,29 @@ Consider[2] = function()
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_TOP or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_MID or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_BOT)
-	 then
+	then
 		for k, creep in pairs(creeps2) do
 			if
 				(creep:GetAttackRange() <= 300 and CanCast[abilityNumber](creep) and
 					not creep:HasModifier("modifier_dark_seer_ion_shell") and
 					creep:GetHealth() / creep:GetMaxHealth() > 0.8)
-			 then
+			then
 				return BOT_ACTION_DESIRE_HIGH, creep
 			end
 		end
 
-	-- if ( GetUnitToUnitDistance(npcBot,npcEnemy)< CastRange + 75*#allys)
-	-- then
-	-- 	for _,myFriend in pairs(allys) do
-	-- 		if ( not myFriend:HasModifier("modifier_dark_seer_ion_shell") and myFriend:GetAttackRange() < 300 )
-	-- 		then
-	-- 			return BOT_ACTION_DESIRE_MODERATE-0.05, myFriend;
-	-- 		end
-	-- 	end
-	-- 	if not npcBot:HasModifier("modifier_dark_seer_ion_shell") then
-	-- 		return BOT_ACTION_DESIRE_MODERATE-0.05, npcBot;
-	-- 	end
-	-- end
+		-- if ( GetUnitToUnitDistance(npcBot,npcEnemy)< CastRange + 75*#allys)
+		-- then
+		-- 	for _,myFriend in pairs(allys) do
+		-- 		if ( not myFriend:HasModifier("modifier_dark_seer_ion_shell") and myFriend:GetAttackRange() < 300 )
+		-- 		then
+		-- 			return BOT_ACTION_DESIRE_MODERATE-0.05, myFriend;
+		-- 		end
+		-- 	end
+		-- 	if not npcBot:HasModifier("modifier_dark_seer_ion_shell") then
+		-- 		return BOT_ACTION_DESIRE_MODERATE-0.05, npcBot;
+		-- 	end
+		-- end
 	end
 
 	-- If we're going after someone
@@ -298,7 +298,7 @@ Consider[2] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = npcBot:GetTarget()
 
 		if (npcEnemy ~= nil) then
@@ -320,7 +320,7 @@ end
 
 local function ShouldSurge(t)
 	return (AbilityExtensions:IsRetreating(t) or AbilityExtensions:GetHealthPercent(t) <= 0.4 or t:IsHexed() or
-		t:GetCurrentMovementSpeed() <= 150) and
+			t:GetCurrentMovementSpeed() <= 150) and
 		AbilityExtensions:CanMove(t) and
 		t:WasRecentlyDamagedByAnyHero(3)
 end
@@ -351,7 +351,8 @@ Consider[3] = function()
 
 	local locationAoE = npcBot:FindAoELocation(false, true, npcBot:GetLocation(), CastRange, Radius, 0, 0)
 	if (locationAoE.count >= 2 and AOESurge:IsTrained() == true) and #enemys ~= 0 then
-		return RemapValClamped(locationAoE.count, 2, 4, BOT_ACTION_DESIRE_LOW, BOT_ACTION_DESIRE_HIGH), locationAoE.targetloc, "Location"
+		return RemapValClamped(locationAoE.count, 2, 4, BOT_ACTION_DESIRE_LOW, BOT_ACTION_DESIRE_HIGH),
+			locationAoE.targetloc, "Location"
 	end
 	--------------------------------------
 	-- Mode based usage
@@ -360,7 +361,7 @@ Consider[3] = function()
 	if
 		(npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH and
 			ShouldSurge(npcBot))
-	 then
+	then
 		if (npcBot:WasRecentlyDamagedByAnyHero(2.0)) then
 			if (AOESurge:IsTrained() == true) then
 				return BOT_ACTION_DESIRE_HIGH, locationAoE.targetloc, "Location"
@@ -388,7 +389,7 @@ Consider[3] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = npcBot:GetTarget()
 
 		if (npcEnemy ~= nil) then
@@ -403,7 +404,8 @@ Consider[3] = function()
 					end
 				end
 				if (AOESurge:IsTrained() == true) then
-					local locationAoE = npcBot:FindAoELocation(false, true, ClosestBot:GetLocation(), CastRange, Radius, 0, 0)
+					local locationAoE = npcBot:FindAoELocation(false, true, ClosestBot:GetLocation(), CastRange, Radius,
+						0, 0)
 					return BOT_ACTION_DESIRE_MODERATE, locationAoE.targetloc, "Location"
 				else
 					return BOT_ACTION_DESIRE_MODERATE, ClosestBot, "Target"
@@ -463,7 +465,7 @@ Consider[4] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = AbilityExtensions:GetTargetIfGood(npcBot)
 
 		if (npcEnemy ~= nil) then
@@ -499,7 +501,7 @@ Consider[5] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local locationAoE = npcBot:FindAoELocation(true, true, npcBot:GetLocation(), CastRange, Radius, 0, 0)
 		if (locationAoE.count >= 2) then
 			return BOT_ACTION_DESIRE_LOW, locationAoE.targetloc

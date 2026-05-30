@@ -35,7 +35,7 @@ end }
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-    ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+    ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
@@ -77,7 +77,7 @@ CanCast[2] = function(target)
 end
 CanCast[3] = function(target)
     return target:HasModifier("modifier_shadow_demon_disruption") or
-        AbilityExtensions:NormalCanCast(target, false, DAMAGE_TYPE_MAGICAL, false, true)        -- cannot calculate the position if the target is not seen
+        AbilityExtensions:NormalCanCast(target, false, DAMAGE_TYPE_MAGICAL, false, true) -- cannot calculate the position if the target is not seen
 end
 CanCast[4] = function(target)
     return target:HasModifier("modifier_shadow_demon_disruption") or

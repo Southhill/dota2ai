@@ -64,7 +64,7 @@ local TalentTree = {
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-	ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+	ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
@@ -75,7 +75,7 @@ cast.Desire = {}
 cast.Target = {}
 cast.Type = {}
 local Consider = {}
-local CanCast = {utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.UCanCast}
+local CanCast = { utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.UCanCast }
 local enemyDisabled = utility.enemyDisabled
 
 function GetComboDamage()
@@ -118,7 +118,7 @@ Consider[1] = function()
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_PHYSICAL) or
 						(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 							npcBot:GetMana() > ComboMana))
-				 then
+				then
 					return BOT_ACTION_DESIRE_HIGH, WeakestEnemy
 				end
 			end
@@ -141,9 +141,9 @@ Consider[1] = function()
 		if (ManaPercentage > 0.6 or npcBot:GetMana() > ComboMana) then
 			if
 				((WeakestEnemy ~= nil and CanCast[abilityNumber](WeakestEnemy) and
-					GetUnitToUnitDistance(npcBot, WeakestEnemy) < Radius - CastPoint * WeakestEnemy:GetCurrentMovementSpeed()) or
+						GetUnitToUnitDistance(npcBot, WeakestEnemy) < Radius - CastPoint * WeakestEnemy:GetCurrentMovementSpeed()) or
 					(WeakestCreep ~= nil and CreepHealth <= Damage))
-			 then
+			then
 				return BOT_ACTION_DESIRE_LOW, WeakestEnemy
 			end
 		end
@@ -155,7 +155,7 @@ Consider[1] = function()
 			if
 				(CreepHealth <= WeakestCreep:GetActualIncomingDamage(Damage, DAMAGE_TYPE_PHYSICAL) and
 					(ManaPercentage > 0.4 or npcBot:GetMana() > ComboMana))
-			 then
+			then
 				return BOT_ACTION_DESIRE_LOW, WeakestCreep
 			end
 		end
@@ -166,7 +166,7 @@ Consider[1] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = npcBot:GetTarget()
 
 		if (npcEnemy ~= nil) then
@@ -231,7 +231,7 @@ Consider[2] = function()
 			if
 				(npcTarget:IsRoshan() and CanCast[abilityNumber](npcTarget) and
 					GetUnitToUnitDistance(npcBot, npcTarget) < nCastRange)
-			 then
+			then
 				return BOT_ACTION_DESIRE_LOW, npcTarget:GetLocation()
 			end
 		end
@@ -242,7 +242,7 @@ Consider[2] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcTarget = npcBot:GetTarget()
 		if npcTarget ~= nil and CanCast[abilityNumber](npcTarget) and GetUnitToUnitDistance(npcBot, npcTarget) < nCastRange then
 			local distance = GetUnitToUnitDistance(npcTarget, npcBot)
@@ -296,7 +296,7 @@ Consider[3] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = npcBot:GetTarget()
 
 		if (npcEnemy ~= nil) then
@@ -304,7 +304,7 @@ Consider[3] = function()
 			if
 				(CanCast[abilityNumber](npcEnemy) and distance > CastRange and distance < 1.5 * CastRange and
 					npcBot:IsFacingLocation(npcEnemy:GetLocation(), 10))
-			 then
+			then
 				local tableNearbyEnemyHeroes = npcEnemy:GetNearbyHeroes(1000, false, BOT_MODE_NONE)
 				if (tableNearbyEnemyHeroes ~= nil and #tableNearbyEnemyHeroes <= 2) then
 					return BOT_ACTION_DESIRE_MODERATE
@@ -343,7 +343,7 @@ Consider[4] = function()
 	-- If we're seriously retreating, see if we can land a stun on someone who's damaged us recently
 	if
 		(npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH and #enemys >= 1)
-	 then
+	then
 		if (npcBot:WasRecentlyDamagedByAnyHero(2.0)) then
 			return BOT_ACTION_DESIRE_MODERATE
 		end
@@ -354,14 +354,14 @@ Consider[4] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = npcBot:GetTarget()
 
 		if (npcEnemy ~= nil) then
 			if
 				(CanCast[abilityNumber](npcEnemy) and GetUnitToUnitDistance(npcBot, npcEnemy) <= 3000 and
 					GetUnitToUnitDistance(npcBot, npcEnemy) >= 1600)
-			 then
+			then
 				return BOT_ACTION_DESIRE_MODERATE
 			end
 		end

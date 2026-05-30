@@ -1,6 +1,9 @@
 local role = require(GetScriptDirectory() .. "/base/RoleUtility")
 local bnUtil = require(GetScriptDirectory() .. "/base/BotNameUtility")
 local config = require(GetScriptDirectory() .. "/const/config")
+local Heroes = require(GetScriptDirectory() .. "/const/heroes")
+local ChatSystem = require(GetScriptDirectory() .. "/base/ChatSystem")
+local g_Agent2026Started = nil -- 防止重复执行开局通告
 
 print("============================================")
 print("[Agent2026] 已加载")
@@ -8,149 +11,6 @@ print("[Agent2026] 当前脚本路径: " .. GetScriptDirectory())
 print("============================================")
 print("============================================")
 
--- Dota2 所有英雄的内部名称列表
-local hero_pool = { "npc_dota_hero_abaddon", "npc_dota_hero_abyssal_underlord", "npc_dota_hero_alchemist",
-    "npc_dota_hero_antimage", "npc_dota_hero_ancient_apparition", "npc_dota_hero_arc_warden",
-    "npc_dota_hero_axe", "npc_dota_hero_bane", "npc_dota_hero_batrider", "npc_dota_hero_beastmaster",
-    "npc_dota_hero_bloodseeker", "npc_dota_hero_bounty_hunter", "npc_dota_hero_brewmaster",
-    "npc_dota_hero_bristleback", "npc_dota_hero_broodmother", "npc_dota_hero_centaur",
-    "npc_dota_hero_chaos_knight", "npc_dota_hero_chen", "npc_dota_hero_clinkz",
-    "npc_dota_hero_rattletrap", -- Clockwerk
-    "npc_dota_hero_crystal_maiden", "npc_dota_hero_dark_seer", "npc_dota_hero_dazzle", "npc_dota_hero_death_prophet",
-    "npc_dota_hero_disruptor", "npc_dota_hero_doom_bringer", "npc_dota_hero_dragon_knight",
-    "npc_dota_hero_drow_ranger", "npc_dota_hero_earth_spirit", "npc_dota_hero_earthshaker",
-    "npc_dota_hero_elder_titan", "npc_dota_hero_ember_spirit", "npc_dota_hero_enchantress",
-    "npc_dota_hero_enigma", "npc_dota_hero_faceless_void", "npc_dota_hero_gyrocopter",
-    "npc_dota_hero_hoodwink", "npc_dota_hero_huskar", "npc_dota_hero_invoker", "npc_dota_hero_wisp",
-    "npc_dota_hero_jakiro", "npc_dota_hero_juggernaut", "npc_dota_hero_keeper_of_the_light",
-    "npc_dota_hero_kunkka", "npc_dota_hero_legion_commander", "npc_dota_hero_leshrac",
-    "npc_dota_hero_lich", "npc_dota_hero_life_stealer", "npc_dota_hero_lina", "npc_dota_hero_lion",
-    "npc_dota_hero_lone_druid", "npc_dota_hero_luna", "npc_dota_hero_lycan", "npc_dota_hero_magnataur",
-    "npc_dota_hero_medusa", "npc_dota_hero_meepo", "npc_dota_hero_mirana", "npc_dota_hero_morphling",
-    "npc_dota_hero_monkey_king", "npc_dota_hero_naga_siren", "npc_dota_hero_furion",        -- Natures prophet
-    "npc_dota_hero_necrolyte", "npc_dota_hero_night_stalker", "npc_dota_hero_nyx_assassin", "npc_dota_hero_ogre_magi",
-    "npc_dota_hero_omniknight", "npc_dota_hero_oracle", "npc_dota_hero_obsidian_destroyer", -- Outworld Devourer
-    "npc_dota_hero_phantom_assassin", "npc_dota_hero_phantom_lancer", "npc_dota_hero_phoenix",
-    "npc_dota_hero_puck", "npc_dota_hero_pudge", "npc_dota_hero_pugna", "npc_dota_hero_queenofpain",
-    "npc_dota_hero_razor", "npc_dota_hero_riki", "npc_dota_hero_rubick", "npc_dota_hero_sand_king",
-    "npc_dota_hero_shadow_demon", "npc_dota_hero_nevermore", "npc_dota_hero_shadow_shaman",
-    "npc_dota_hero_silencer", "npc_dota_hero_skywrath_mage", "npc_dota_hero_slardar",
-    "npc_dota_hero_slark", "npc_dota_hero_sniper", "npc_dota_hero_spectre",
-    -- "npc_dota_hero_spirit_breaker",
-    "npc_dota_hero_storm_spirit", "npc_dota_hero_sven", "npc_dota_hero_techies",
-    "npc_dota_hero_templar_assassin", "npc_dota_hero_terrorblade", "npc_dota_hero_tidehunter",
-    "npc_dota_hero_shredder", "npc_dota_hero_tinker", "npc_dota_hero_tiny", "npc_dota_hero_treant",
-    "npc_dota_hero_troll_warlord", "npc_dota_hero_tusk", "npc_dota_hero_undying", "npc_dota_hero_ursa",
-    "npc_dota_hero_vengefulspirit", "npc_dota_hero_venomancer", "npc_dota_hero_viper",
-    "npc_dota_hero_visage", "npc_dota_hero_warlock", "npc_dota_hero_weaver", "npc_dota_hero_windrunner",
-    "npc_dota_hero_winter_wyvern", "npc_dota_hero_witch_doctor", "npc_dota_hero_skeleton_king",
-    "npc_dota_hero_zuus" }
--- recording default bot heroes
-local hero_pool_default_bot = { "npc_dota_hero_axe", "npc_dota_hero_bane", "npc_dota_hero_bloodseeker",
-    "npc_dota_hero_bounty_hunter", "npc_dota_hero_bristleback", "npc_dota_hero_chaos_knight",
-    "npc_dota_hero_crystal_maiden", "npc_dota_hero_dazzle", "npc_dota_hero_death_prophet",
-    "npc_dota_hero_dragon_knight", "npc_dota_hero_drow_ranger", "npc_dota_hero_earthshaker",
-    "npc_dota_hero_hoodwink", "npc_dota_hero_jakiro", "npc_dota_hero_juggernaut",
-    "npc_dota_hero_kunkka", "npc_dota_hero_lich", "npc_dota_hero_lina", "npc_dota_hero_lion",
-    "npc_dota_hero_luna", "npc_dota_hero_necrolyte", "npc_dota_hero_nevermore",
-    "npc_dota_hero_omniknight", "npc_dota_hero_oracle", "npc_dota_hero_phantom_assassin",
-    "npc_dota_hero_pudge", "npc_dota_hero_razor", "npc_dota_hero_sand_king",
-    "npc_dota_hero_skeleton_king", "npc_dota_hero_skywrath_mage", "npc_dota_hero_sniper",
-    "npc_dota_hero_sven", "npc_dota_hero_tidehunter", "npc_dota_hero_tiny",
-    "npc_dota_hero_vengefulspirit", "npc_dota_hero_viper", "npc_dota_hero_warlock",
-    "npc_dota_hero_windrunner", "npc_dota_hero_witch_doctor", "npc_dota_hero_zuus" }
--- recoding implemented bots, using in test.
-local hero_pool_test = {}
--- recording implemented bots, used in CM mode.
-local allBotHeroes = { "npc_dota_hero_abaddon", "npc_dota_hero_alchemist", "npc_dota_hero_abyssal_underlord",
-    "npc_dota_hero_ancient_apparition", "npc_dota_hero_arc_warden", "npc_dota_hero_axe",
-    "npc_dota_hero_antimage", "npc_dota_hero_batrider", "npc_dota_hero_beastmaster",
-    "npc_dota_hero_bounty_hunter", "npc_dota_hero_brewmaster", "npc_dota_hero_broodmother",
-    "npc_dota_hero_bloodseeker", "npc_dota_hero_bristleback", "npc_dota_hero_bane",
-    "npc_dota_hero_chaos_knight", "npc_dota_hero_centaur", "npc_dota_hero_crystal_maiden",
-    "npc_dota_hero_clinkz", "npc_dota_hero_chen", "npc_dota_hero_dark_seer",
-    "npc_dota_hero_disruptor", "npc_dota_hero_doom_bringer", "npc_dota_hero_dazzle",
-    "npc_dota_hero_drow_ranger", "npc_dota_hero_dragon_knight", "npc_dota_hero_death_prophet",
-    "npc_dota_hero_earth_spirit", -- "npc_dota_hero_elder_titan",
-    "npc_dota_hero_enchantress", "npc_dota_hero_enigma", "npc_dota_hero_earthshaker", "npc_dota_hero_ember_spirit",
-    "npc_dota_hero_faceless_void", "npc_dota_hero_furion", "npc_dota_hero_gyrocopter",
-    "npc_dota_hero_hoodwink", "npc_dota_hero_huskar", "npc_dota_hero_jakiro",
-    "npc_dota_hero_juggernaut", "npc_dota_hero_keeper_of_the_light", "npc_dota_hero_kunkka",
-    "npc_dota_hero_lina", "npc_dota_hero_lion", "npc_dota_hero_luna",
-    "npc_dota_hero_legion_commander", "npc_dota_hero_leshrac", "npc_dota_hero_life_stealer",
-    "npc_dota_hero_lich", "npc_dota_hero_lycan", "npc_dota_hero_magnataur", "npc_dota_hero_medusa",
-    "npc_dota_hero_mirana", -- "npc_dota_hero_monkey_king",
-    "npc_dota_hero_nevermore", "npc_dota_hero_night_stalker", "npc_dota_hero_necrolyte", "npc_dota_hero_naga_siren",
-    "npc_dota_hero_nyx_assassin", "npc_dota_hero_oracle", "npc_dota_hero_obsidian_destroyer",
-    "npc_dota_hero_ogre_magi", "npc_dota_hero_omniknight", "npc_dota_hero_phantom_assassin",
-    "npc_dota_hero_pugna", "npc_dota_hero_pudge", "npc_dota_hero_phantom_lancer",
-    "npc_dota_hero_queenofpain", "npc_dota_hero_razor", "npc_dota_hero_riki",
-    "npc_dota_hero_skywrath_mage", "npc_dota_hero_shadow_shaman", "npc_dota_hero_slardar",
-    "npc_dota_hero_silencer", "npc_dota_hero_skeleton_king", "npc_dota_hero_slark",
-    "npc_dota_hero_sand_king", "npc_dota_hero_sven", "npc_dota_hero_sniper", "npc_dota_hero_spectre",
-    "npc_dota_hero_shadow_demon",                       -- "npc_dota_hero_spirit_breaker",
-    "npc_dota_hero_treant", "npc_dota_hero_tidehunter", -- "npc_dota_hero_tiny",
-    "npc_dota_hero_terrorblade", "npc_dota_hero_templar_assassin", "npc_dota_hero_troll_warlord", "npc_dota_hero_tusk",
-    "npc_dota_hero_ursa", "npc_dota_hero_undying", "npc_dota_hero_viper", "npc_dota_hero_venomancer",
-    "npc_dota_hero_vengefulspirit", "npc_dota_hero_winter_wyvern", "npc_dota_hero_weaver",
-    "npc_dota_hero_warlock", "npc_dota_hero_windrunner", "npc_dota_hero_witch_doctor",
-    "npc_dota_hero_zuus" }
-local hero_pool_position_1 = { "npc_dota_hero_chaos_knight", "npc_dota_hero_skeleton_king", "npc_dota_hero_slark",
-    "npc_dota_hero_clinkz", "npc_dota_hero_drow_ranger", "npc_dota_hero_faceless_void",
-    "npc_dota_hero_life_stealer", "npc_dota_hero_luna", "npc_dota_hero_juggernaut",
-    "npc_dota_hero_ursa", "npc_dota_hero_sven", "npc_dota_hero_spectre",
-    "npc_dota_hero_antimage", "npc_dota_hero_gyrocopter", "npc_dota_hero_lycan",
-    -- "npc_dota_hero_monkey_king",
-    "npc_dota_hero_terrorblade", "npc_dota_hero_phantom_lancer", "npc_dota_hero_troll_warlord" }
-local hero_pool_position_2 = { "npc_dota_hero_leshrac", "npc_dota_hero_ember_spirit", "npc_dota_hero_dragon_knight",
-    "npc_dota_hero_huskar", "npc_dota_hero_zuus", "npc_dota_hero_lina",
-    "npc_dota_hero_medusa", "npc_dota_hero_phantom_assassin", "npc_dota_hero_viper",
-    "npc_dota_hero_necrolyte", "npc_dota_hero_queenofpain", "npc_dota_hero_razor",
-    "npc_dota_hero_nevermore", "npc_dota_hero_bloodseeker", "npc_dota_hero_pugna",
-    "npc_dota_hero_death_prophet", "npc_dota_hero_arc_warden", "npc_dota_hero_sniper",
-    "npc_dota_hero_alchemist", "npc_dota_hero_obsidian_destroyer",
-    "npc_dota_hero_templar_assassin", "npc_dota_hero_kunkka" -- "npc_dota_hero_tiny",
-}
-local hero_pool_position_3 = { "npc_dota_hero_centaur", "npc_dota_hero_doom_bringer", "npc_dota_hero_legion_commander",
-    "npc_dota_hero_tidehunter", "npc_dota_hero_axe", "npc_dota_hero_bristleback",
-    "npc_dota_hero_windrunner", "npc_dota_hero_abyssal_underlord", "npc_dota_hero_batrider",
-    "npc_dota_hero_beastmaster", "npc_dota_hero_brewmaster", "npc_dota_hero_enigma",
-    "npc_dota_hero_broodmother", "npc_dota_hero_dark_seer", "npc_dota_hero_enchantress",
-    "npc_dota_hero_magnataur", "npc_dota_hero_mirana", "npc_dota_hero_weaver",
-    "npc_dota_hero_furion", "npc_dota_hero_shredder" }
-local hero_pool_position_4 = { "npc_dota_hero_hoodwink", "npc_dota_hero_skywrath_mage", "npc_dota_hero_shadow_shaman",
-    "npc_dota_hero_abaddon", "npc_dota_hero_venomancer", "npc_dota_hero_slardar",
-    "npc_dota_hero_undying", "npc_dota_hero_night_stalker", "npc_dota_hero_silencer",
-    "npc_dota_hero_riki", "npc_dota_hero_earthshaker", "npc_dota_hero_omniknight",
-    "npc_dota_hero_bounty_hunter", "npc_dota_hero_keeper_of_the_light",
-    "npc_dota_hero_naga_siren", "npc_dota_hero_chen", "npc_dota_hero_pudge",
-    "npc_dota_hero_sand_king", "npc_dota_hero_nyx_assassin",
-    "npc_dota_hero_tusk" -- "npc_dota_hero_elder_titan",
-    -- "npc_dota_hero_spirit_breaker",
-}
-local hero_pool_position_5 = { "npc_dota_hero_ogre_magi", "npc_dota_hero_crystal_maiden", "npc_dota_hero_lion",
-    "npc_dota_hero_treant", "npc_dota_hero_vengefulspirit", "npc_dota_hero_jakiro",
-    "npc_dota_hero_dazzle", "npc_dota_hero_lich", "npc_dota_hero_oracle",
-    "npc_dota_hero_winter_wyvern", "npc_dota_hero_warlock", "npc_dota_hero_bane",
-    "npc_dota_hero_ancient_apparition", "npc_dota_hero_disruptor",
-    "npc_dota_hero_earth_spirit", "npc_dota_hero_witch_doctor", "npc_dota_hero_shadow_demon" }
--- This is the pool of heros from which to choose bots for each position
-local hero_pool_position = {
-    [1] = hero_pool_position_1,
-    [2] = hero_pool_position_2,
-    [3] = hero_pool_position_3,
-    [4] = hero_pool_position_4,
-    [5] = hero_pool_position_5
-}
--- This is the pool of other heros in each position, which dont have bots yet. This is so we can tell which positions the players are in.
-local hero_pool_position_unimplemented = {
-    [1] = { "npc_dota_hero_morphling" },
-    [2] = { "npc_dota_hero_invoker", "npc_dota_hero_meepo", "npc_dota_hero_puck", "npc_dota_hero_storm_spirit",
-        "npc_dota_hero_tinker" },
-    [3] = { "npc_dota_hero_rattletrap", "npc_dota_hero_lone_druid", "npc_dota_hero_pangolier" },
-    [4] = { "npc_dota_hero_wisp", "npc_dota_hero_phoenix", "npc_dota_hero_techies" },
-    [5] = { "npc_dota_hero_rubick", "npc_dota_hero_visage", "npc_dota_hero_dark_willow" }
-}
 ----------------------------------------------------------------------------------------------------
 local debugMode = config.debugMode
 -----------------------------------------------------SELECT HERO FOR BOT WITH CHAT FEATURE------------------------------
@@ -159,7 +19,7 @@ function GetHumanChatHero(name)
     if name == nil then
         return ""
     end
-    for _, hero in pairs(allBotHeroes) do
+    for _, hero in pairs(Heroes.allBotHeroes) do
         if string.find(hero, name) then
             return hero
         end
@@ -176,20 +36,52 @@ function SelectHeroChatCallback(PlayerID, ChatText, bTeamOnly)
         if bTeamOnly then
             for _, id in pairs(GetTeamPlayers(GetTeam())) do
                 if IsPlayerBot(id) and IsPlayerInHeroSelectionControl(id) and GetSelectedHeroName(id) == "" then
-                    SelectHero(id, hero)
+                    SelectHeroAndAnnounce(id, hero)
                     break
                 end
             end
         elseif bTeamOnly == false and GetTeamForPlayer(PlayerID) ~= GetTeam() then
             for _, id in pairs(GetTeamPlayers(GetTeam())) do
                 if IsPlayerBot(id) and IsPlayerInHeroSelectionControl(id) and GetSelectedHeroName(id) == "" then
-                    SelectHero(id, hero)
+                    SelectHeroAndAnnounce(id, hero)
                     break
                 end
             end
         end
     else
         print("Hero name not found! Please refer to hero_selection.lua of this script for list of heroes's name")
+    end
+end
+
+-- Explicit helper: select hero then announce to team chat (position + lane)
+function SelectHeroAndAnnounce(playerID, heroName)
+    SelectHero(playerID, heroName)
+
+    local unit = GetTeamMember(playerID)
+    if unit ~= nil then
+        local display = heroName or ""
+        display = display:gsub("^npc_dota_hero_", "")
+        display = display:gsub("_", " ")
+        display = display:gsub("(%a)([%w']*)", function(a, b) return string.upper(a) .. b end)
+
+        local pos = -1
+        if heroName ~= nil then
+            pos = GetHeroPostion(heroName) or -1
+        end
+        local posText = (pos >= 1 and pos <= 5) and tostring(pos) or "未知"
+        local laneName = "未知"
+        if pos >= 1 and pos <= 5 then
+            local laneConst = GetLanesTable()[pos]
+            if laneConst == LANE_TOP then
+                laneName = "上路"
+            elseif laneConst == LANE_MID then
+                laneName = "中路"
+            elseif laneConst == LANE_BOT then
+                laneName = "下路"
+            end
+        end
+
+        Say(unit, "[Agent2026] 已选择: " .. display .. " — 位次: " .. posText .. " (" .. laneName .. ")", true)
     end
 end
 
@@ -200,14 +92,15 @@ function GetBotNames()
 end
 
 function Think()
-    -- 开局在公屏打印确认信息（仅执行一次）
+    -- 开局在公屏打印确认信息 + 版本公告（仅执行一次）
     if g_Agent2026Started == nil and GetGameState() >= GAME_STATE_PRE_GAME then
         g_Agent2026Started = true
+        ChatSystem.SendVersionAnnouncement()
         local allBots = GetTeamPlayers(GetTeam())
         if allBots and #allBots > 0 then
             local firstBot = GetTeamMember(allBots[1])
             if firstBot then
-                Say(firstBot, "[Agent2026] 已启�?", true)
+                Say(firstBot, "[Agent2026] 已启用", true)
             end
         end
     end
@@ -263,7 +156,7 @@ function NewTurboModeLogic()
                 else
                     hero = PickRightHero(i - 1)
                 end
-                SelectHero(id, hero)
+                SelectHeroAndAnnounce(id, hero)
                 lastpick = GameTime()
                 return
             end
@@ -295,7 +188,7 @@ function TurboModeLogic()
                 else
                     hero = PickRightHero(i - 1)
                 end
-                SelectHero(id, hero)
+                SelectHeroAndAnnounce(id, hero)
                 return
             end
         end
@@ -313,7 +206,7 @@ function SingleDraftLogic()
                 else
                     hero = PickRightHero(i - 1)
                 end
-                SelectHero(id, hero)
+                SelectHeroAndAnnounce(id, hero)
                 lastpick = GameTime()
                 return
             end
@@ -337,12 +230,12 @@ function OneVsOneLogic()
                 hero = GetRandomHero2()
             end
             if hero ~= nil then
-                SelectHero(i, hero)
+                SelectHeroAndAnnounce(i, hero)
                 oboselect = true
             end
             return
         elseif oboselect and IsPlayerBot(i) and IsPlayerInHeroSelectionControl(i) and GetSelectedHeroName(i) == "" then
-            SelectHero(i, "npc_dota_hero_techies")
+            SelectHeroAndAnnounce(i, "npc_dota_hero_techies")
             return
         end
     end
@@ -379,14 +272,14 @@ function AllPickLogic()
                 randomTime = 0
 
                 local temphero = GetPositionedHero(team, selectedHeroes)
-                SelectHero(id, temphero)
+                SelectHeroAndAnnounce(id, temphero)
             end
         end
     else
         for i, id in pairs(GetTeamPlayers(team)) do
             if (IsPlayerInHeroSelectionControl(id) and IsPlayerBot(id) and
                     (GetSelectedHeroName(id) == "" or GetSelectedHeroName(id) == nil)) then
-                SelectHero(id, GetHeroInTest(selectedHeroes))
+                SelectHeroAndAnnounce(id, GetHeroInTest(selectedHeroes))
             end
         end
     end
@@ -398,8 +291,8 @@ function AllRandomLogic()
     for i, id in pairs(GetTeamPlayers(GetTeam())) do
         if GetHeroPickState() == HEROPICK_STATE_AR_SELECT and IsPlayerInHeroSelectionControl(id) and
             GetSelectedHeroName(id) == "" then
-            hero = GetRandomHero2()
-            SelectHero(id, hero)
+            local hero = GetRandomHero2()
+            SelectHeroAndAnnounce(id, hero)
             return
         end
     end
@@ -411,55 +304,38 @@ end
 -- Picking logic for Mid Only Same Hero Game Mode
 local RandomedHero = nil
 function MidOnlyLogic()
+    if GetHeroPickState() ~= HEROPICK_STATE_AP_SELECT then
+        return
+    end
+
+    local selectedHero = nil
     if IsHumanPresentInGame() then
-        if IsHumansDonePicking() then
-            if IsHumanPlayerExist() then
-                local selectedHero = GetSelectedHumanHero(GetTeam())
-                if selectedHero ~= "" and selectedHero ~= nil then
-                    for i, id in pairs(GetTeamPlayers(GetTeam())) do
-                        if GetHeroPickState() == HEROPICK_STATE_AP_SELECT and IsPlayerBot(id) and
-                            IsPlayerInHeroSelectionControl(id) and GetSelectedHeroName(id) == "" then
-                            SelectHero(id, selectedHero)
-                            return
-                        end
-                    end
-                end
-            else
-                local selectedHero = GetSelectedHumanHero(GetOpposingTeam())
-                if selectedHero ~= "" and selectedHero ~= nil then
-                    for i, id in pairs(GetTeamPlayers(GetTeam())) do
-                        if GetHeroPickState() == HEROPICK_STATE_AP_SELECT and IsPlayerBot(id) and
-                            IsPlayerInHeroSelectionControl(id) and GetSelectedHeroName(id) == "" then
-                            SelectHero(id, selectedHero)
-                            return
-                        end
-                    end
-                end
-            end
+        if not IsHumansDonePicking() then
+            return
         end
-    else
-        if GetTeam() == TEAM_DIRE then
-            if not IsOpposingTeamDonePicking() then
-                return
-            else
-                local selectedHero = GetOpposingTeamSelectedHero()
-                for i, id in pairs(GetTeamPlayers(GetTeam())) do
-                    if GetHeroPickState() == HEROPICK_STATE_AP_SELECT and IsPlayerBot(id) and
-                        IsPlayerInHeroSelectionControl(id) and GetSelectedHeroName(id) == "" then
-                        SelectHero(id, selectedHero)
-                        return
-                    end
-                end
-            end
+
+        if IsHumanPlayerExist() then
+            selectedHero = GetSelectedHumanHero(GetTeam())
         else
-            local selectedHero = SetRandomHero()
-            for i, id in pairs(GetTeamPlayers(GetTeam())) do
-                if GetHeroPickState() == HEROPICK_STATE_AP_SELECT and IsPlayerBot(id) and
-                    IsPlayerInHeroSelectionControl(id) and GetSelectedHeroName(id) == "" then
-                    SelectHero(id, selectedHero)
-                    return
-                end
-            end
+            selectedHero = GetSelectedHumanHero(GetOpposingTeam())
+        end
+    elseif GetTeam() == TEAM_DIRE then
+        if not IsOpposingTeamDonePicking() then
+            return
+        end
+        selectedHero = GetOpposingTeamSelectedHero()
+    else
+        selectedHero = SetRandomHero()
+    end
+
+    if selectedHero == nil or selectedHero == "" then
+        return
+    end
+
+    for _, id in pairs(GetTeamPlayers(GetTeam())) do
+        if IsPlayerBot(id) and IsPlayerInHeroSelectionControl(id) and GetSelectedHeroName(id) == "" then
+            SelectHeroAndAnnounce(id, selectedHero)
+            return
         end
     end
 end
@@ -587,8 +463,8 @@ end
 function GetHeroPostion(heroName)
     if (heroName ~= "") then
         for p = 1, 5, 1 do
-            if (ListContains(hero_pool_position[p], heroName) or
-                    ListContains(hero_pool_position_unimplemented[p], heroName)) then
+            if (ListContains(Heroes.positionPools[p], heroName) or
+                    ListContains(Heroes.unimplementedPools[p], heroName)) then
                 return p
             end
         end
@@ -605,14 +481,14 @@ function GetPositionedHero(team, selectedHeroes)
         position = RandomInt(1, 5)
     until (positionCounts[position] == 0)
 
-    return GetRandomHero(hero_pool_position[position], selectedHeroes)
+    return GetRandomHero(Heroes.positionPools[position], selectedHeroes)
 
     -- The object is to fill positions in this order: 3, 4, 2, 5, 1
     -- local order = {3, 4, 2, 5, 1};
     -- local positionCounts = GetPositionCounts( team );
     -- for i,position in ipairs( order ) do
     -- 	if( positionCounts[position] == 0 ) then
-    --         return GetRandomHero( hero_pool_position[position], selectedHeroes );
+    --         return GetRandomHero( Heroes.positionPools[position], selectedHeroes );
     --     end
     -- end
 end
@@ -632,8 +508,8 @@ function GetPositionCounts(team)
         local heroName = GetSelectedHeroName(id)
         if (heroName ~= "") then
             for position = 1, 5, 1 do
-                if (ListContains(hero_pool_position[position], heroName) or
-                        ListContains(hero_pool_position_unimplemented[position], heroName)) then
+                if (ListContains(Heroes.positionPools[position], heroName) or
+                        ListContains(Heroes.unimplementedPools[position], heroName)) then
                     counts[position] = counts[position] + 1
                 end
             end
@@ -661,8 +537,8 @@ function GetHeroInTest(selectedHeroes)
     -- Step through the "hero_pool_test" pool allocating them in order. This function will error if the pool is too small, but it's not for general use.
     local hero
     repeat
-        hero = hero_pool_test[1]
-        table.remove(hero_pool_test, 1)
+        hero = Heroes.testPool[1]
+        table.remove(Heroes.testPool, 1)
     until (selectedHeroes[hero] ~= true)
     return hero
 end
@@ -695,11 +571,11 @@ function GetRandomHero2()
     end
 
     if (hero == nil) then
-        hero = allBotHeroes[RandomInt(1, #allBotHeroes)]
+        hero = Heroes.allBotHeroes[RandomInt(1, #Heroes.allBotHeroes)]
     end
 
     while (selectedHeroes[hero] == true) do
-        hero = allBotHeroes[RandomInt(1, #allBotHeroes)]
+        hero = Heroes.allBotHeroes[RandomInt(1, #Heroes.allBotHeroes)]
     end
 
     return hero
@@ -793,7 +669,11 @@ end
 ----------------------------------------------------------------------------------------------------
 local chatLanes = {}
 ---------------------------------------------------------LANE ASSIGMENT WITH CHAT FEATURE-----------------------------------------------
-function SelectLaneChatCallback(PlayerID, ChatText, bTeamOnly)
+-- Parses a chat command from a teammate and converts it into a lane assignment table.
+-- Only teammates from the same team are allowed to set these lane commands.
+-- Expected input: 5 words separated by spaces, each one of `top`, `mid`, or `bot`.
+-- The parsed lanes are stored in the shared `chatLanes` table for later assignment.
+function ProcessLaneChatCommand(PlayerID, ChatText, bTeamOnly)
     if GetTeamForPlayer(PlayerID) == GetTeam() then
         chatLanes = {}
         local count = 1
@@ -821,7 +701,7 @@ function UpdateLaneAssignments()
         -- print("AP Lane Assignment")
         if GetGameState() == GAME_STATE_STRATEGY_TIME or GetGameState() == GAME_STATE_PRE_GAME then
             InstallChatCallback(function(attr)
-                SelectLaneChatCallback(attr.player_id, attr.string, attr.team_only)
+                ProcessLaneChatCommand(attr.player_id, attr.string, attr.team_only)
             end)
         end
         if #chatLanes == 5 then
@@ -1077,25 +957,25 @@ function PicksHero()
     PickCycle = PickCycle + 1
 end
 
--- Add to list human picked heroes
-function AddToList()
-    if not IsPlayerBot(GetCMCaptain()) then
-        for _, h in pairs(allBotHeroes) do
-            if IsCMPickedHero(GetTeam(), h) and not alreadyInTable(h) then
-                table.insert(humanPick, h)
-            end
-        end
-    end
-end
-
 -- Check if selected hero already picked by human
-function alreadyInTable(hero_name)
+local function alreadyInTable(hero_name)
     for _, h in pairs(humanPick) do
         if hero_name == h then
             return true
         end
     end
     return false
+end
+
+-- Add to list human picked heroes
+function AddToList()
+    if not IsPlayerBot(GetCMCaptain()) then
+        for _, h in pairs(Heroes.allBotHeroes) do
+            if IsCMPickedHero(GetTeam(), h) and not alreadyInTable(h) then
+                table.insert(humanPick, h)
+            end
+        end
+    end
 end
 
 -- Check if the randomed hero doesn't available for captain's mode
@@ -1120,10 +1000,10 @@ end
 
 -- Random hero which is non picked, non banned, or non human picked heroes if the human is the captain
 function RandomHero()
-    local hero = allBotHeroes[RandomInt(1, #allBotHeroes)]
+    local hero = Heroes.allBotHeroes[RandomInt(1, #Heroes.allBotHeroes)]
     while (IsUnavailableHero(hero) or IsCMPickedHero(GetTeam(), hero) or IsCMPickedHero(GetOpposingTeam(), hero) or
             IsCMBannedHero(hero)) do
-        hero = allBotHeroes[RandomInt(1, #allBotHeroes)]
+        hero = Heroes.allBotHeroes[RandomInt(1, #Heroes.allBotHeroes)]
     end
     return hero
 end
@@ -1161,7 +1041,7 @@ function SelectsHero()
         end
 
         for i = 1, #RestBotPlayers do
-            SelectHero(RestBotPlayers[i], ListPickedHeroes[i])
+            SelectHeroAndAnnounce(RestBotPlayers[i], ListPickedHeroes[i])
         end
 
         AllHeroesSelected = true
@@ -1170,7 +1050,7 @@ end
 
 -- Get the team picked heroes
 function GetTeamSelectedHeroes()
-    for _, sName in pairs(allBotHeroes) do
+    for _, sName in pairs(Heroes.allBotHeroes) do
         if IsCMPickedHero(GetTeam(), sName) then
             table.insert(ListPickedHeroes, sName)
         end

@@ -8,6 +8,7 @@
 local utility = require(GetScriptDirectory() .. "/base/Utility")
 require(GetScriptDirectory() .. "/ability_item_usage_generic")
 local AbilityExtensions = require(GetScriptDirectory() .. "/base/AbilityAbstraction")
+local Timer = require(GetScriptDirectory() .. "/util/timer")
 
 local debugmode = false
 local npcBot = GetBot()
@@ -64,7 +65,7 @@ local TalentTree = {
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-	ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+	ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
@@ -75,7 +76,7 @@ cast.Desire = {}
 cast.Target = {}
 cast.Type = {}
 local Consider = {}
-local CanCast = {utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.UCanCast}
+local CanCast = { utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.UCanCast }
 local enemyDisabled = utility.enemyDisabled
 
 function GetComboDamage()
@@ -118,12 +119,12 @@ Consider[1] = function()
 	-- If we're seriously retreating, see if we can land a stun on someone who's damaged us recently
 	if
 		((npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH) or #enemys2 > 0)
-	 then
+	then
 		for _, npcEnemy in pairs(enemys) do
 			if
 				((npcBot:WasRecentlyDamagedByHero(npcEnemy, 2.0) and CanCast[abilityNumber](npcEnemy)) or
 					GetUnitToUnitDistance(npcBot, npcEnemy) < 400)
-			 then
+			then
 				return BOT_ACTION_DESIRE_HIGH, npcEnemy
 			end
 		end
@@ -134,7 +135,7 @@ Consider[1] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = npcBot:GetTarget()
 
 		if (npcEnemy ~= nil) then
@@ -248,15 +249,15 @@ end
 -- end
 
 local goodNeutral = {
-	"npc_dota_neutral_alpha_wolf", -- 头狼
-	"npc_dota_neutral_centaur_khan", -- 半人马征服�?
-	"npc_dota_neutral_dark_troll_warlord", -- 黑暗巨魔召唤法师
-	"npc_dota_neutral_polar_furbolg_ursa_warrior", -- 地狱熊怪粉碎�?
+	"npc_dota_neutral_alpha_wolf",              -- 头狼
+	"npc_dota_neutral_centaur_khan",            -- 半人马征服�?
+	"npc_dota_neutral_dark_troll_warlord",      -- 黑暗巨魔召唤法师
+	"npc_dota_neutral_polar_furbolg_ursa_warrior", -- 地狱熊怪粉碎�?
 	--"npc_dota_neutral_forest_troll_high_priest",			-- 丘陵巨魔牧师
-	--"npc_dota_neutral_mud_golem",			-- 泥土傀�?
-	--"npc_dota_neutral_ogre_magi",		-- 食人魔冰霜法�?
-	"npc_dota_neutral_satyr_hellcaller", -- 萨特苦难使�?
-	"npc_dota_neutral_enraged_wildkin" -- 枭兽撕裂�?
+	--"npc_dota_neutral_mud_golem",			-- 泥土傀�?
+	--"npc_dota_neutral_ogre_magi",		-- 食人魔冰霜法�?
+	"npc_dota_neutral_satyr_hellcaller", -- 萨特苦难使�?
+	"npc_dota_neutral_enraged_wildkin" -- 枭兽撕裂�?
 }
 
 local function IsGoodNeutralCreeps(npcCreep)
@@ -370,7 +371,7 @@ function ConsiderRecall()
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_TOP or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_MID or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_BOT)
-	 then
+	then
 		local nearbyTower = npcBot:GetNearbyTowers(1000, false)
 		if nearbyTower[1] ~= nil then
 			local maxDist = 0
@@ -395,7 +396,7 @@ function ConsiderRecall()
 	if
 		(npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_TOP or npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_MID or
 			npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_BOT)
-	 then
+	then
 		local nearbyTower = npcBot:GetNearbyTowers(1000, true)
 		if nearbyTower[1] ~= nil then
 			local maxDist = 0
@@ -422,7 +423,7 @@ function ConsiderRecall()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcTarget = npcBot:GetTarget()
 		if (npcTarget ~= nil and npcTarget:IsHero() and GetUnitToUnitDistance(npcTarget, npcBot) < 1000) then
 			local maxDist = 0
@@ -448,12 +449,12 @@ function ConsiderRecall()
 end
 
 local GetAllAllyHeroes =
-	AbilityExtensions:EveryManySeconds(
-	2,
-	function()
-		return AbilityExtensions:GetNearbyNonIllusionHeroes(npcBot, 10000, false)
-	end
-)
+	Timer.EveryManySeconds(
+		2,
+		function()
+			return AbilityExtensions:GetNearbyNonIllusionHeroes(npcBot, 10000, false)
+		end
+	)
 
 Consider[4] = function()
 	local abilityNumber = 4
@@ -474,28 +475,28 @@ Consider[4] = function()
 	local function IsDamaged(npc)
 		return npc:GetHealth() <= 400 or
 			AbilityExtensions:GetHealthDeficit(npc) >= healAmount * 1.3 and npc:GetUnitName() ~= "npc_dota_hero_huskar" and
-				npc:WasRecentlyDamagedByAnyHero(1.2)
+			npc:WasRecentlyDamagedByAnyHero(1.2)
 	end
 
 	local CastRange = 1599
 	local allys = GetAllAllyHeroes()
-	if not AbilityExtensions:CalledOnThisFrame(allys) then
+	if not Timer.CalledOnThisFrame(allys) then
 		AbilityExtensions:GetNearbyNonIllusionHeroes(npcBot, CastRange, false)
 	end
 	allys =
 		AbilityExtensions:Filter(
-		allys,
-		function(t)
-			return not t:IsInvulnerable() and not t:HasModifier("modifier_ice_blast")
-		end
-	)
+			allys,
+			function(t)
+				return not t:IsInvulnerable() and not t:HasModifier("modifier_ice_blast")
+			end
+		)
 	local damagedAllies =
 		AbilityExtensions:Filter(
-		allys,
-		function(t)
-			return IsDamaged(t) and not IsSeverelyDamaged(t)
-		end
-	)
+			allys,
+			function(t)
+				return IsDamaged(t) and not IsSeverelyDamaged(t)
+			end
+		)
 	local severelyDamagedAllies = AbilityExtensions:Filter(allys, IsSeverelyDamaged)
 
 	local enemys = utility.GetNearbyVisibleHeroes(npcBot, CastRange, true, BOT_MODE_NONE)
@@ -520,8 +521,8 @@ Consider[4] = function()
 	if #tableNearbyAttackingAlliedHeroes >= 2 and #enemys > 0 then
 		if
 			AbilityExtensions:Contains(severelyDamagedAllies, npcBot) and #damagedAllies >= 3 or
-				#damagedAllies >= 2 and #severelyDamagedAllies >= 1
-		 then
+			#damagedAllies >= 2 and #severelyDamagedAllies >= 1
+		then
 			return BOT_ACTION_DESIRE_HIGH
 		end
 	end

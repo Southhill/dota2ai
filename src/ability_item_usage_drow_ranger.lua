@@ -64,7 +64,7 @@ local TalentTree = {
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-	ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+	ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
@@ -114,7 +114,7 @@ Consider[1] = function()
 			local modifier = target:GetModifierByName("modifier_drow_ranger_frost_arrows_slow")
 			if
 				modifier ~= nil and target:GetModifierRemainingDuration(modifier) > npcBot:GetAttackSpeed() / 100 * 0.7 / 1.7 + 0.2
-			 then
+			then
 				return AbilityExtensions:GetManaPercent(npcBot) >= 0.8
 			end
 			if AbilityExtensions:MustBeIllusion(npcBot, target) then
@@ -123,7 +123,7 @@ Consider[1] = function()
 			else
 				return AbilityExtensions:GetManaPercent(npcBot) >= 0.4 or
 					AbilityExtensions:GetManaPercent(npcBot) >= 0.2 and
-						(GetUnitToUnitDistance(npcBot, target) >= 300 or npcBot:GetLevel() < 6)
+					(GetUnitToUnitDistance(npcBot, target) >= 300 or npcBot:GetLevel() < 6)
 			end
 		elseif target:IsBuilding() then
 			return false
@@ -181,7 +181,7 @@ Consider[2] = function()
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) or
 						(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 							npcBot:GetMana() > ComboMana))
-				 then
+				then
 					return BOT_ACTION_DESIRE_HIGH, utility.GetUnitsTowardsLocation(
 						npcBot,
 						WeakestEnemy,
@@ -205,7 +205,7 @@ Consider[2] = function()
 	if
 		((npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH) or
 			(npcBot:WasRecentlyDamagedByAnyHero(2.0) and #enemys >= 1))
-	 then
+	then
 		local locationAoE = npcBot:FindAoELocation(true, true, npcBot:GetLocation(), CastRange, Radius, CastPoint, 0)
 		if (locationAoE.count >= 2) then
 			return BOT_ACTION_DESIRE_LOW, locationAoE.targetloc, "Location"
@@ -223,7 +223,7 @@ Consider[2] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local locationAoE = npcBot:FindAoELocation(true, true, npcBot:GetLocation(), CastRange, Radius, CastPoint, 0)
 		if (locationAoE.count >= 2) then
 			return BOT_ACTION_DESIRE_LOW, locationAoE.targetloc, "Location"
@@ -235,7 +235,7 @@ Consider[2] = function()
 			if
 				(CanCast[abilityNumber](npcEnemy) and not enemyDisabled(npcEnemy) and
 					GetUnitToUnitDistance(npcBot, npcEnemy) <= CastRange)
-			 then
+			then
 				return BOT_ACTION_DESIRE_MODERATE, utility.GetUnitsTowardsLocation(
 					npcBot,
 					npcEnemy,
@@ -279,7 +279,7 @@ Consider[3] = function()
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) or
 						(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 							npcBot:GetMana() > ComboMana))
-				 then
+				then
 					return BOT_ACTION_DESIRE_HIGH, WeakestEnemy:GetLocation(), "Location"
 				end
 			end
@@ -317,7 +317,7 @@ Consider[3] = function()
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_TOP or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_MID or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_BOT)
-	 then
+	then
 		if (ManaPercentage > 0.4 or npcBot:GetMana() > ComboMana) then
 			local locationAoE = npcBot:FindAoELocation(true, false, npcBot:GetLocation(), CastRange, Radius, 0, 0)
 			if (locationAoE.count >= 3) then
@@ -342,7 +342,7 @@ Consider[3] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local locationAoE = npcBot:FindAoELocation(true, true, npcBot:GetLocation(), CastRange, Radius, 0, 0)
 		if (locationAoE.count >= 2) then
 			return BOT_ACTION_DESIRE_MODERATE, locationAoE.targetloc, "Location"

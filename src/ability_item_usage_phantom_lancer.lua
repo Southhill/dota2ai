@@ -63,7 +63,7 @@ local TalentTree = {
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-	ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+	ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
@@ -74,7 +74,7 @@ cast.Desire = {}
 cast.Target = {}
 cast.Type = {}
 local Consider = {}
-local CanCast = {utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.UCanCast}
+local CanCast = { utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.UCanCast }
 local enemyDisabled = utility.enemyDisabled
 
 function GetComboDamage()
@@ -135,7 +135,7 @@ Consider[1] = function()
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) or
 						(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 							npcBot:GetMana() > ComboMana))
-				 then
+				then
 					return BOT_ACTION_DESIRE_HIGH, WeakestEnemy
 				end
 			end
@@ -151,14 +151,14 @@ Consider[1] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcTarget = npcBot:GetTarget()
 
 		if (npcTarget ~= nil) then
 			if
 				(CanCast[abilityNumber](npcTarget) and not enemyDisabled(npcTarget) and
 					GetUnitToUnitDistance(npcBot, npcTarget) < CastRange + 75 * #allys)
-			 then
+			then
 				return BOT_ACTION_DESIRE_MODERATE, npcTarget
 			end
 		end
@@ -212,7 +212,7 @@ Consider[2] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = npcBot:GetTarget()
 
 		if (ManaPercentage > 0.4 or npcBot:GetMana() > ComboMana) then
@@ -222,7 +222,7 @@ Consider[2] = function()
 					if
 						(CanCast[abilityNumber](npcEnemy) and GetUnitToUnitDistance(npcBot, npcEnemy) > CastRange - 100 and
 							GetUnitToUnitDistance(npcBot, npcEnemy) < 1000)
-					 then
+					then
 						return BOT_ACTION_DESIRE_MODERATE, utility.GetUnitsTowardsLocation(npcBot, npcEnemy, CastRange)
 					end
 				end
@@ -245,9 +245,9 @@ Consider[3] = function()
 		local weakestCreep, creepHealth = utility.GetWeakestUnit(creeps)
 		if
 			weakestCreep ~= nil and
-				creepHealth <= weakestCreep:GetActualIncomingDamage(npcBot:GetAttackDamage() * 1.05, DAMAGE_TYPE_PHYSICAL) and
-				GetUnitToUnitDistance(npcBot, weakestCreep) <= 250
-		 then
+			creepHealth <= weakestCreep:GetActualIncomingDamage(npcBot:GetAttackDamage() * 1.05, DAMAGE_TYPE_PHYSICAL) and
+			GetUnitToUnitDistance(npcBot, weakestCreep) <= 250
+		then
 			return true
 		end
 	end

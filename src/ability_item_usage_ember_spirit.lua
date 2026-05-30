@@ -6,6 +6,7 @@
 local utility = require(GetScriptDirectory() .. "/base/Utility")
 require(GetScriptDirectory() .. "/ability_item_usage_generic")
 local AbilityExtensions = require(GetScriptDirectory() .. "/base/AbilityAbstraction")
+local Timer = require(GetScriptDirectory() .. "/util/timer")
 
 local npcBot = GetBot()
 if npcBot:IsIllusion() then
@@ -14,11 +15,11 @@ end
 local AbilityNames, Abilities, Talents = AbilityExtensions:InitAbility(npcBot)
 -- local CanCast = {utility.NCanCast,utility.UCanCast,utility.NCanCast,utility.UCanCast,utility.UCanCast}
 
-local AbilityToLevelUp = {AbilityNames[2], AbilityNames[3], AbilityNames[3], AbilityNames[1], AbilityNames[3],
-                          AbilityNames[5], AbilityNames[3], AbilityNames[2], AbilityNames[2], "talent", AbilityNames[2],
-                          AbilityNames[1], AbilityNames[1], AbilityNames[1], "talent", AbilityNames[5], "nil",
-                          AbilityNames[5], "nil", "talent", "nil", "nil", "nil", "nil", "talent"}
-local TalentTree = {function()
+local AbilityToLevelUp = { AbilityNames[2], AbilityNames[3], AbilityNames[3], AbilityNames[1], AbilityNames[3],
+    AbilityNames[5], AbilityNames[3], AbilityNames[2], AbilityNames[2], "talent", AbilityNames[2],
+    AbilityNames[1], AbilityNames[1], AbilityNames[1], "talent", AbilityNames[5], "nil",
+    AbilityNames[5], "nil", "talent", "nil", "nil", "nil", "nil", "talent" }
+local TalentTree = { function()
     return Talents[1]
 end, function()
     return Talents[4]
@@ -26,11 +27,11 @@ end, function()
     return Talents[5]
 end, function()
     return Talents[8]
-end}
+end }
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-    ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+    ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 local cast = {}
@@ -82,8 +83,8 @@ Consider[1] = function()
     local weakestCreep = utility.GetWeakestUnit(weakCreeps)
     local forbiddenCreeps = AbilityExtensions:Filter(enemyCreeps, function(t)
         return t:GetHealth() > t:GetActualIncomingDamage(damage, DAMAGE_TYPE_MAGICAL) and t:GetHealth() <=
-                   t:GetActualIncomingDamage(damage, DAMAGE_TYPE_MAGICAL) +
-                   AbilityExtensions:AttackOnceDamage(npcBot, t) * (0.9 + #enemyCreeps * 0.1)
+            t:GetActualIncomingDamage(damage, DAMAGE_TYPE_MAGICAL) +
+            AbilityExtensions:AttackOnceDamage(npcBot, t) * (0.9 + #enemyCreeps * 0.1)
     end)
     if #friendCreeps == 0 then
         forbiddenCreeps = {}
@@ -151,7 +152,7 @@ Consider[2] = function()
     end)
     local targettableEnemies = AbilityExtensions:Filter(enemies, function(t)
         return AbilityExtensions:NormalCanCast(t, true, DAMAGE_TYPE_PHYSICAL, true) and
-                   not AbilityExtensions:CannotBeAttacked(t)
+            not AbilityExtensions:CannotBeAttacked(t)
     end)
     local friends = AbilityExtensions:GetNearbyHeroes(npcBot, 1200, true)
     local friendCount = AbilityExtensions:GetEnemyHeroNumber(npcBot, friends)
@@ -166,8 +167,8 @@ Consider[2] = function()
     local weakestCreep = utility.GetWeakestUnit(weakCreeps)
     local forbiddenCreeps = AbilityExtensions:Filter(enemyCreeps, function(t)
         return t:GetHealth() > t:GetActualIncomingDamage(creepDamage, DAMAGE_TYPE_MAGICAL) and t:GetHealth() <=
-                   t:GetActualIncomingDamage(creepDamage, DAMAGE_TYPE_MAGICAL) +
-                   AbilityExtensions:AttackOnceDamage(npcBot, t) * (0.9 + #enemyCreeps * 0.1)
+            t:GetActualIncomingDamage(creepDamage, DAMAGE_TYPE_MAGICAL) +
+            AbilityExtensions:AttackOnceDamage(npcBot, t) * (0.9 + #enemyCreeps * 0.1)
     end)
     if #friendCreeps == 0 then
         forbiddenCreeps = {}
@@ -337,7 +338,7 @@ local function RefreshActiveRemnants()
         return t:GetUnitName() == "npc_dota_ember_spirit_remnant"
     end)
 end
-local DetectRemnant = AbilityExtensions:EveryManySeconds(2, RefreshActiveRemnants)
+local DetectRemnant = Timer.EveryManySeconds(2, RefreshActiveRemnants)
 RefreshActiveRemnants()
 
 Consider[4] = function()
@@ -364,8 +365,8 @@ Consider[4] = function()
     local weakestCreep = utility.GetWeakestUnit(weakCreeps)
     local forbiddenCreeps = AbilityExtensions:Filter(enemyCreeps, function(t)
         return t:GetHealth() > t:GetActualIncomingDamage(damage, DAMAGE_TYPE_MAGICAL) and t:GetHealth() <=
-                   t:GetActualIncomingDamage(damage, DAMAGE_TYPE_MAGICAL) +
-                   AbilityExtensions:AttackOnceDamage(npcBot, t) * (0.9 + #enemyCreeps * 0.1)
+            t:GetActualIncomingDamage(damage, DAMAGE_TYPE_MAGICAL) +
+            AbilityExtensions:AttackOnceDamage(npcBot, t) * (0.9 + #enemyCreeps * 0.1)
     end)
     if #friendCreeps == 0 then
         forbiddenCreeps = {}
@@ -392,7 +393,7 @@ Consider[4] = function()
         elseif AbilityExtensions:IsFarmingOrPushing(npcBot) then
             local remnantUnderTower = AbilityExtensions:Filter(activeRemnants, function(t)
                 return GetUnitToUnitDistance(t, npcBot) >= 4000 and #AbilityExtensions:GetNearbyNonIllusionHeroes(t) ==
-                           0
+                    0
             end)
             if remnantUnderTower[1] then
                 return BOT_ACTION_DESIRE_MODERATE, remnantUnderTower[1]:GetLocation()
@@ -416,10 +417,10 @@ Consider[4] = function()
         local distanceToFountain = AbilityExtensions:Filter(activeRemnants, function(t)
             local distance = GetUnitToUnitDistance(t, npcBot)
             return distance >= npcBot:GetCurrentMovementSpeed() * 2 and distance >
-                       AbilityExtensions:GetDistanceFromAncient(t) + 600
+                AbilityExtensions:GetDistanceFromAncient(t) + 600
         end)
         distanceToFountain = AbilityExtensions:Map(distanceToFountain, function(t)
-            return {t, AbilityExtensions:GetDistanceFromAncient(t)}
+            return { t, AbilityExtensions:GetDistanceFromAncient(t) }
         end)
         distanceToFountain = AbilityExtensions:SortByMinFirst(distanceToFountain, function(t)
             return t[2]
@@ -434,10 +435,10 @@ Consider[4] = function()
                 GetUnitToUnitDistance(activeRemnant, target) <= radius then
                 if AbilityExtensions:GetHealthPercent(target) <= 0.7 then
                     if AbilityExtensions:Any(activeRemnants, function(t)
-                        local d = GetUnitToUnitDistance(t, target)
-                        return d >= 0.7 * radius and d <= 800 and t:IsFacingLocation(target, 30) and
-                                   t:GetCurrentMovementSpeed() ~= 0
-                    end) then
+                            local d = GetUnitToUnitDistance(t, target)
+                            return d >= 0.7 * radius and d <= 800 and t:IsFacingLocation(target, 30) and
+                                t:GetCurrentMovementSpeed() ~= 0
+                        end) then
                         return 0.1, activeRemnant:GetLocation()
                     end
                     return RemapValClamped(AbilityExtensions:GetHealthPercent(target), 0, 0.7, 0.9, 0.5),
@@ -455,7 +456,7 @@ end
 
 local function ShouldGoToFountainFromLane()
     return healthPercent <= 0.25 and not AbilityExtensions:HasAvailableItem("item_flask") or healthPercent <= 0.4 and
-               manaPercent <= 0.1
+        manaPercent <= 0.1
 end
 
 Consider[5] = function()
@@ -481,8 +482,8 @@ Consider[5] = function()
     local weakestCreep = utility.GetWeakestUnit(weakCreeps)
     local forbiddenCreeps = AbilityExtensions:Filter(enemyCreeps, function(t)
         return t:GetHealth() > t:GetActualIncomingDamage(damage, DAMAGE_TYPE_MAGICAL) and t:GetHealth() <=
-                   t:GetActualIncomingDamage(damage, DAMAGE_TYPE_MAGICAL) +
-                   AbilityExtensions:AttackOnceDamage(npcBot, t) * (0.9 + #enemyCreeps * 0.1)
+            t:GetActualIncomingDamage(damage, DAMAGE_TYPE_MAGICAL) +
+            AbilityExtensions:AttackOnceDamage(npcBot, t) * (0.9 + #enemyCreeps * 0.1)
     end)
     if #friendCreeps == 0 then
         forbiddenCreeps = {}
@@ -525,7 +526,7 @@ Consider[5] = function()
                 strangeFacing = nearestEnemy:GetFacing() + 75
             end
             local extraLocation = npcBot:GetLocation() +
-                                      Vector(useRange * math.cos(strangeFacing), useRange * math.sin(strangeFacing))
+                Vector(useRange * math.cos(strangeFacing), useRange * math.sin(strangeFacing))
             if npcBot:HasScepter() then
                 extraLocation = AbilityExtensions:GetPointFromLineByDistance(npcBot:GetLocation(),
                     AbilityExtensions:GetAncient(npcBot), useRange)
@@ -546,7 +547,7 @@ Consider[5] = function()
                 if target:GetHealth() <= (0.9 + 0.18 * friendCount) * damageOnce * remnantNumber + charge then
                     return BOT_ACTION_DESIRE_HIGH,
                         target:GetExtrapolatedLocation(GetUnitToUnitDistance(target, npcBot) /
-                                                           Clamp((remnantSpeed - target:GetCurrentMovementSpeed()), 100,
+                            Clamp((remnantSpeed - target:GetCurrentMovementSpeed()), 100,
                                 1000))
                 end
             end

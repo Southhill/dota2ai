@@ -1,4 +1,4 @@
-local ItemPurchaseSystem = require(GetScriptDirectory() .. "/base/ItemPurchaseSystem") --导入通用函数�?
+local ItemPurchaseSystem = require(GetScriptDirectory() .. "/base/ItemPurchaseSystem") --导入通用函数
 
 local ItemsToBuy =
 {

@@ -64,7 +64,7 @@ local talentTree = {
 utility.CheckAbilityBuildSimple(abilityTree)
 
 function AbilityLevelUpThink()
-	ability_item_usage_generic.AbilityLevelUpThink2(abilityTree, talentTree)
+	ability_item_usage_generic.AbilityLevelUpThink(abilityTree, talentTree)
 end
 
 --------------------------------------

@@ -66,7 +66,7 @@ local TalentTree = {
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-	ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+	ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
@@ -109,7 +109,7 @@ function CanCast2(npcEnemy)
 		not npcEnemy:HasModifier("modifier_abaddon_aphotic_shield")
 end
 
-local CanCast = {CanCast1, CanCast2}
+local CanCast = { CanCast1, CanCast2 }
 
 Consider[1] = function()
 	-- TODO: lv 25 AOE mist coil
@@ -160,7 +160,7 @@ Consider[1] = function()
 		(npcBot:GetHealth() / npcBot:GetMaxHealth() > (0.4 - #enemys * 0.05) or
 			npcBot:HasModifier("modifier_abaddon_aphotic_shield") or
 			npcBot:HasModifier("modifier_abaddon_borrowed_time"))
-	 then
+	then
 		if (WeakestAlly ~= nil) then
 			if (AllyHealth / WeakestAlly:GetMaxHealth() < 0.5) then
 				return BOT_ACTION_DESIRE_MODERATE, WeakestAlly
@@ -187,12 +187,12 @@ Consider[1] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		if
 			(npcBot:GetHealth() / npcBot:GetMaxHealth() > (0.5 - #enemys * 0.05) or
 				npcBot:HasModifier("modifier_abaddon_aphotic_shield") or
 				npcBot:HasModifier("modifier_abaddon_borrowed_time"))
-		 then
+		then
 			local npcEnemy = npcBot:GetTarget()
 			if (npcEnemy ~= nil) then
 				if (CanCast[abilityNumber](npcEnemy) and GetUnitToUnitDistance(npcBot, npcEnemy) < CastRange + 75 * #allys) then
@@ -217,7 +217,7 @@ Consider[1] = function()
 			(ManaPercentage > 0.4 and
 				(npcBot:GetHealth() / npcBot:GetMaxHealth() > 0.75 or npcBot:HasModifier("modifier_abaddon_aphotic_shield")) and
 				ability:GetLevel() >= 2)
-		 then
+		then
 			if (WeakestEnemy ~= nil) then
 				if (CanCast[abilityNumber](WeakestEnemy)) then
 					return BOT_ACTION_DESIRE_LOW, WeakestEnemy
@@ -405,7 +405,7 @@ Consider[2] = function()
 	end
 	if
 		(npcBot:GetActiveMode() == BOT_MODE_ATTACK or npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or ManaPercentage > 0.4)
-	 then
+	then
 		for _, npcTarget in pairs(allys) do
 			if
 				(npcTarget:GetCurrentMovementSpeed() < 250 or npcTarget:IsSilenced() or npcTarget:IsMuted() or
@@ -413,7 +413,7 @@ Consider[2] = function()
 					npcTarget:IsDisarmed() or
 					npcTarget:IsBlind() or
 					npcTarget:IsBlockDisabled())
-			 then
+			then
 				if (CanCast[abilityNumber](npcTarget)) then
 					return BOT_ACTION_DESIRE_HIGH, npcTarget
 				end
@@ -444,7 +444,7 @@ Consider[2] = function()
 			if
 				(npcTarget:GetHealth() / npcTarget:GetMaxHealth() < (0.6 + #enemys * 0.05 + 0.2 * ManaPercentage) or
 					npcTarget:WasRecentlyDamagedByAnyHero(5.0))
-			 then
+			then
 				if (CanCast[abilityNumber](npcTarget)) then
 					return BOT_ACTION_DESIRE_MODERATE, npcTarget
 				end
@@ -459,7 +459,7 @@ Consider[2] = function()
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_TOP or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_MID or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_BOT)
-	 then
+	then
 		if (#enemys + #creeps >= 3) then
 			if (ManaPercentage > 0.4) then
 				for _, npcTarget in pairs(allys) do
@@ -476,7 +476,7 @@ Consider[2] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = npcBot:GetTarget()
 
 		if (ManaPercentage > 0.4 and HealthPercentage <= 0.66) then

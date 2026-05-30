@@ -8,6 +8,7 @@
 local utility = require(GetScriptDirectory() .. "/base/Utility")
 require(GetScriptDirectory() .. "/ability_item_usage_generic")
 local AbilityExtensions = require(GetScriptDirectory() .. "/base/AbilityAbstraction")
+local Func = require(GetScriptDirectory() .. "/util/functional")
 
 local enableDebug = true
 local npcBot = GetBot()
@@ -64,12 +65,12 @@ local talentTree = {
 utility.CheckAbilityBuild(abilityTree)
 
 function AbilityLevelUpThink()
-	ability_item_usage_generic.AbilityLevelUpThink2(abilityTree, talentTree)
+	ability_item_usage_generic.AbilityLevelUpThink(abilityTree, talentTree)
 end
 
 --utility.PrintAbilityName(abilities)
 local abilityName = { "lich_frost_nova", "lich_frost_shield", "lich_sinister_gaze", "lich_ice_spire", "lich_chain_frost" }
-local abilityIndexes = utility.ReverseTable(abilityName)
+local abilityIndexes = Func.ReverseTable(abilityName)
 
 --------------------------------------
 -- Ability Usage Thinking

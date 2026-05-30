@@ -63,7 +63,7 @@ local TalentTree = {
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-	ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+	ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
@@ -92,7 +92,8 @@ function CanCast4(t)
 	local hasShard = AbilityExtensions:HasShard(t)
 	return AbilityExtensions:NormalCanCast(t, false, GetLagunaBladeDamageType(), nil, not hasShard, not hasShard)
 end
-local CanCast = {utility.NCanCast, utility.NCanCast, utility.NCanCast, CanCast4}
+
+local CanCast = { utility.NCanCast, utility.NCanCast, utility.NCanCast, CanCast4 }
 
 ----------------------------------------------------------------------------------------------------
 
@@ -121,7 +122,7 @@ Consider[1] = function()
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) or
 						(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 							npcBot:GetMana() > ComboMana))
-				 then
+				then
 					return BOT_ACTION_DESIRE_HIGH, WeakestEnemy:GetLocation()
 				end
 			end
@@ -169,7 +170,7 @@ Consider[1] = function()
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_TOP or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_MID or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_BOT)
-	 then
+	then
 		local locationAoE = npcBot:FindAoELocation(true, false, npcBot:GetLocation(), CastRange, Radius, 0, 0)
 
 		if (locationAoE.count >= 4) then
@@ -182,7 +183,7 @@ Consider[1] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcTarget = npcBot:GetTarget()
 
 		if (npcTarget ~= nil) then
@@ -234,7 +235,7 @@ Consider[2] = function()
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) or
 						(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 							npcBot:GetMana() > ComboMana))
-				 then
+				then
 					return BOT_ACTION_DESIRE_HIGH, WeakestEnemy:GetExtrapolatedLocation(0.95)
 				end
 			end
@@ -243,18 +244,18 @@ Consider[2] = function()
 
 	local imprisonedEnemy =
 		AbilityExtensions:Map(
-		utility.GetNearbyVisibleHeroes(npcBot, CastRange + 100, true, BOT_MODE_NONE),
-		function(t)
-			return {t, AbilityExtensions:GetImprisonmentRemainingDuration(t)}
-		end
-	)
+			utility.GetNearbyVisibleHeroes(npcBot, CastRange + 100, true, BOT_MODE_NONE),
+			function(t)
+				return { t, AbilityExtensions:GetImprisonmentRemainingDuration(t) }
+			end
+		)
 	imprisonedEnemy =
 		AbilityExtensions:First(
-		imprisonedEnemy,
-		function(t)
-			return t[2] ~= nil
-		end
-	)
+			imprisonedEnemy,
+			function(t)
+				return t[2] ~= nil
+			end
+		)
 	if imprisonedEnemy ~= nil then
 		local timer = imprisonedEnemy[2] - ability:GetSpecialValueFloat("effect_delay") - ability:GetCastPoint() - 0.1
 		if timer >= 0 then
@@ -274,7 +275,8 @@ Consider[2] = function()
 
 	-- If we're farming and can kill 3+ creeps with LSA
 	if (npcBot:GetActiveMode() == BOT_MODE_FARM) then
-		local locationAoE = npcBot:FindAoELocation(true, false, npcBot:GetLocation(), CastRange, Radius, CastPoint, Damage)
+		local locationAoE = npcBot:FindAoELocation(true, false, npcBot:GetLocation(), CastRange, Radius, CastPoint,
+			Damage)
 
 		if (locationAoE.count >= 3) then
 			return BOT_ACTION_DESIRE_LOW, locationAoE.targetloc
@@ -296,7 +298,7 @@ Consider[2] = function()
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_TOP or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_MID or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_BOT)
-	 then
+	then
 		local locationAoE = npcBot:FindAoELocation(true, false, npcBot:GetLocation(), CastRange, Radius, CastPoint, 0)
 
 		if (locationAoE.count >= 4) then
@@ -306,7 +308,8 @@ Consider[2] = function()
 
 	-- If we're seriously retreating, see if we can land a stun on someone who's damaged us recently
 	if (npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH) then
-		local tableNearbyEnemyHeroes = utility.GetNearbyVisibleHeroes(npcBot, CastRange + Radius + 200, true, BOT_MODE_NONE)
+		local tableNearbyEnemyHeroes = utility.GetNearbyVisibleHeroes(npcBot, CastRange + Radius + 200, true,
+			BOT_MODE_NONE)
 		for _, npcEnemy in pairs(tableNearbyEnemyHeroes) do
 			if (npcBot:WasRecentlyDamagedByHero(npcEnemy, 2.0)) then
 				if (CanCast[4](npcEnemy)) then
@@ -321,7 +324,7 @@ Consider[2] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcTarget = npcBot:GetTarget()
 
 		if (npcTarget ~= nil) then
@@ -358,7 +361,7 @@ local function NormalLagnuaBladeConsider()
 				if
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DamageType) or
 						HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DamageType))
-				 then
+				then
 					return BOT_ACTION_DESIRE_HIGH, WeakestEnemy, "Target"
 				end
 			end
@@ -371,7 +374,7 @@ local function NormalLagnuaBladeConsider()
 		if
 			(npcTarget:GetActualIncomingDamage(Damage, DamageType) > npcTarget:GetHealth() and
 				GetUnitToUnitDistance(npcTarget, npcBot) < (CastRange + 200))
-		 then
+		then
 			return BOT_ACTION_DESIRE_HIGH, npcTarget, "Target"
 		end
 	end
@@ -409,8 +412,8 @@ local function TryUseShardLagunaAt(location, possibleEnemies)
 		function(t)
 			return CanCast[4](t) and
 				AbilityExtensions:GetPointToLineDistance(t:GetLocation(), line) <=
-					(AbilityExtensions:CannotMove() and scepter_width + t:GetBoundingRadius() or
-						scepter_width * 0.75 + t:GetBoundingRadius())
+				(AbilityExtensions:CannotMove() and scepter_width + t:GetBoundingRadius() or
+					scepter_width * 0.75 + t:GetBoundingRadius())
 		end
 	)
 end
@@ -432,34 +435,35 @@ local ShardLagunaBlade = function()
 		local degree1 = AbilityExtensions:GetDegree(enemyLocation, myLocation)
 		local degree2 = degree1 + deltaDegree
 		local degree3 = degree1 - deltaDegree
-		local degree = {degree1, degree2, degree3}
+		local degree = { degree1, degree2, degree3 }
 		local guess =
 			AbilityExtensions:Map(
-			degree,
-			function(t)
-				return {t, myLocation + Vector(distance * math.cos(t), distance * math.sin(t))}
-			end
-		)
+				degree,
+				function(t)
+					return { t, myLocation + Vector(distance * math.cos(t), distance * math.sin(t)) }
+				end
+			)
 		local count =
 			AbilityExtensions:Map(
-			guess,
-			function(t)
-				return {t[1], t[2], TryUseShardLagunaAt(t[3], enemies)}
-			end
-		)
+				guess,
+				function(t)
+					return { t[1], t[2], TryUseShardLagunaAt(t[3], enemies) }
+				end
+			)
 		count =
 			AbilityExtensions:Max(
-			count,
-			function(t)
-				return t[3]
-			end
-		)
+				count,
+				function(t)
+					return t[3]
+				end
+			)
 		if
 			count[3] > 1 or AbilityExtensions:HasAbilityRetargetModifier(oTarget) or AbilityExtensions:CannotBeTargetted(oTarget)
-		 then
+		then
 			return oDesire, count[2], "Location"
 		else
-			return oDesire, oTarget, "Target" -- Why still use at target sometimes? Because laguna used at location can be dodged with forced movement!
+			return oDesire, oTarget,
+				"Target"             -- Why still use at target sometimes? Because laguna used at location can be dodged with forced movement!
 		end
 	end
 	return 0

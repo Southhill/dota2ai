@@ -64,7 +64,7 @@ local TalentTree = {
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-	ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+	ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
@@ -88,7 +88,8 @@ local CanCast = {
 	end,
 	utility.NCanCast,
 	function(t)
-		return t:HasModifier("modifier_obsidian_destroyer_astral_imprisonment_prison") or AbilityExtensions:NormalCanCast(t)
+		return t:HasModifier("modifier_obsidian_destroyer_astral_imprisonment_prison") or
+		AbilityExtensions:NormalCanCast(t)
 	end
 }
 local enemyDisabled = utility.enemyDisabled
@@ -163,7 +164,7 @@ Consider[1] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = npcBot:GetTarget()
 
 		if (npcEnemy ~= nil) then
@@ -197,9 +198,9 @@ local dazzle_shadow_grave = function()
 	for _, npcTarget in pairs(allys) do
 		if
 			(npcTarget:GetHealth() / npcTarget:GetMaxHealth() <= 0.2 + 0.05 * enemyCount) and
-				AbilityExtensions:IsOrGoingToBeSeverelyDisabled(npcTarget) and
-				CanCast[2](npcTarget)
-		 then
+			AbilityExtensions:IsOrGoingToBeSeverelyDisabled(npcTarget) and
+			CanCast[2](npcTarget)
+		then
 			return BOT_ACTION_DESIRE_MODERATE, npcTarget
 		end
 	end
@@ -265,9 +266,9 @@ local oldConsider2 = function()
 	for _, npcTarget in pairs(allys) do
 		if
 			(npcTarget:GetHealth() / npcTarget:GetMaxHealth() <= 0.2 + 0.05 * enemyCount) and
-				AbilityExtensions:IsOrGoingToBeSeverelyDisabled(npcTarget) and
-				CanCast[2](npcTarget)
-		 then
+			AbilityExtensions:IsOrGoingToBeSeverelyDisabled(npcTarget) and
+			CanCast[2](npcTarget)
+		then
 			return BOT_ACTION_DESIRE_MODERATE, npcTarget
 		end
 	end
@@ -279,7 +280,7 @@ local oldConsider2 = function()
 				if
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) and #allys <= 1 and
 						not AbilityExtensions:IsOrGoingToBeSeverelyDisabled(WeakestEnemy))
-				 then
+				then
 					return BOT_ACTION_DESIRE_HIGH, WeakestEnemy
 				end
 			end
@@ -307,7 +308,7 @@ local oldConsider2 = function()
 				if
 					(CanCast[abilityNumber](WeakestEnemy) and GetUnitToUnitDistance(npcBot, WeakestEnemy) < CastRange + 200 and
 						not AbilityExtensions:IsOrGoingToBeSeverelyDisabled(WeakestEnemy))
-				 then
+				then
 					return BOT_ACTION_DESIRE_LOW, WeakestEnemy
 				end
 			end
@@ -319,7 +320,7 @@ local oldConsider2 = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcTarget = npcBot:GetTarget()
 
 		if (npcTarget ~= nil) then
@@ -327,7 +328,7 @@ local oldConsider2 = function()
 				(CanCast[abilityNumber](npcTarget) and not AbilityExtensions:IsOrGoingToBeSeverelyDisabled(npcTarget) and
 					GetUnitToUnitDistance(npcBot, npcTarget) > 75 * #allys and
 					GetUnitToUnitDistance(npcBot, npcTarget) < CastRange + 100)
-			 then
+			then
 				return BOT_ACTION_DESIRE_MODERATE, npcTarget
 			end
 		end
@@ -431,7 +432,7 @@ Consider[4] = function()
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) or
 						(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 							npcBot:GetMana() > ComboMana))
-				 then
+				then
 					return BOT_ACTION_DESIRE_HIGH, WeakestEnemy:GetExtrapolatedLocation(CastPoint)
 				end
 			end
@@ -446,18 +447,18 @@ Consider[4] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local locationAoE = npcBot:FindAoELocation(true, true, npcBot:GetLocation(), CastRange, Radius, CastPoint, 0)
 		if (#enemys >= 2) then
 			if
 				npcBot:GetModifierStackCount(
 					npcBot:GetModifierByName("modifier_obsidian_destroyer_astral_imprisonment_charge_counter")
 				) > 30 or
-					(#enemys >= 3 and
-						npcBot:GetModifierStackCount(
-							npcBot:GetModifierByName("modifier_obsidian_destroyer_astral_imprisonment_charge_counter")
-						) > 12)
-			 then
+				(#enemys >= 3 and
+					npcBot:GetModifierStackCount(
+						npcBot:GetModifierByName("modifier_obsidian_destroyer_astral_imprisonment_charge_counter")
+					) > 12)
+			then
 				return BOT_ACTION_DESIRE_LOW, locationAoE.targetloc
 			end
 		end

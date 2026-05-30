@@ -64,7 +64,7 @@ local TalentTree = {
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-	ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+	ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
@@ -131,7 +131,7 @@ Consider[1] = function()
 			if
 				(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 					npcBot:GetMana() > ComboMana)
-			 then
+			then
 				return BOT_ACTION_DESIRE_HIGH
 			end
 		end
@@ -152,7 +152,7 @@ Consider[1] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = npcBot:GetTarget()
 
 		if (npcEnemy ~= nil) then
@@ -195,7 +195,7 @@ Consider[4] = function()
 				if
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 						npcBot:GetMana() > ComboMana)
-				 then
+				then
 					return BOT_ACTION_DESIRE_HIGH, WeakestEnemy
 				end
 			end
@@ -241,14 +241,14 @@ Consider[4] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = npcBot:GetTarget()
 
 		if (npcEnemy ~= nil) then
 			if
 				(CanCast[abilityNumber](npcEnemy) and not enemyDisabled(npcEnemy) and
 					GetUnitToUnitDistance(npcBot, npcEnemy) < CastRange + 75 * #allys)
-			 then
+			then
 				return BOT_ACTION_DESIRE_MODERATE, npcEnemy
 			end
 		end
@@ -295,7 +295,7 @@ Consider[5] = function()
 				if
 					(allys2 ~= nil and HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 						npcBot:GetMana() > ComboMana)
-				 then
+				then
 					return BOT_ACTION_DESIRE_HIGH, allys2[#allys2]
 				end
 			end
@@ -304,17 +304,17 @@ Consider[5] = function()
 
 	if
 		AbilityExtensions:HasScepter(npcBot) and
-			(AbilityExtensions:IsSeverelyDisabled(npcBot) or AbilityExtensions:GetHealthPercent(npcBot) <= 0.3)
-	 then
+		(AbilityExtensions:IsSeverelyDisabled(npcBot) or AbilityExtensions:GetHealthPercent(npcBot) <= 0.3)
+	then
 		local enemies = utility.GetNearbyVisibleHeroes(npcBot, CastRange, true, BOT_MODE_NONE)
 		enemies = AbilityExtensions:Filter(enemies, CanCast[5])
 		local realEnemies =
 			AbilityExtensions:Filter(
-			npcBot,
-			function(t)
-				return AbilityExtensions:MayNotBeIllusion(npcBot, t)
-			end
-		)
+				npcBot,
+				function(t)
+					return AbilityExtensions:MayNotBeIllusion(npcBot, t)
+				end
+			)
 		if #realEnemies ~= 0 then
 			return BOT_ACTION_DESIRE_HIGH, AbilityExtensions:Max(
 				realEnemies,
@@ -352,7 +352,7 @@ Consider[5] = function()
 	if
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY)
-	 then
+	then
 		local npcEnemy = npcBot:GetTarget()
 
 		if (npcEnemy ~= nil and #allys >= 1) then
@@ -412,7 +412,7 @@ Consider[7] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY)
-	 then
+	then
 		local npcTarget = npcBot:GetTarget()
 		if (npcTarget ~= nil and GetUnitToUnitDistance(npcTarget, npcBot) < Radius) then
 			return BOT_ACTION_DESIRE_VERYHIGH
@@ -445,10 +445,10 @@ Consider[6] = function()
 		local nearbyEnemies = AbilityExtensions:GetNearbyNonIllusionHeroes(npcBot, ability:GetAOERadius(), true)
 		if
 			#nearbyEnemies >= 3 or
-				npcBot:GetTeam() == lastInfestTarget:GetTeam() and AbilityExtensions:IsSeverelyDisabled(lastInfestTarget) and
-					#nearbyEnemies <= 2 or
-				#nearbyEnemies == 1
-		 then
+			npcBot:GetTeam() == lastInfestTarget:GetTeam() and AbilityExtensions:IsSeverelyDisabled(lastInfestTarget) and
+			#nearbyEnemies <= 2 or
+			#nearbyEnemies == 1
+		then
 			return BOT_ACTION_DESIRE_MODERATE + 0.1
 		end
 	end

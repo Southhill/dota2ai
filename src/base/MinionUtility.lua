@@ -364,10 +364,6 @@ function CanBeAttacked(npcTarget)
     return npcTarget:CanBeSeen() and not npcTarget:IsInvulnerable();
 end
 
-function CanCastOnMagicImmuneTarget(npcTarget)
-    return npcTarget:CanBeSeen() and not npcTarget:IsInvulnerable();
-end
-
 function CanCastOnNonMagicImmuneTarget(npcTarget)
     return npcTarget:CanBeSeen() and not npcTarget:IsMagicImmune() and not npcTarget:IsInvulnerable();
 end

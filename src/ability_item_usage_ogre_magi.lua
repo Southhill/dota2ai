@@ -63,7 +63,7 @@ local TalentTree = {
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-	ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+	ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
@@ -145,7 +145,7 @@ Consider[1] = function()
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) or
 						(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 							npcBot:GetMana() > ComboMana))
-				 then
+				then
 					return BOT_ACTION_DESIRE_HIGH, WeakestEnemy
 				end
 			end
@@ -167,8 +167,8 @@ Consider[1] = function()
 	--------------------------------------
 	-- Mode based usage
 	--------------------------------------
-	--[[--����
-	--if ( npcBot:GetActiveMode() == BOT_MODE_LANING ) 
+	--[[
+	--if ( npcBot:GetActiveMode() == BOT_MODE_LANING )
 	--then
 		if((ManaPercentage>0.4 or npcBot:GetMana()>ComboMana) and ability:GetLevel()>=1 )
 		then
@@ -180,18 +180,19 @@ Consider[1] = function()
 				end
 			end
 		end
-	--end]] if
+	--end]]
+	if
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcTarget = npcBot:GetTarget()
 
 		if (npcTarget ~= nil) then
 			if
 				(CanCast[1](npcTarget) and not enemyDisabled(npcTarget) and
 					GetUnitToUnitDistance(npcBot, npcTarget) < CastRange + 75 * #allys)
-			 then
+			then
 				return BOT_ACTION_DESIRE_MODERATE, npcTarget
 			end
 		end
@@ -224,7 +225,7 @@ Consider[2] = function()
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) or
 						(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 							npcBot:GetMana() > ComboMana))
-				 then
+				then
 					return BOT_ACTION_DESIRE_HIGH, WeakestEnemy
 				end
 			end
@@ -250,7 +251,7 @@ Consider[2] = function()
 		if (#creeps >= 2) then
 			if
 				(CreepHealth <= WeakestCreep:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) and npcBot:GetMana() > ComboMana)
-			 then
+			then
 				return BOT_ACTION_DESIRE_LOW, WeakestCreep
 			end
 		end
@@ -263,7 +264,7 @@ Consider[2] = function()
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_TOP or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_MID or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_BOT)
-	 then
+	then
 		if (#enemys >= 1) then
 			if (ManaPercentage > 0.5 or npcBot:GetMana() > ComboMana and AbilitiesReal[4]:GetLevel() >= 1) then
 				if (WeakestEnemy ~= nil) then
@@ -288,7 +289,7 @@ Consider[2] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcTarget = npcBot:GetTarget()
 
 		if (ManaPercentage > 0.4 or npcBot:GetMana() > ComboMana) then
@@ -326,7 +327,7 @@ Consider[3] = function()
 			npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_TOP or
 			npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_MID or
 			npcBot:GetActiveMode() == BOT_MODE_PUSH_TOWER_BOTTOM)
-	 then
+	then
 		if (ManaPercentage > 0.6 and npcBot:GetMana() > ComboMana) then
 			local tableNearbyFriendlyTowers = npcBot:GetNearbyTowers(CastRange + 300, false)
 			for _, myTower in pairs(tableNearbyFriendlyTowers) do
@@ -338,7 +339,7 @@ Consider[3] = function()
 			for _, myFriend in pairs(allys) do
 				if
 					(GetUnitToUnitDistance(myFriend, npcBot) < CastRange and not myFriend:HasModifier("modifier_ogre_magi_bloodlust"))
-				 then
+				then
 					return BOT_ACTION_DESIRE_MODERATE, myFriend
 				end
 			end
@@ -369,8 +370,8 @@ Consider[4] = function()
 
 	if
 		not ability:IsFullyCastable() or AbilitiesReal[1]:IsFullyCastable() or
-			ability:GetManaCost() / npcBot:GetMaxMana() > 0.3
-	 then
+		ability:GetManaCost() / npcBot:GetMaxMana() > 0.3
+	then
 		return BOT_ACTION_DESIRE_NONE, 0
 	end
 
@@ -420,7 +421,7 @@ Consider[4] = function()
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) or
 						(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 							npcBot:GetMana() > ComboMana))
-				 then
+				then
 					return BOT_ACTION_DESIRE_HIGH, WeakestEnemy
 				end
 			end
@@ -436,14 +437,14 @@ Consider[4] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcTarget = npcBot:GetTarget()
 
 		if (npcTarget ~= nil) then
 			if
 				(CanCast[5](npcTarget) and not enemyDisabled(npcTarget) and
 					GetUnitToUnitDistance(npcBot, npcTarget) < CastRange + 75 * #allys)
-			 then
+			then
 				return BOT_ACTION_DESIRE_MODERATE, npcTarget
 			end
 		end

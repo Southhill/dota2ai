@@ -290,7 +290,6 @@ AbilityExtensions
 技能加点系统具有健壮的错误恢复：
 - `incorrectAbilityLevelUpNumber` — 记录加点偏移量
 - 当技能名无效时自动跳过并记录
-- `FillInAbilities()` 验证并修正所有技能名
 - 脚本重载时 `abilityInited` 标志确保状态重置
 
 ### 4.5 装饰器模式 (函数包装)

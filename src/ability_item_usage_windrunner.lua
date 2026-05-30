@@ -4,7 +4,7 @@
 --  Contributor: zmcmcc Email:mengzhang@utexas.edu
 ----------------------------------------------------------------------------
 --------------------------------------
--- General Initialization 风行�?
+-- General Initialization 风行�?
 --------------------------------------
 local utility = require(GetScriptDirectory() .. "/base/Utility")
 require(GetScriptDirectory() .. "/ability_item_usage_generic")
@@ -16,10 +16,6 @@ local Abilities = {}
 local AbilitiesReal = {}
 
 ability_item_usage_generic.InitAbility(Abilities, AbilitiesReal, Talents)
-
--- utility.PrintAbilityName(Abilities)
-local abilityName = {"windrunner_shackleshot", "windrunner_powershot", "windrunner_windrun", "windrunner_focusfire"}
-local abilityIndex = utility.ReverseTable(abilityName)
 
 local AbilityToLevelUp = {
 	Abilities[3],
@@ -68,7 +64,7 @@ local TalentTree = {
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-	ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+	ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
@@ -79,7 +75,7 @@ cast.Desire = {}
 cast.Target = {}
 cast.Type = {}
 local Consider = {}
-local CanCast = {utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.UCanCast}
+local CanCast = { utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.UCanCast }
 local enemyDisabled = utility.enemyDisabled
 
 function GetComboDamage()
@@ -103,8 +99,8 @@ Consider[3] = function()
 
 	if
 		not ability:IsFullyCastable() or npcBot:HasModifier("modifier_windrunner_wind_walk") or
-			npcBot:HasModifier("modifier_shadow_demon_purge_slow")
-	 then
+		npcBot:HasModifier("modifier_shadow_demon_purge_slow")
+	then
 		return BOT_ACTION_DESIRE_NONE, 0
 	end
 
@@ -136,12 +132,12 @@ Consider[3] = function()
 	-- If we're seriously retreating, see if we can land a stun on someone who's damaged us recently
 	if
 		((npcBot:GetActiveMode() == BOT_MODE_RETREAT and npcBot:GetActiveModeDesire() >= BOT_MODE_DESIRE_HIGH) or #enemys2 > 0)
-	 then
+	then
 		for _, npcEnemy in pairs(enemys) do
 			if
 				((npcBot:WasRecentlyDamagedByHero(npcEnemy, 2.0) and HealthPercentage < 0.4) or
 					GetUnitToUnitDistance(npcBot, npcEnemy) < 400)
-			 then
+			then
 				return BOT_ACTION_DESIRE_HIGH
 			end
 		end
@@ -152,13 +148,13 @@ Consider[3] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = npcBot:GetTarget()
 
 		if (npcEnemy ~= nil) then
 			if
 				(npcEnemy:GetHealth() / npcEnemy:GetMaxHealth() < 0.4 or GetUnitToUnitDistance(npcBot, npcEnemy) > AttackRange + 200)
-			 then
+			then
 				return BOT_ACTION_DESIRE_HIGH, npcEnemy
 			end
 		end
@@ -206,7 +202,7 @@ Consider[4] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = npcBot:GetTarget()
 
 		if (npcEnemy ~= nil) then
@@ -214,7 +210,7 @@ Consider[4] = function()
 				(CanCast[abilityNumber](npcEnemy) and npcEnemy:GetHealth() / npcEnemy:GetMaxHealth() < 0.5 and
 					GetUnitToUnitDistance(npcBot, npcEnemy) < CastRange and
 					#allys >= #enemys)
-			 then
+			then
 				return BOT_ACTION_DESIRE_MODERATE, npcEnemy
 			end
 		end

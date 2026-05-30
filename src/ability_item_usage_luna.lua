@@ -63,7 +63,7 @@ local TalentTree = {
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-	ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+	ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
@@ -74,7 +74,7 @@ cast.Desire = {}
 cast.Target = {}
 cast.Type = {}
 local Consider = {}
-local CanCast = {utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.UCanCast}
+local CanCast = { utility.NCanCast, utility.NCanCast, utility.NCanCast, utility.UCanCast }
 local enemyDisabled = utility.enemyDisabled
 
 function GetComboDamage()
@@ -123,7 +123,7 @@ Consider[1] = function()
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) or
 						(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 							npcBot:GetMana() > ComboMana))
-				 then
+				then
 					return BOT_ACTION_DESIRE_HIGH, WeakestEnemy
 				end
 			end
@@ -170,7 +170,7 @@ Consider[1] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = npcBot:GetTarget()
 
 		if (npcEnemy ~= nil) then
@@ -237,17 +237,17 @@ Consider[4] = function()
 			(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 				npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 				npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-		 then
+		then
 			local npcEnemy = npcBot:GetTarget()
 			local creeps2 = npcBot:GetNearbyCreeps(Radius, true)
 			local incomingDamage = npcEnemy:GetActualIncomingDamage(damage, DAMAGE_TYPE_MAGICAL)
 			if (npcEnemy ~= nil and #creeps2 <= 1) then
 				if
 					not (npcEnemy:GetHealth() <= incomingDamage * 0.4 and #allys >= 2) and CanCast[abilityNumber](npcEnemy) and
-						(npcEnemy:GetHealth() <= npcEnemy:GetActualIncomingDamage(damage, DAMAGE_TYPE_MAGICAL) or
-							npcEnemy:GetHealth() <= Damage) and
-						GetUnitToUnitDistance(npcEnemy, npcBot) <= CastRange
-				 then
+					(npcEnemy:GetHealth() <= npcEnemy:GetActualIncomingDamage(damage, DAMAGE_TYPE_MAGICAL) or
+						npcEnemy:GetHealth() <= Damage) and
+					GetUnitToUnitDistance(npcEnemy, npcBot) <= CastRange
+				then
 					return BOT_ACTION_DESIRE_MODERATE, npcEnemy:GetExtrapolatedLocation(0.5), "Location"
 				end
 			end
@@ -270,7 +270,7 @@ Consider[4] = function()
 			(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 				npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 				npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-		 then
+		then
 			local npcEnemy = AbilityExtensions:GetTargetIfGood(npcBot)
 
 			if (npcEnemy ~= nil and #creeps <= 1) then
@@ -279,7 +279,7 @@ Consider[4] = function()
 						(npcEnemy:GetHealth() <= npcEnemy:GetActualIncomingDamage(npcBot:GetOffensivePower(), DAMAGE_TYPE_MAGICAL) or
 							npcEnemy:GetHealth() <= Damage) and
 						GetUnitToUnitDistance(npcEnemy, npcBot) <= Radius)
-				 then
+				then
 					return BOT_ACTION_DESIRE_MODERATE
 				end
 			end

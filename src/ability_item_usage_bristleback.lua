@@ -64,7 +64,7 @@ local TalentTree = {
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-	ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+	ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
@@ -120,18 +120,18 @@ Consider[1] = function()
 		local enemies = utility.GetNearbyVisibleHeroes(npcBot, CastRange, true, BOT_MODE_NONE)
 		enemies =
 			AbilityExtensions:Filter(
-			enemies,
-			function(t)
-				local m = t:GetModifierByName("modifier_bristleback_viscous_nasal_goo")
-				if m ~= -1 and t:GetModifierStackCount(m) >= 6 and t:GetModifierRemainingDuration(m) >= 2.5 then
-					return false
+				enemies,
+				function(t)
+					local m = t:GetModifierByName("modifier_bristleback_viscous_nasal_goo")
+					if m ~= -1 and t:GetModifierStackCount(m) >= 6 and t:GetModifierRemainingDuration(m) >= 2.5 then
+						return false
+					end
+					return true
 				end
-				return true
-			end
-		)
+			)
 		if
 			(AbilityExtensions:IsAttackingEnemies(npcBot) or AbilityExtensions:IsRetreating(npcBot)) and npcBot:GetMana() >= 120
-		 then
+		then
 			if #enemies == 0 then
 				return 0
 			end
@@ -182,7 +182,7 @@ Consider[1] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcTarget = AbilityExtensions:GetTargetIfGood(npcBot)
 		if npcTarget ~= nil then
 			if (CanCast[abilityNumber](npcTarget) and GetUnitToUnitDistance(npcBot, npcTarget) < CastRange) then
@@ -225,7 +225,7 @@ Consider[2] = function()
 				if
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_PHYSICAL) or
 						WeakestEnemy:HasModifier("modifier_bristleback_viscous_nasal_goo"))
-				 then
+				then
 					return BOT_ACTION_DESIRE_HIGH, WeakestEnemy
 				end
 			end
@@ -262,7 +262,7 @@ Consider[2] = function()
 			if
 				(CreepHealth <= WeakestCreep:GetActualIncomingDamage(Damage, DAMAGE_TYPE_PHYSICAL) and
 					(ManaPercentage > 0.4 or npcBot:GetMana() > ComboMana))
-			 then
+			then
 				return BOT_ACTION_DESIRE_LOW, WeakestCreep
 			end
 		end
@@ -284,7 +284,7 @@ Consider[2] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = npcBot:GetTarget()
 
 		if (npcEnemy ~= nil) then

@@ -8,6 +8,7 @@
 local utility = require(GetScriptDirectory() .. "/base/Utility")
 require(GetScriptDirectory() .. "/ability_item_usage_generic")
 local AbilityExtensions = require(GetScriptDirectory() .. "/base/AbilityAbstraction")
+local Timer = require(GetScriptDirectory() .. "/util/timer")
 
 local debugmode = false
 local npcBot = GetBot()
@@ -64,7 +65,7 @@ local TalentTree = {
 utility.CheckAbilityBuild(AbilityToLevelUp)
 
 function AbilityLevelUpThink()
-	ability_item_usage_generic.AbilityLevelUpThink2(AbilityToLevelUp, TalentTree)
+	ability_item_usage_generic.AbilityLevelUpThink(AbilityToLevelUp, TalentTree)
 end
 
 --------------------------------------
@@ -149,7 +150,7 @@ Consider[1] = function()
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) or
 						(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 							npcBot:GetMana() > ComboMana))
-				 then
+				then
 					return BOT_ACTION_DESIRE_HIGH, WeakestEnemy:GetExtrapolatedLocation(CastPoint)
 				end
 			end
@@ -184,7 +185,7 @@ Consider[1] = function()
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_TOP or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_MID or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_TOWER_BOT)
-	 then
+	then
 		local locationAoE = npcBot:FindAoELocation(true, false, npcBot:GetLocation(), CastRange, Radius, 0, 0)
 
 		if (locationAoE.count >= 4) then
@@ -197,7 +198,7 @@ Consider[1] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local locationAoE = npcBot:FindAoELocation(true, true, npcBot:GetLocation(), CastRange, Radius, 0, 0)
 		if (locationAoE.count >= 2) then
 			return BOT_ACTION_DESIRE_LOW, locationAoE.targetloc
@@ -261,7 +262,7 @@ function Consider2()
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) or
 						(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 							npcBot:GetMana() > ComboMana))
-				 then
+				then
 					return BOT_ACTION_DESIRE_HIGH
 				end
 			end
@@ -287,14 +288,14 @@ function Consider2()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = npcBot:GetTarget()
 
 		if (npcEnemy ~= nil) and npcEnemy:IsHero() then
 			if
 				(CanCast[abilityNumber](npcEnemy) and not enemyDisabled(npcEnemy) and
 					GetUnitToUnitDistance(npcBot, npcEnemy) < CastRange + 75 * #allys)
-			 then
+			then
 				return BOT_ACTION_DESIRE_MODERATE
 			end
 		end
@@ -353,7 +354,7 @@ Consider[5] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		if (HealthPercentage <= 0.70 + #enemys * 0.05) then
 			return BOT_ACTION_DESIRE_HIGH
 		end
@@ -383,11 +384,11 @@ Consider[4] = function()
 	local useTable = {}
 	if
 		not npcBot:HasModifier("modifier_alchemist_chemical_rage") and
-			not npcBot:HasModifier("modifier_alchemist_berserk_potion")
-	 then
+		not npcBot:HasModifier("modifier_alchemist_berserk_potion")
+	then
 		local useChemicalRageDesire = Consider[5]()
 		if useChemicalRageDesire ~= 0 then
-			table.insert(useTable, {useChemicalRageDesire, npcBot})
+			table.insert(useTable, { useChemicalRageDesire, npcBot })
 		end
 	end
 
@@ -419,7 +420,7 @@ Consider[4] = function()
 			(ally:GetActiveMode() == BOT_MODE_ROAM or ally:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 				ally:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 				ally:GetActiveMode() == BOT_MODE_ATTACK)
-		 then
+		then
 			if (HealthPercentage <= 0.70 + #enemys * 0.05) then
 				return BOT_ACTION_DESIRE_HIGH
 			end
@@ -430,10 +431,10 @@ Consider[4] = function()
 	for _, ally in ipairs(allys) do
 		local useAtAllyDesire = checkAlly(ally) - 0.2
 		if useAtAllyDesire > 0 then
-			table.insert(useTable, {useAtAllyDesire, ally})
+			table.insert(useTable, { useAtAllyDesire, ally })
 		end
 	end
-	local highestDesire = {-1, -1}
+	local highestDesire = { -1, -1 }
 	for _, target in ipairs(useTable) do
 		if highestDesire[1] < target[1] then
 			highestDesire = target
@@ -485,13 +486,13 @@ Consider[6] = function()
 					(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(Damage, DAMAGE_TYPE_MAGICAL) or
 						(HeroHealth <= WeakestEnemy:GetActualIncomingDamage(GetComboDamage(), DAMAGE_TYPE_MAGICAL) and
 							npcBot:GetMana() > ComboMana))
-				 then
+				then
 					if
 						((GetUnitToUnitDistance(npcBot, WeakestEnemy) > CastRange - 100 and
-							GetUnitToUnitDistance(npcBot, WeakestEnemy) < CastRange) or
+								GetUnitToUnitDistance(npcBot, WeakestEnemy) < CastRange) or
 							(TimeSinceCast > 3 and TimeSinceCast < 5) or
 							WeakestEnemy:GetHealth() / WeakestEnemy:GetMaxHealth() <= 0.2)
-					 then
+					then
 						return BOT_ACTION_DESIRE_HIGH, WeakestEnemy
 					end
 				end
@@ -509,9 +510,9 @@ Consider[6] = function()
 				if (CanCast[abilityNumber](npcEnemy) and not enemyDisabled(npcEnemy)) then
 					if
 						(GetUnitToUnitDistance(npcBot, npcEnemy) > CastRange - 100 and GetUnitToUnitDistance(npcBot, npcEnemy) < CastRange) or
-							(TimeSinceCast > 2 and TimeSinceCast < 5) or
-							npcEnemy:GetHealth() / npcEnemy:GetMaxHealth() <= 0.2
-					 then
+						(TimeSinceCast > 2 and TimeSinceCast < 5) or
+						npcEnemy:GetHealth() / npcEnemy:GetMaxHealth() <= 0.2
+					then
 						return BOT_ACTION_DESIRE_HIGH, npcEnemy
 					end
 				end
@@ -524,16 +525,16 @@ Consider[6] = function()
 		(npcBot:GetActiveMode() == BOT_MODE_ROAM or npcBot:GetActiveMode() == BOT_MODE_TEAM_ROAM or
 			npcBot:GetActiveMode() == BOT_MODE_DEFEND_ALLY or
 			npcBot:GetActiveMode() == BOT_MODE_ATTACK)
-	 then
+	then
 		local npcEnemy = AbilityExtensions:GetTargetIfGood(npcBot)
 
 		if (npcEnemy ~= nil) then
 			if CanCast[abilityNumber](npcEnemy) and not enemyDisabled(npcEnemy) then
 				if
 					GetUnitToUnitDistance(npcBot, npcEnemy) > CastRange - 100 and GetUnitToUnitDistance(npcBot, npcEnemy) < CastRange or
-						(TimeSinceCast > 3 and TimeSinceCast < 5) or
-						npcEnemy:GetHealth() / npcEnemy:GetMaxHealth() <= 0.2
-				 then
+					(TimeSinceCast > 3 and TimeSinceCast < 5) or
+					npcEnemy:GetHealth() / npcEnemy:GetMaxHealth() <= 0.2
+				then
 					return BOT_ACTION_DESIRE_HIGH, npcEnemy
 				end
 			end
@@ -546,11 +547,11 @@ Consider[6] = function()
 	if TimeSinceCast >= 2.5 then
 		local silencer =
 			AbilityExtensions:Count(
-			enemys,
-			function(t)
-				return AbilityExtensions:MayNotBeIllusion(t) and t:HasSilence()
-			end
-		)
+				enemys,
+				function(t)
+					return AbilityExtensions:MayNotBeIllusion(t) and t:HasSilence()
+				end
+			)
 		if silencer > 0 then
 			return BOT_ACTION_DESIRE_HIGH, enemys[1]
 		end
@@ -592,11 +593,11 @@ local function GetFeedScepterDesire(t)
 	local tb = t.itemInformationTable
 	local scepterIndex =
 		AbilityExtensions:IndexOf(
-		tb,
-		function(tp)
-			return tp.name == "item_ultimate_scepter" or tp.name == "item_recipe_ultimate_scepter"
-		end
-	)
+			tb,
+			function(tp)
+				return tp.name == "item_ultimate_scepter" or tp.name == "item_recipe_ultimate_scepter"
+			end
+		)
 	if scepterIndex == -1 then
 		return 0.02
 	elseif scepterIndex == 1 then
@@ -610,11 +611,11 @@ local function CheckFeedScepter()
 	local friends = GetNonScepterFriends()
 	friends =
 		AbilityExtensions:Filter(
-		friends,
-		function(t)
-			return t:IsAlive() and AbilityExtensions:AllyCanCast(t) and GetUnitToUnitDistance(t, npcBot) <= 1400
-		end
-	)
+			friends,
+			function(t)
+				return t:IsAlive() and AbilityExtensions:AllyCanCast(t) and GetUnitToUnitDistance(t, npcBot) <= 1400
+			end
+		)
 	AbilityExtensions:ForEach(
 		friends,
 		function(t)
@@ -622,7 +623,7 @@ local function CheckFeedScepter()
 		end
 	)
 end
-CheckFeedScepter = AbilityExtensions:EveryManySeconds(1, CheckFeedScepter)
+CheckFeedScepter = Timer.EveryManySeconds(1, CheckFeedScepter)
 
 function AbilityUsageThink()
 	-- Check if we're already using an ability
@@ -645,14 +646,14 @@ function AbilityUsageThink()
 		local scepter = AbilityExtensions:GetAvailableItem(npcBot, "item_ultimate_scepter")
 		if scepter and not AbilityExtensions:IsMuted(npcBot) then
 			local desirePairs = AbilityExtensions:ResumeUntilReturn(CheckFeedScepter)
-			if AbilityExtensions:CalledOnThisFrame(desirePairs) then
+			if Timer.CalledOnThisFrame(desirePairs) then
 				local bestDesire =
 					AbilityExtensions:Max(
-					desirePairs,
-					function(t)
-						return t[1]
-					end
-				)
+						desirePairs,
+						function(t)
+							return t[1]
+						end
+					)
 				if bestDesire[1] ~= 0 then
 					npcBot:Action_UseAbilityOnEntity(scepter, bestDesire[2])
 				end

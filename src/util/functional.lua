@@ -702,6 +702,17 @@ function Func.MaxValue(coefficients, min, max)
     return Func.MinValue(g, -max, -min)
 end
 
+-- 反转键值对
+function Func.ReverseTable(tb)
+    local g = {}
+    for k, v in pairs(tb) do
+        if type(v) == "number" or type(v) == "string" then
+            g[v] = k
+        end
+    end
+    return g
+end
+
 -- 计算两个物体的碰撞信息（位置/速度）
 -- TODO: 此函数未完成，暂不实现
 -- function Func.GetCollapseInfo(obj1, obj2, timeLimit)

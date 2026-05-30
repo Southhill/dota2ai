@@ -6,6 +6,7 @@ PushUtility = {}
 local utility = require(GetScriptDirectory() .. "/base/Utility")
 local role = require(GetScriptDirectory() .. "/base/RoleUtility")
 local AbilityExtensions = require(GetScriptDirectory() .. "/base/AbilityAbstraction")
+local Timer = require(GetScriptDirectory() .. "/util/timer")
 
 -- 获取英雄当前所在的分路（距离哪条兵线前沿最近）
 function PushUtility.GetLane(nTeam, hHero)
@@ -719,9 +720,6 @@ function PushUtility.strippath(filename)
     end
 end
 
-local EnemyHeroListTimer = -1000
-local EnemyHeroList = nil
-
 function PushUtility.GetRealHero(Candidates)
     if Candidates == nil or #Candidates == 0 then
         return nil
@@ -792,61 +790,36 @@ function PushUtility.GetRealHero(Candidates)
     return nil
 end
 
-function PushUtility.GetEnemyTeam()
-    if EnemyHeroList ~= nil and DotaTime() - EnemyHeroListTimer < 0.1 then
-        return EnemyHeroList
-    end
-
-    EnemyHeroListTimer = DotaTime()
-    EnemyHeroList = {}
+-- 每 0.1 秒重建一次敌方真实英雄列表（避免每帧重复调用 GetUnitList）
+PushUtility.GetEnemyTeam = Timer.EveryManySeconds(0.1, function()
+    local result = {}
+    local seen = {}
 
     for _, unit in pairs(GetUnitList(UNIT_LIST_ENEMY_HEROES)) do
-        local q = false
-        for _, unit2 in pairs(EnemyHeroList) do
-            if unit2:GetUnitName() == unit:GetUnitName() then
-                q = true
-            end
-        end
-
-        if not q then
-            local skip = false
-            if not NotNilOrDead(unit) then
-                skip = true
-            end
-            --			if unit.isRealHero~=nil and unit.isRealHero then
-            --				table.insert(EnemyHeroList,unit);
-            --				skip=true;
-            --			end
-            --			if unit.isIllusion~=nil and unit.isIllusion then
-            --				skip=true;
-            --			end
-
-            if not skip then
-                local candidates = {}
-                for _, unit2 in pairs(GetUnitList(UNIT_LIST_ENEMY_HEROES)) do
-                    if NotNilOrDead(unit2) and unit2:GetUnitName() == unit:GetUnitName() then
-                        table.insert(candidates, unit2)
-                    end
+        if NotNilOrDead(unit) and not seen[unit:GetUnitName()] then
+            seen[unit:GetUnitName()] = true
+            local candidates = {}
+            for _, unit2 in pairs(GetUnitList(UNIT_LIST_ENEMY_HEROES)) do
+                if NotNilOrDead(unit2) and unit2:GetUnitName() == unit:GetUnitName() then
+                    table.insert(candidates, unit2)
                 end
+            end
 
-                local ind, hero = GetRealHero(candidates)
-                if hero ~= nil and (hero.isIllusion == nil or (not hero.isIllusion)) then
-                    for _, can in pairs(candidates) do
-                        can.isIllusion = true
-                        can.isRealHero = false
-                    end
-
-                    hero.isIllusion = false
-                    hero.isRealHero = true
-
-                    table.insert(EnemyHeroList, hero)
+            local _, hero = GetRealHero(candidates)
+            if hero ~= nil and (hero.isIllusion == nil or not hero.isIllusion) then
+                for _, can in pairs(candidates) do
+                    can.isIllusion = true
+                    can.isRealHero = false
                 end
+                hero.isIllusion = false
+                hero.isRealHero = true
+                table.insert(result, hero)
             end
         end
     end
 
-    return EnemyHeroList
-end
+    return result
+end)
 
 for k, v in pairs(PushUtility) do
     _G[k] = v
