@@ -154,7 +154,7 @@ end
 
 -- 检测敌方英雄是否拥有免疫类减益效果
 function surroundingModule.HasImmuneDebuff(npcEnemy)
-    return npcBot:HasModifier("modifier_abaddon_borrowed_time") or
+    return npcEnemy:HasModifier("modifier_abaddon_borrowed_time") or
         npcEnemy:HasModifier("modifier_winter_wyvern_winters_curse") or
         npcEnemy:HasModifier("modifier_obsidian_destroyer_astral_imprisonment_prison") or
         npcEnemy:HasModifier("modifier_winter_wyvern_winters_curse_aura")

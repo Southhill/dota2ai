@@ -1,5 +1,5 @@
-local minionUtility = dofile( GetScriptDirectory().."/base/MinionUtility" )
+local MinionUtility = require(GetScriptDirectory() .. "/base/MinionUtility")
 
-function  MinionThink(  hMinionUnit )
-    minionUtility.MinionThink(hMinionUnit)
-end	
+function MinionThink(hMinionUnit)
+    MinionUtility.MinionThink(hMinionUnit)
+end

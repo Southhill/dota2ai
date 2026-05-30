@@ -1,32 +1,32 @@
 ----------------------------------------------------------------------------
 --	野怪营地工具 —管理野怪刷新、堆叠计时等
 ----------------------------------------------------------------------------
-local X = {}
+local CampUtility = {}
 
 local team = GetTeam();
-local CStackTime = {55, 55, 55, 55, 55, 54, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55}
-local CStackLoc = {Vector(1854.000000, -4469.000000, 0.000000), Vector(1249.000000, -2416.000000, 0.000000),
-                   Vector(3471.000000, -5841.000000, 0.000000), Vector(5153.000000, -3620.000000, 0.000000),
-                   Vector(-1846.000000, -2996.000000, 0.000000), Vector(-4961.000000, 559.000000, 0.000000),
-                   Vector(-3873.000000, -833.000000, 0.000000), Vector(-3146.000000, 702.000000, 0.000000),
-                   Vector(1141.000000, -3111.000000, 0.000000), Vector(660.000000, 2300.000000, 0.000000),
-                   Vector(3666.000000, 1836.000000, 0.000000), Vector(482.000000, 4723.000000, 0.000000),
-                   Vector(3173.000000, -861.000000, 0.000000), Vector(-3443.000000, 6098.000000, 0.000000),
-                   Vector(-4353.000000, 4842.000000, 0.000000), Vector(-1083.000000, 3385.000000, 0.000000),
-                   Vector(-922.000000, 4299.000000, 0.000000), Vector(4136.000000, -1753.000000, 0.000000)}
+local CStackTime = { 55, 55, 55, 55, 55, 54, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55 }
+local CStackLoc = { Vector(1854.000000, -4469.000000, 0.000000), Vector(1249.000000, -2416.000000, 0.000000),
+    Vector(3471.000000, -5841.000000, 0.000000), Vector(5153.000000, -3620.000000, 0.000000),
+    Vector(-1846.000000, -2996.000000, 0.000000), Vector(-4961.000000, 559.000000, 0.000000),
+    Vector(-3873.000000, -833.000000, 0.000000), Vector(-3146.000000, 702.000000, 0.000000),
+    Vector(1141.000000, -3111.000000, 0.000000), Vector(660.000000, 2300.000000, 0.000000),
+    Vector(3666.000000, 1836.000000, 0.000000), Vector(482.000000, 4723.000000, 0.000000),
+    Vector(3173.000000, -861.000000, 0.000000), Vector(-3443.000000, 6098.000000, 0.000000),
+    Vector(-4353.000000, 4842.000000, 0.000000), Vector(-1083.000000, 3385.000000, 0.000000),
+    Vector(-922.000000, 4299.000000, 0.000000), Vector(4136.000000, -1753.000000, 0.000000) }
 
 -- test hero
-local jungler = {'npc_dota_hero_alchemist', 'npc_dota_hero_bloodseeker' -- 'npc_dota_hero_legion_commander',
--- 'npc_dota_hero_life_stealer'
--- 'npc_dota_hero_skeleton_king',
--- 'npc_dota_hero_ursa'
+local jungler = { 'npc_dota_hero_alchemist', 'npc_dota_hero_bloodseeker' -- 'npc_dota_hero_legion_commander',
+    -- 'npc_dota_hero_life_stealer'
+    -- 'npc_dota_hero_skeleton_king',
+    -- 'npc_dota_hero_ursa'
 }
 
-function X.GetCampMoveToStack(id)
+function CampUtility.GetCampMoveToStack(id)
     return CStackLoc[id]
 end
 
-function X.GetCampStackTime(camp)
+function CampUtility.GetCampStackTime(camp)
     if camp.cattr.speed == "fast" then
         return 55;
     elseif camp.cattr.speed == "slow" then
@@ -36,39 +36,39 @@ function X.GetCampStackTime(camp)
     end
 end
 
-function X.IsEnemyCamp(camp)
+function CampUtility.IsEnemyCamp(camp)
     return camp.team ~= GetTeam();
 end
 
-function X.IsAncientCamp(camp)
+function CampUtility.IsAncientCamp(camp)
     return camp.type == "ancient";
 end
 
-function X.IsSmallCamp(camp)
+function CampUtility.IsSmallCamp(camp)
     return camp.type == "small";
 end
 
-function X.IsMediumCamp(camp)
+function CampUtility.IsMediumCamp(camp)
     return camp.type == "medium";
 end
 
-function X.IsLargeCamp(camp)
+function CampUtility.IsLargeCamp(camp)
     return camp.type == "large";
 end
 
-function X.RefreshCamp(bot)
+function CampUtility.RefreshCamp(bot)
     local camps = GetNeutralSpawners();
     local AllCamps = {};
     for k, camp in pairs(camps) do
         if bot:GetLevel() <= 6 then
-            if not X.IsEnemyCamp(camp) and not X.IsLargeCamp(camp) and not X.IsAncientCamp(camp) then
+            if not CampUtility.IsEnemyCamp(camp) and not CampUtility.IsLargeCamp(camp) and not CampUtility.IsAncientCamp(camp) then
                 table.insert(AllCamps, {
                     idx = k,
                     cattr = camp
                 });
             end
         elseif bot:GetLevel() <= 10 then
-            if not X.IsEnemyCamp(camp) and not X.IsAncientCamp(camp) then
+            if not CampUtility.IsEnemyCamp(camp) and not CampUtility.IsAncientCamp(camp) then
                 table.insert(AllCamps, {
                     idx = k,
                     cattr = camp
@@ -85,7 +85,7 @@ function X.RefreshCamp(bot)
     return AllCamps, nCamps;
 end
 
-function X.IsStrongJungler(bot)
+function CampUtility.IsStrongJungler(bot)
     local name = bot:GetUnitName();
     for _, n in pairs(jungler) do
         if name == n then
@@ -95,7 +95,7 @@ function X.IsStrongJungler(bot)
     return false;
 end
 
-function X.PrintCamps()
+function CampUtility.PrintCamps()
     print("========CAMPS==========")
     local camps = GetNeutralSpawners();
     for i = 1, #camps do
@@ -106,7 +106,7 @@ function X.PrintCamps()
     end
 end
 
-function X.PingCamp(nCamp, nPId, nTeam, bot)
+function CampUtility.PingCamp(nCamp, nPId, nTeam, bot)
     if bot:GetTeam() == nTeam and bot:GetPlayerID() == nPId then
         local camps = GetNeutralSpawners();
         for i = 1, #camps do
@@ -118,12 +118,12 @@ function X.PingCamp(nCamp, nPId, nTeam, bot)
     end
 end
 
-function X.GetClosestNeutralSpwan(bot, AvailableCamp)
+function CampUtility.GetClosestNeutralSpwan(bot, AvailableCamp)
     local minDist = 10000;
     local pCamp = nil;
     for _, camp in pairs(AvailableCamp) do
         local dist = GetUnitToLocationDistance(bot, camp.cattr.location);
-        if X.IsTheClosestOne(bot, dist, camp.cattr.location) and dist < minDist then
+        if CampUtility.IsTheClosestOne(bot, dist, camp.cattr.location) and dist < minDist then
             minDist = dist;
             pCamp = camp;
         end
@@ -131,7 +131,7 @@ function X.GetClosestNeutralSpwan(bot, AvailableCamp)
     return pCamp
 end
 
-function X.IsTheClosestOne(bot, bDis, loc)
+function CampUtility.IsTheClosestOne(bot, bDis, loc)
     local dis = bDis;
     local closest = bot;
     for k, v in pairs(GetTeamPlayers(GetTeam())) do
@@ -147,7 +147,7 @@ function X.IsTheClosestOne(bot, bDis, loc)
     return closest:GetUnitName() == bot:GetUnitName();
 end
 
-function X.FindFarmedTarget(Creeps)
+function CampUtility.FindFarmedTarget(Creeps)
     local minHP = 10000;
     local target = nil;
     for _, creep in pairs(Creeps) do
@@ -161,7 +161,7 @@ function X.FindFarmedTarget(Creeps)
     return target
 end
 
-function X.IsSuitableToFarm(bot)
+function CampUtility.IsSuitableToFarm(bot)
     local mode = bot:GetActiveMode();
     if mode == BOT_MODE_RUNE or mode == BOT_MODE_DEFEND_TOWER_TOP or mode == BOT_MODE_DEFEND_TOWER_MID or mode ==
         BOT_MODE_DEFEND_TOWER_BOT or mode == BOT_MODE_ATTACK then
@@ -170,7 +170,7 @@ function X.IsSuitableToFarm(bot)
     return true;
 end
 
-function X.UpdateAvailableCamp(bot, preferedCamp, AvailableCamp)
+function CampUtility.UpdateAvailableCamp(bot, preferedCamp, AvailableCamp)
     if preferedCamp ~= nil then
         for i = 1, #AvailableCamp do
             if AvailableCamp[i].cattr.location == preferedCamp.cattr.location or
@@ -184,4 +184,4 @@ function X.UpdateAvailableCamp(bot, preferedCamp, AvailableCamp)
     end
 end
 
-return X
+return CampUtility

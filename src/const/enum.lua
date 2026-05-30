@@ -107,4 +107,12 @@ Enum.ModifierForcedMovement = {
     "modifier_monkey_king_right_click_jump_activity",
 }
 
+-- 免疫类减益 modifier（施法判定时需排除的目标状态）
+Enum.ModifierImmuneDebuff = {
+    "modifier_abaddon_borrowed_time",
+    "modifier_winter_wyvern_winters_curse",
+    "modifier_obsidian_destroyer_astral_imprisonment_prison",
+    "modifier_winter_wyvern_winters_curse_aura",
+}
+
 return Enum

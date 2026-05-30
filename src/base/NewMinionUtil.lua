@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------
 --	召唤物工具（新）—管理幻象/守卫/通用召唤物
 ----------------------------------------------------------------------------
-local MyModule = {}
+local NewMinionUtility = {}
 local Units = require(GetScriptDirectory() .. "/const/units")
 
 local bot = GetBot()
@@ -19,32 +19,32 @@ local castQDesire = 0
 local castWDesire = 0
 local castEDesire = 0
 
-function MyModule.IsFrozeSigil(unit_name)
+function NewMinionUtility.IsFrozeSigil(unit_name)
     return Units.frozeSigilSet[unit_name] ~= nil
 end
 
 ------------BEASTMASTER'S HAWK
-function MyModule.IsHawk(unit_name)
+function NewMinionUtility.IsHawk(unit_name)
     return Units.hawkSet[unit_name] ~= nil
 end
 
-function MyModule.IsTornado(unit_name)
+function NewMinionUtility.IsTornado(unit_name)
     return Units.tornadoSet[unit_name] ~= nil
 end
 
-function MyModule.IsHealingWard(unit_name)
+function NewMinionUtility.IsHealingWard(unit_name)
     return Units.healingWardSet[unit_name] ~= nil
 end
 
-function MyModule.IsBear(unit_name)
+function NewMinionUtility.IsBear(unit_name)
     return Units.bearSet[unit_name] ~= nil
 end
 
-function MyModule.IsFamiliar(unit_name)
+function NewMinionUtility.IsFamiliar(unit_name)
     return Units.familiarSet[unit_name] ~= nil
 end
 
-function MyModule.IsMinionWithNoSkill(unit_name)
+function NewMinionUtility.IsMinionWithNoSkill(unit_name)
     return Units.minionWithNoSkillSet[unit_name] ~= nil
 end
 
@@ -52,20 +52,20 @@ local remnant = Units.remnant
 local trap = Units.trap
 local independent = Units.independent
 
-function MyModule.IsValidUnit(unit)
+function NewMinionUtility.IsValidUnit(unit)
     return unit ~= nil and unit:IsNull() == false and unit:IsAlive()
 end
 
-function MyModule.IsValidTarget(target)
+function NewMinionUtility.IsValidTarget(target)
     return target ~= nil and target:IsNull() == false and target:CanBeSeen() and target:IsInvulnerable() == false and
         target:IsAlive()
 end
 
-function MyModule.IsInRange(unit, target, range)
+function NewMinionUtility.IsInRange(unit, target, range)
     return GetUnitToUnitDistance(unit, target) <= range
 end
 
-function MyModule.CanCastOnTarget(target, ability)
+function NewMinionUtility.CanCastOnTarget(target, ability)
     if CheckFlag(ability:GetTargetFlags(), ABILITY_TARGET_FLAG_MAGIC_IMMUNE_ENEMIES) then
         return target:IsHero() and target:IsIllusion() == false
     else
@@ -76,9 +76,9 @@ end
 local globRadius = 1200
 
 -- 局部别名（内部全局函数通过此处引用 MyModule 方法）
-local IsValidTarget = MyModule.IsValidTarget
-local IsInRange = MyModule.IsInRange
-local CanCastOnTarget = MyModule.CanCastOnTarget
+local IsValidTarget = NewMinionUtility.IsValidTarget
+local IsInRange = NewMinionUtility.IsInRange
+local CanCastOnTarget = NewMinionUtility.CanCastOnTarget
 
 function GetWeakest(units)
     local target = nil
@@ -182,7 +182,7 @@ function IllusionThink(minion)
 end
 
 -----------ATTACKING WARD LIKE UNIT
-function MyModule.IsAttackingWard(unit_name)
+function NewMinionUtility.IsAttackingWard(unit_name)
     return Units.attackingWardSet[unit_name] ~= nil
 end
 
@@ -221,7 +221,7 @@ function AttackingWardThink(minion)
 end
 
 ----------CAN'T BE CONTROLLED UNIT
-function MyModule.CantBeControlled(unit_name)
+function NewMinionUtility.CantBeControlled(unit_name)
     return Units.cantBeControlledSet[unit_name] ~= nil
 end
 
@@ -230,7 +230,7 @@ function CantBeControlledThink(minion)
 end
 
 -----------MINION WITH SKILLS
-function MyModule.IsMinionWithSkill(unit_name)
+function NewMinionUtility.IsMinionWithSkill(unit_name)
     return Units.minionWithSkillSet[unit_name] ~= nil
 end
 
@@ -400,4 +400,4 @@ function MinionThink(hMinionUnit)
     end
 end
 
-return MyModule
+return NewMinionUtility

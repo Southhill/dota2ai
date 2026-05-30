@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------
 --	召唤物工具 —管理野怪/召唤物行为
 ----------------------------------------------------------------------------
-local MyModule = {};
+local MinionUtility = {};
 local utility = require(GetScriptDirectory() .. "/base/Utility")
 
 local npcBot = nil;
@@ -885,4 +885,4 @@ function ConsiderFrostArmor(hMinionUnit)
     return BOT_ACTION_DESIRE_NONE, 0;
 end
 
-return MyModule;
+return MinionUtility;

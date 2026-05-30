@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------
 --	聊天系统模块
 ----------------------------------------------------------------------------
-local M = {}
+local ChatUtility = {}
 
 local Project = require(GetScriptDirectory() .. "/const/project")
 
@@ -64,7 +64,7 @@ local function DetectDotaVersion()
 end
 
 -- 发送版本公告（游戏开始时执行一次）
-function M.SendVersionAnnouncement()
+function ChatUtility.SendVersionAnnouncement()
     if announceFlag == false then
         announceFlag = true
 
@@ -94,8 +94,8 @@ function M.SendVersionAnnouncement()
 end
 
 -- 遗迹告警：兵营被破后遗迹血量低于阈值时发送
-function M.AnnounceAncientWarning(npcBot, health)
+function ChatUtility.AnnounceAncientWarning(npcBot, health)
     npcBot:ActionImmediate_Chat("Ancient HP low: < " .. health, true)
 end
 
-return M
+return ChatUtility

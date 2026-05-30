@@ -85,12 +85,6 @@ function SelectHeroAndAnnounce(playerID, heroName)
     end
 end
 
-------------------------------------------------------------------------------------------------------------------------
-
-function GetBotNames()
-    return bnUtil.GetDota2Team()
-end
-
 function Think()
     -- 开局在公屏打印确认信息 + 版本公告（仅执行一次）
     if g_Agent2026Started == nil and GetGameState() >= GAME_STATE_PRE_GAME then

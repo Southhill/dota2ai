@@ -1,7 +1,7 @@
 ﻿----------------------------------------------------------------------------
 --	信使系统 —管理信使运送物品
 ----------------------------------------------------------------------------
-local M = {}
+local CourierUtility = {}
 
 -- 信使校准状态变量（原 CourierUtility 内联）
 local pIDInc = 1
@@ -40,7 +40,7 @@ local function IsOnlyInventoryFull(npcHero)
     return true
 end
 local function CannotCarryOnBackpack(itemName)
-    local items = {"item_gem", "item_rapier", "item_immortal"}
+    local items = { "item_gem", "item_rapier", "item_immortal" }
     for _, v in ipairs(items) do
         if v == itemName then
             return true
@@ -147,8 +147,8 @@ local function IsFlyingCourier(npcCourier)
     return false
 end
 
-local CourierStateMap = {"COURIER_STATE_IDLE", "COURIER_STATE_AT_BASE", "COURIER_STATE_MOVING",
-                         "COURIER_STATE_DELIVERING_ITEMS", "COURIER_STATE_RETURNING_TO_BASE", "COURIER_STATE_DEAD"}
+local CourierStateMap = { "COURIER_STATE_IDLE", "COURIER_STATE_AT_BASE", "COURIER_STATE_MOVING",
+    "COURIER_STATE_DELIVERING_ITEMS", "COURIER_STATE_RETURNING_TO_BASE", "COURIER_STATE_DEAD" }
 
 function PrintCourierState(state)
     local text = CourierStateMap[state - 1] or "UNKNOWN"
@@ -178,7 +178,7 @@ local lastTransferredTime = -100
 local lastTransferredTimeCourierItemNumber = 0
 local returnToFountainWhenTransferFailed = false
 
-function M.CourierUsageThink()
+function CourierUtility.CourierUsageThink()
     local npcBot = GetBot()
 
     if GetGameMode() == 23 or npcBot:IsInvulnerable() or not npcBot:IsHero() or npcBot:IsIllusion() or
@@ -389,5 +389,4 @@ function M.CourierUsageThink()
     end
 end
 
-return M
-
+return CourierUtility

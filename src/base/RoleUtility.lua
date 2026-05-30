@@ -3,7 +3,7 @@
 -- 角色工具模块 —定义每个英雄的角色定位
 ----------------------------------------------------------------------------------------------------
 
-local X = {}
+local RoleUtility = {}
 
 local Tools = require(GetScriptDirectory() .. "/util/Tools")
 local Enum = require(GetScriptDirectory() .. "/const/enum")
@@ -11,98 +11,98 @@ local Roles = require(GetScriptDirectory() .. "/const/roles")
 local Heroes = require(GetScriptDirectory() .. "/const/heroes")
 
 -- 从常量模块加载英雄角色数据
-X["hero_roles"] = Roles.hero_roles
-X["bottle"] = Roles.bottle
-X["phase_boots"] = Roles.phase_boots
-X["off"] = Tools.GenEnumArray(Heroes.off)
-X["mid"] = Tools.GenEnumArray(Heroes.mid)
-X["safe"] = Tools.GenEnumArray(Heroes.safe)
-X["supp"] = Tools.GenEnumArray(Heroes.supp)
+RoleUtility["hero_roles"] = Roles.hero_roles
+RoleUtility["bottle"] = Roles.bottle
+RoleUtility["phase_boots"] = Roles.phase_boots
+RoleUtility["off"] = Tools.GenEnumArray(Heroes.off)
+RoleUtility["mid"] = Tools.GenEnumArray(Heroes.mid)
+RoleUtility["safe"] = Tools.GenEnumArray(Heroes.safe)
+RoleUtility["supp"] = Tools.GenEnumArray(Heroes.supp)
 
-function X.IsCarry(hero)
-	if X["hero_roles"][hero] == nil then
+function RoleUtility.IsCarry(hero)
+	if RoleUtility["hero_roles"][hero] == nil then
 		return false
 	end
-	return X["hero_roles"][hero]["carry"] > 0
+	return RoleUtility["hero_roles"][hero]["carry"] > 0
 end
 
-function X.IsDisabler(hero)
-	if X["hero_roles"][hero] == nil then
+function RoleUtility.IsDisabler(hero)
+	if RoleUtility["hero_roles"][hero] == nil then
 		return false
 	end
-	return X["hero_roles"][hero]["disabler"] > 0
+	return RoleUtility["hero_roles"][hero]["disabler"] > 0
 end
 
-function X.IsDurable(hero)
-	if X["hero_roles"][hero] == nil then
+function RoleUtility.IsDurable(hero)
+	if RoleUtility["hero_roles"][hero] == nil then
 		return false
 	end
-	return X["hero_roles"][hero]["durable"] > 0
+	return RoleUtility["hero_roles"][hero]["durable"] > 0
 end
 
-function X.HasEscape(hero)
-	if X["hero_roles"][hero] == nil then
+function RoleUtility.HasEscape(hero)
+	if RoleUtility["hero_roles"][hero] == nil then
 		return false
 	end
-	return X["hero_roles"][hero]["escape"] > 0
+	return RoleUtility["hero_roles"][hero]["escape"] > 0
 end
 
-function X.IsInitiator(hero)
-	if X["hero_roles"][hero] == nil then
+function RoleUtility.IsInitiator(hero)
+	if RoleUtility["hero_roles"][hero] == nil then
 		return false
 	end
-	return X["hero_roles"][hero]["initiator"] > 0
+	return RoleUtility["hero_roles"][hero]["initiator"] > 0
 end
 
-function X.IsJungler(hero)
-	if X["hero_roles"][hero] == nil then
+function RoleUtility.IsJungler(hero)
+	if RoleUtility["hero_roles"][hero] == nil then
 		return false
 	end
-	return X["hero_roles"][hero]["jungler"] > 0
+	return RoleUtility["hero_roles"][hero]["jungler"] > 0
 end
 
-function X.IsNuker(hero)
-	if X["hero_roles"][hero] == nil then
+function RoleUtility.IsNuker(hero)
+	if RoleUtility["hero_roles"][hero] == nil then
 		return false
 	end
-	return X["hero_roles"][hero]["nuker"] > 0
+	return RoleUtility["hero_roles"][hero]["nuker"] > 0
 end
 
-function X.IsSupport(hero)
-	if X["hero_roles"][hero] == nil then
+function RoleUtility.IsSupport(hero)
+	if RoleUtility["hero_roles"][hero] == nil then
 		return false
 	end
-	return X["hero_roles"][hero]["support"] > 0
+	return RoleUtility["hero_roles"][hero]["support"] > 0
 end
 
-function X.IsPusher(hero)
-	if X["hero_roles"][hero] == nil then
+function RoleUtility.IsPusher(hero)
+	if RoleUtility["hero_roles"][hero] == nil then
 		return false
 	end
-	return X["hero_roles"][hero]["pusher"] > 0
+	return RoleUtility["hero_roles"][hero]["pusher"] > 0
 end
 
-function X.IsMelee(attackRange)
+function RoleUtility.IsMelee(attackRange)
 	return attackRange <= 320
 end
 
-function X.BetterBuyPhaseBoots(hero)
-	return X["phase_boots"][hero] == 1
+function RoleUtility.BetterBuyPhaseBoots(hero)
+	return RoleUtility["phase_boots"][hero] == 1
 end
 
-function X.GetRoleLevel(hero, role)
-	return X["hero_roles"][hero][role]
+function RoleUtility.GetRoleLevel(hero, role)
+	return RoleUtility["hero_roles"][hero][role]
 end
 
-function X.IsRemovedFromSupportPoll(hero)
+function RoleUtility.IsRemovedFromSupportPoll(hero)
 	return hero == "npc_dota_hero_alchemist" or hero == "npc_dota_hero_naga_siren" or
 		hero == "npc_dota_hero_skeleton_king" or
 		hero == "npc_dota_hero_alchemist"
 end
 
 --OFFLANER
-function X.CanBeOfflanerOld(hero)
-	if X["hero_roles"][hero] == nil then
+function RoleUtility.CanBeOfflanerOld(hero)
+	if RoleUtility["hero_roles"][hero] == nil then
 		return false
 	end
 	return hero == "npc_dota_hero_bounty_hunter" or hero == "npc_dota_hero_nyx_assassin" or
@@ -113,74 +113,74 @@ function X.CanBeOfflanerOld(hero)
 		hero == "npc_dota_hero_dark_seer" or
 		hero == "npc_dota_hero_techies" or
 		hero == "npc_dota_hero_batrider" or
-		(X["hero_roles"][hero]["initiator"] > 0 and X["hero_roles"][hero]["disabler"] > 0 and
-			X["hero_roles"][hero]["durable"] > 0 and
-			X["hero_roles"][hero]["support"] == 0)
+		(RoleUtility["hero_roles"][hero]["initiator"] > 0 and RoleUtility["hero_roles"][hero]["disabler"] > 0 and
+			RoleUtility["hero_roles"][hero]["durable"] > 0 and
+			RoleUtility["hero_roles"][hero]["support"] == 0)
 end
 
-function X.CanBeOfflaner(heroName)
-	return X["off"][heroName]
+function RoleUtility.CanBeOfflaner(heroName)
+	return RoleUtility["off"][heroName]
 end
 
 --MIDLANER
-function X.CanBeMidlanerOld(hero)
-	if X["hero_roles"][hero] == nil then
+function RoleUtility.CanBeMidlanerOld(hero)
+	if RoleUtility["hero_roles"][hero] == nil then
 		return false
 	end
 	return hero == "npc_dota_hero_zuus" or hero == "npc_dota_hero_templar_assassin" or
 		hero == "npc_dota_hero_ember_spirit" or
 		hero == "npc_dota_hero_puck" or
 		hero == "npc_dota_hero_pugna" or
-		(X["hero_roles"][hero]["carry"] > 0 and (X["hero_roles"][hero]["nuker"] > 0 or X["hero_roles"][hero]["pusher"] > 0))
+		(RoleUtility["hero_roles"][hero]["carry"] > 0 and (RoleUtility["hero_roles"][hero]["nuker"] > 0 or RoleUtility["hero_roles"][hero]["pusher"] > 0))
 end
 
-function X.CanBeMidlaner(heroName)
-	return X["mid"][heroName]
+function RoleUtility.CanBeMidlaner(heroName)
+	return RoleUtility["mid"][heroName]
 end
 
 --SAFELANER
-function X.CanBeSafeLaneCarryOld(hero)
-	if X["hero_roles"][hero] == nil or hero == "npc_dota_hero_obsidian_destroyer" or hero == "npc_dota_hero_storm_spirit" then
+function RoleUtility.CanBeSafeLaneCarryOld(hero)
+	if RoleUtility["hero_roles"][hero] == nil or hero == "npc_dota_hero_obsidian_destroyer" or hero == "npc_dota_hero_storm_spirit" then
 		return false
 	end
-	return X["hero_roles"][hero]["carry"] > 1 and
-		((X["hero_roles"][hero]["nuker"] < 3 and X["hero_roles"][hero]["pusher"] < 3) or
-			(X["hero_roles"][hero]["escape"] > 0 and X["hero_roles"][hero]["nuker"] < 2) or
-			X["hero_roles"][hero]["nuker"] < 2 or
-			X["hero_roles"][hero]["jungler"] == 1)
+	return RoleUtility["hero_roles"][hero]["carry"] > 1 and
+		((RoleUtility["hero_roles"][hero]["nuker"] < 3 and RoleUtility["hero_roles"][hero]["pusher"] < 3) or
+			(RoleUtility["hero_roles"][hero]["escape"] > 0 and RoleUtility["hero_roles"][hero]["nuker"] < 2) or
+			RoleUtility["hero_roles"][hero]["nuker"] < 2 or
+			RoleUtility["hero_roles"][hero]["jungler"] == 1)
 end
 
-function X.CanBeSafeLaneCarry(heroName)
-	return X["safe"][heroName]
+function RoleUtility.CanBeSafeLaneCarry(heroName)
+	return RoleUtility["safe"][heroName]
 end
 
 --SUPPORT
-function X.CanBeSupportOld(hero)
-	if X["hero_roles"][hero] == nil then
+function RoleUtility.CanBeSupportOld(hero)
+	if RoleUtility["hero_roles"][hero] == nil then
 		return false
 	end
-	return not X.IsRemovedFromSupportPoll(hero) and X["hero_roles"][hero]["support"] > 0 and
-		(X["hero_roles"][hero]["carry"] < 2 or X["hero_roles"][hero]["nuker"] > 0 or X["hero_roles"][hero]["disabler"] > 0)
+	return not RoleUtility.IsRemovedFromSupportPoll(hero) and RoleUtility["hero_roles"][hero]["support"] > 0 and
+		(RoleUtility["hero_roles"][hero]["carry"] < 2 or RoleUtility["hero_roles"][hero]["nuker"] > 0 or RoleUtility["hero_roles"][hero]["disabler"] > 0)
 end
 
-function X.CanBeSupport(heroName)
-	return X["supp"][heroName]
+function RoleUtility.CanBeSupport(heroName)
+	return RoleUtility["supp"][heroName]
 end
 
-function X.GetCurrentSuitableRole(bot, hero)
+function RoleUtility.GetCurrentSuitableRole(bot, hero)
 	local lane = bot:GetAssignedLane()
 
-	if X.CanBeSupport(hero) and lane ~= LANE_MID then
+	if RoleUtility.CanBeSupport(hero) and lane ~= LANE_MID then
 		return "support"
-	elseif X.CanBeMidlaner(hero) and lane == LANE_MID then
+	elseif RoleUtility.CanBeMidlaner(hero) and lane == LANE_MID then
 		return "midlaner"
 	elseif
-		X.CanBeSafeLaneCarry(hero) and
+		RoleUtility.CanBeSafeLaneCarry(hero) and
 		((GetTeam() == TEAM_RADIANT and lane == LANE_BOT) or (GetTeam() == TEAM_DIRE and lane == LANE_TOP))
 	then
 		return "carry"
 	elseif
-		X.CanBeOfflaner(hero) and
+		RoleUtility.CanBeOfflaner(hero) and
 		((GetTeam() == TEAM_RADIANT and lane == LANE_TOP) or (GetTeam() == TEAM_DIRE and lane == LANE_BOT))
 	then
 		return "offlaner"
@@ -193,7 +193,7 @@ function X.GetCurrentSuitableRole(bot, hero)
 	end
 end
 
-function X.CountValue(hero, role)
+function RoleUtility.CountValue(hero, role)
 	local highest = 0
 	local TeamMember = GetTeamPlayers(GetTeam())
 	for i = 1, #TeamMember do
@@ -201,17 +201,17 @@ function X.CountValue(hero, role)
 	return highest
 end
 
-X["invisEnemyExist"] = false
+RoleUtility["invisEnemyExist"] = false
 
 local globalEnemyCheck = false
 local lastCheck = -90
 
-function X.UpdateInvisEnemyStatus(bot)
+function RoleUtility.UpdateInvisEnemyStatus(bot)
 	if globalEnemyCheck == false then
 		local players = GetTeamPlayers(GetOpposingTeam())
 		for i = 1, #players do
 			if Enum.invisHeroes[GetSelectedHeroName(players[i])] then
-				X["invisEnemyExist"] = true
+				RoleUtility["invisEnemyExist"] = true
 				break
 			end
 		end
@@ -226,7 +226,7 @@ function X.UpdateInvisEnemyStatus(bot)
 					local ISSlot = enemies[i]:FindItemSlot("item_invis_sword")
 					local SESlot = enemies[i]:FindItemSlot("item_silver_edge")
 					if SASlot >= 0 or GCSlot >= 0 or ISSlot >= 0 or SESlot >= 0 then
-						X["invisEnemyExist"] = true
+						RoleUtility["invisEnemyExist"] = true
 						break
 					end
 				end
@@ -236,7 +236,7 @@ function X.UpdateInvisEnemyStatus(bot)
 	end
 end
 
-function X.IsTheLowestLevel(bot)
+function RoleUtility.IsTheLowestLevel(bot)
 	local lowestLevel = 26
 	local lowestID = -1
 	local players = GetTeamPlayers(GetTeam())
@@ -249,38 +249,38 @@ function X.IsTheLowestLevel(bot)
 	return bot:GetPlayerID() == lowestID
 end
 
-X["supportExist"] = nil
-function X.UpdateSupportStatus(bot)
+RoleUtility["supportExist"] = nil
+function RoleUtility.UpdateSupportStatus(bot)
 	if bot.theRole == "support" then
-		X["supportExist"] = true
+		RoleUtility["supportExist"] = true
 	end
 	local TeamMember = GetTeamPlayers(GetTeam())
 	for i = 1, #TeamMember do
 		local ally = GetTeamMember(i)
 		if ally == nil or ally:IsAlive() == false or ally.theRole == nil then
-			X["supportExist"] = nil
+			RoleUtility["supportExist"] = nil
 		end
 	end
 	for i = 1, #TeamMember do
 		local ally = GetTeamMember(i)
 		if ally ~= nil and ally:IsHero() and ally.theRole == "support" then
-			X["supportExist"] = true
+			RoleUtility["supportExist"] = true
 		end
 	end
 	return false
 end
 
-X["lastbbtime"] = -90
+RoleUtility["lastbbtime"] = -90
 
-function X.ShouldBuyBack()
-	return DotaTime() > X["lastbbtime"] + 2.0
+function RoleUtility.ShouldBuyBack()
+	return DotaTime() > RoleUtility["lastbbtime"] + 2.0
 end
 
-function X.GetHighestValueRoles(bot)
+function RoleUtility.GetHighestValueRoles(bot)
 	local maxVal = -1
 	local role = ""
 	print("=========" .. bot:GetUnitName() .. "=========")
-	for key, value in pairs(X.hero_roles[bot:GetUnitName()]) do
+	for key, value in pairs(RoleUtility.hero_roles[bot:GetUnitName()]) do
 		print(tostring(key) .. " : " .. tostring(value))
 		if value >= maxVal then
 			maxVal = value
@@ -290,4 +290,4 @@ function X.GetHighestValueRoles(bot)
 	print("Highest value role => " .. role .. " : " .. tostring(maxVal))
 end
 
-return X
+return RoleUtility

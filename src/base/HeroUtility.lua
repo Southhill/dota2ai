@@ -1,14 +1,14 @@
 ----------------------------------------------------------------------------
 --  英雄级单位的方法集合
 ----------------------------------------------------------------------------
-local heroUnitModule = {}
+local heroUnitUtility = {}
 
 ---------------------------------------------------------------------------------------------------
 --  Bot 自身状态检测
 ---------------------------------------------------------------------------------------------------
 
 -- 检测英雄是否卡住（长时间在同一个位置移动但无法前进）
-function heroUnitModule.IsStuck(npcBot)
+function heroUnitUtility.IsStuck(npcBot)
     if npcBot.stuckLoc ~= nil and npcBot.stuckTime ~= nil then
         local attackTarget = npcBot:GetAttackTarget()
         local EAd = GetUnitToUnitDistance(npcBot, GetAncient(GetOpposingTeam()))
@@ -30,7 +30,7 @@ end
 ---------------------------------------------------------------------------------------------------
 
 -- 检测英雄与目标位置之间是否有树木阻挡
-function heroUnitModule.AreTreesBetween(loc, r)
+function heroUnitUtility.AreTreesBetween(loc, r)
     local npcBot = GetBot()
 
     local trees = npcBot:GetNearbyTrees(GetUnitToLocationDistance(npcBot, loc))
@@ -53,7 +53,7 @@ function heroUnitModule.AreTreesBetween(loc, r)
             end
 
             local d = math.abs((a * z.x + b * z.y + c) / math.sqrt(a * a + b * b))
-            if d <= r and GetUnitToLocationDistance(npcBot, loc) > heroUnitModule.GetDistance(x, loc) + 50 then
+            if d <= r and GetUnitToLocationDistance(npcBot, loc) > heroUnitUtility.GetDistance(x, loc) + 50 then
                 return true
             end
         end
@@ -66,7 +66,7 @@ end
 ---------------------------------------------------------------------------------------------------
 
 -- 获取某个位置附近的敌方英雄列表
-function heroUnitModule.GetEnemiesNearLocation(loc, dist)
+function heroUnitUtility.GetEnemiesNearLocation(loc, dist)
     if loc == nil then
         return {}
     end
@@ -83,7 +83,7 @@ function heroUnitModule.GetEnemiesNearLocation(loc, dist)
 end
 
 -- 获取某个位置附近的友方英雄列表（基于最后一次看到的信息）
-function heroUnitModule.GetAlliesNearLocation(loc, dist)
+function heroUnitUtility.GetAlliesNearLocation(loc, dist)
     if loc == nil then
         return {}
     end
@@ -93,8 +93,8 @@ function heroUnitModule.GetAlliesNearLocation(loc, dist)
     for _, enID in pairs(GetTeamPlayers(GetTeam())) do
         local allyInfo = GetHeroLastSeenInfo(enID)[1]
         if allyInfo ~= nil and allyInfo["location"] ~= nil then
-            if IsHeroAlive(enID) and heroUnitModule.GetDistance(allyInfo["location"], loc) <= dist and
-                (heroUnitModule.GetDistance(allyInfo["location"], Vector(0, 0)) > 10) and allyInfo["time_since_seen"] <
+            if IsHeroAlive(enID) and heroUnitUtility.GetDistance(allyInfo["location"], loc) <= dist and
+                (heroUnitUtility.GetDistance(allyInfo["location"], Vector(0, 0)) > 10) and allyInfo["time_since_seen"] <
                 10 then
                 table.insert(Allies, enID)
             end
@@ -105,7 +105,7 @@ function heroUnitModule.GetAlliesNearLocation(loc, dist)
 end
 
 -- 从单位列表中找出血量最低的单位
-function heroUnitModule.GetWeakestUnit(EnemyUnits)
+function heroUnitUtility.GetWeakestUnit(EnemyUnits)
     if EnemyUnits == nil or #EnemyUnits == 0 then
         return nil, 10000
     end
@@ -125,7 +125,7 @@ function heroUnitModule.GetWeakestUnit(EnemyUnits)
 end
 
 -- 从单位列表中找出血量最高的单位
-function heroUnitModule.GetStrongestUnit(EnemyUnits)
+function heroUnitUtility.GetStrongestUnit(EnemyUnits)
     if EnemyUnits == nil or #EnemyUnits == 0 then
         return nil, 0
     end
@@ -149,7 +149,7 @@ end
 ---------------------------------------------------------------------------------------------------
 
 -- 判断敌方英雄是否处于被控制状态（缠绕、眩晕、妖术）
-function heroUnitModule.enemyDisabled(npcEnemy)
+function heroUnitUtility.enemyDisabled(npcEnemy)
     if npcEnemy:IsRooted() or npcEnemy:IsStunned() or npcEnemy:IsHexed() then
         return true
     end
@@ -157,7 +157,7 @@ function heroUnitModule.enemyDisabled(npcEnemy)
 end
 
 -- 判断一个单位是否为敌方单位
-function heroUnitModule.IsEnemy(hUnit)
+function heroUnitUtility.IsEnemy(hUnit)
     local ourTeam = GetTeam()
     local Team = GetTeamForPlayer(hUnit:GetPlayerID())
     if ourTeam == Team then
@@ -168,25 +168,28 @@ function heroUnitModule.IsEnemy(hUnit)
 end
 
 -- 判断英雄是否为肉山（Roshan）
-function heroUnitModule.IsRoshan(npcTarget)
+function heroUnitUtility.IsRoshan(npcTarget)
     return npcTarget ~= nil and npcTarget:IsAlive() and string.find(npcTarget:GetUnitName(), "roshan")
 end
 
 -- 检测敌方英雄是否拥有免疫类减益效果
-function heroUnitModule.HasImmuneDebuff(npcEnemy)
-    return npcBot:HasModifier("modifier_abaddon_borrowed_time") or
-        npcEnemy:HasModifier("modifier_winter_wyvern_winters_curse") or
-        npcEnemy:HasModifier("modifier_obsidian_destroyer_astral_imprisonment_prison") or
-        npcEnemy:HasModifier("modifier_winter_wyvern_winters_curse_aura")
+local ModifierImmuneDebuff = require(GetScriptDirectory() .. "/const/enum").ModifierImmuneDebuff
+function heroUnitUtility.HasImmuneDebuff(npcEnemy)
+    for _, mod in ipairs(ModifierImmuneDebuff) do
+        if npcEnemy:HasModifier(mod) then
+            return true
+        end
+    end
+    return false
 end
 
 -- 判断目标是否为有效的敌方英雄目标
-function heroUnitModule.IsValidTarget(npcTarget)
+function heroUnitUtility.IsValidTarget(npcTarget)
     return npcTarget ~= nil and npcTarget:IsAlive() and npcTarget:IsHero()
 end
 
 -- 判断目标是否为可疑的幻象
-function heroUnitModule.IsSuspiciousIllusion(npcTarget)
+function heroUnitUtility.IsSuspiciousIllusion(npcTarget)
     local bot = GetBot()
     if npcTarget:IsIllusion() or npcTarget:HasModifier("modifier_illusion") or
         npcTarget:HasModifier("modifier_phantom_lancer_doppelwalk_illusion") or
@@ -211,7 +214,7 @@ function heroUnitModule.IsSuspiciousIllusion(npcTarget)
 end
 
 -- 检查目标是否有林肯法球/法术反射状态
-function heroUnitModule.HasSphere(npcTarget)
+function heroUnitUtility.HasSphere(npcTarget)
     local modifier = { "modifier_item_sphere", "modifier_item_sphere_target" }
     for _, mod in pairs(modifier) do
         if npcTarget:HasModifier(mod) then
@@ -226,62 +229,62 @@ end
 ---------------------------------------------------------------------------------------------------
 
 -- 常规施法判定：目标可见、非魔免、非无敌、无免疫减益
-function heroUnitModule.NCanCast(npcEnemy)
+function heroUnitUtility.NCanCast(npcEnemy)
     return npcEnemy:CanBeSeen() and not npcEnemy:IsMagicImmune() and not npcEnemy:IsInvulnerable() and
-        not heroUnitModule.HasImmuneDebuff(npcEnemy)
+        not heroUnitUtility.HasImmuneDebuff(npcEnemy)
 end
 
 -- 魔免施法判定：等同于 UCanCast（可对魔免目标施法）
-function heroUnitModule.MiCanCast(npcEnemy)
-    return heroUnitModule.UCanCast(npcEnemy)
+function heroUnitUtility.MiCanCast(npcEnemy)
+    return heroUnitUtility.UCanCast(npcEnemy)
 end
 
 -- 通用施法判定：目标可见、非无敌、无免疫减益、非幻象
-function heroUnitModule.UCanCast(npcEnemy)
-    return npcEnemy:CanBeSeen() and not npcEnemy:IsInvulnerable() and not heroUnitModule.HasImmuneDebuff(npcEnemy) and
+function heroUnitUtility.UCanCast(npcEnemy)
+    return npcEnemy:CanBeSeen() and not npcEnemy:IsInvulnerable() and not heroUnitUtility.HasImmuneDebuff(npcEnemy) and
         not npcEnemy:IsIllusion()
 end
 
 -- 无目标施法：始终返回 true
-function heroUnitModule.CanCastNoTarget()
+function heroUnitUtility.CanCastNoTarget()
     return true
 end
 
 -- 被动技能施法：始终返回 true
-function heroUnitModule.CanCastPassive()
+function heroUnitUtility.CanCastPassive()
     return true
 end
 
 -- 常规施法判定（可见、非无敌、非幻象、无禁止效果、非魔免）
-function heroUnitModule.NormalCanCast(npcTarget)
+function heroUnitUtility.NormalCanCast(npcTarget)
     return npcTarget:CanBeSeen() and not npcTarget:IsInvulnerable() and
-        not heroUnitModule.IsSuspiciousIllusion(npcTarget) and
-        not heroUnitModule.HasImmuneDebuff(npcTarget) and not npcTarget:IsMagicImmune()
+        not heroUnitUtility.IsSuspiciousIllusion(npcTarget) and
+        not heroUnitUtility.HasImmuneDebuff(npcTarget) and not npcTarget:IsMagicImmune()
 end
 
 -- Roshan 施法判定（无视魔免）
-function heroUnitModule.RoshanCanCast(npcTarget)
+function heroUnitUtility.RoshanCanCast(npcTarget)
     return npcTarget:CanBeSeen() and not npcTarget:IsInvulnerable() and
-        not heroUnitModule.IsSuspiciousIllusion(npcTarget) and
-        not heroUnitModule.HasImmuneDebuff(npcTarget)
+        not heroUnitUtility.IsSuspiciousIllusion(npcTarget) and
+        not heroUnitUtility.HasImmuneDebuff(npcTarget)
 end
 
 -- 大招施法判定（含林肯检测）
-function heroUnitModule.UltimateCanCast(npcTarget)
+function heroUnitUtility.UltimateCanCast(npcTarget)
     return npcTarget:CanBeSeen() and not npcTarget:IsInvulnerable() and
-        not heroUnitModule.IsSuspiciousIllusion(npcTarget) and
-        not heroUnitModule.HasImmuneDebuff(npcTarget) and not heroUnitModule.HasSphere(npcTarget)
+        not heroUnitUtility.IsSuspiciousIllusion(npcTarget) and
+        not heroUnitUtility.HasImmuneDebuff(npcTarget) and not heroUnitUtility.HasSphere(npcTarget)
 end
 
 -- AOE 施法判定（不检测幻象和林肯）
-function heroUnitModule.AoeCanCast(npcTarget)
+function heroUnitUtility.AoeCanCast(npcTarget)
     return npcTarget:CanBeSeen() and not npcTarget:IsMagicImmune() and
         not npcTarget:IsInvulnerable() and
-        not heroUnitModule.HasImmuneDebuff(npcTarget)
+        not heroUnitUtility.HasImmuneDebuff(npcTarget)
 end
 
 -- 是否应该使用tp
-function heroUnitModule.ShouldTP(npcTarget)
+function heroUnitUtility.ShouldTP(npcTarget)
     local tpLoc = nil
     local mode = npcTarget:GetActiveMode()
     local modDesire = npcTarget:GetActiveModeDesire()
@@ -369,7 +372,7 @@ end
 --  内部辅助函数
 ---------------------------------------------------------------------------------------------------
 
-function heroUnitModule.GetDistance(a, b)
+function heroUnitUtility.GetDistance(a, b)
     local x1 = a.x
     local x2 = b.x
     local y1 = a.y
@@ -377,4 +380,4 @@ function heroUnitModule.GetDistance(a, b)
     return math.sqrt(math.pow((y2 - y1), 2) + math.pow((x2 - x1), 2))
 end
 
-return heroUnitModule
+return heroUnitUtility

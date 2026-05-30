@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------
 --	物品使用系统 —管理主动物品的使用
 ----------------------------------------------------------------------------
-local M = {}
+local ItemUsageUtility = {}
 local role = require(GetScriptDirectory() .. "/base/RoleUtility")
 local AbilityExtensions = require(GetScriptDirectory() .. "/base/AbilityAbstraction")
 
@@ -213,7 +213,7 @@ end
 
 -- npcBot EXPER's code
 local giveTime = -90
-function M.UnImplementedItemUsage()
+function ItemUsageUtility.UnImplementedItemUsage()
     local npcBot = GetBot()
     if npcBot:IsChanneling() or npcBot:IsUsingAbility() or npcBot:IsInvisible() or npcBot:IsMuted() then
         return
@@ -918,4 +918,4 @@ function M.UnImplementedItemUsage()
     end
 end
 
-return M
+return ItemUsageUtility

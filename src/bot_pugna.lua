@@ -1,11 +1,11 @@
-local minionutils = dofile(GetScriptDirectory() .. "/base/NewMinionUtil")
+local NewMinionUtility = require(GetScriptDirectory() .. "/base/NewMinionUtil")
 
 function MinionThink(hMinionUnit)
-	if minionutils.IsValidUnit(hMinionUnit) then
+	if NewMinionUtility.IsValidUnit(hMinionUnit) then
 		if hMinionUnit:IsIllusion() then
-			minionutils.IllusionThink(hMinionUnit);
-		elseif minionutils.IsAttackingWard(hMinionUnit:GetUnitName()) then
-			minionutils.AttackingWardThink(hMinionUnit);
+			NewMinionUtility.IllusionThink(hMinionUnit);
+		elseif NewMinionUtility.IsAttackingWard(hMinionUnit:GetUnitName()) then
+			NewMinionUtility.AttackingWardThink(hMinionUnit);
 		else
 			return;
 		end

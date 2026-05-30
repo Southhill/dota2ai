@@ -1,4 +1,4 @@
-local minionutils = dofile(GetScriptDirectory() .. "/base/NewMinionUtil")
+local NewMinionUtility = require(GetScriptDirectory() .. "/base/NewMinionUtil")
 local AbilityExtensions = require(GetScriptDirectory() .. "/base/AbilityAbstraction")
 
 local function DiveBombCanCast(target)
@@ -23,13 +23,13 @@ function HawkThink(minion)
 end
 
 function MinionThink(hMinionUnit)
-	if minionutils.IsValidUnit(hMinionUnit) then
-		if minionutils.IsHawk(hMinionUnit:GetUnitName()) then
+	if NewMinionUtility.IsValidUnit(hMinionUnit) then
+		if NewMinionUtility.IsHawk(hMinionUnit:GetUnitName()) then
 			HawkThink(hMinionUnit)
-		elseif minionutils.IsMinionWithSkill(hMinionUnit:GetUnitName()) then
-			minionutils.MinionWithSkillThink(hMinionUnit)
+		elseif NewMinionUtility.IsMinionWithSkill(hMinionUnit:GetUnitName()) then
+			NewMinionUtility.MinionWithSkillThink(hMinionUnit)
 		else
-			minionutils.IllusionThink(hMinionUnit)
+			NewMinionUtility.IllusionThink(hMinionUnit)
 		end
 	end
 end

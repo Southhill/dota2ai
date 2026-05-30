@@ -93,7 +93,16 @@
 每个英雄一份。定义出装顺序列表，调用 `ItemPurchaseSystem`。
 
 #### `bot_<hero_name>.lua`（特殊行为）
-为有特殊机制的英雄准备的独立行为脚本（如陈、维萨吉、米波等）。
+为有特殊机制的英雄准备的独立行为脚本。分为两类使用模式：
+
+- **完整实现**：如 `bot_brewmaster.lua`（熊猫酒仙），在文件内直接实现完整的 `MinionThink` 逻辑，
+  分别控制熊猫的三个分身（风暴/大地/火焰）的技能施放、攻击、移动和撤退。
+- **委托实现**：如 `bot_enchantress.lua` 和 `bot_chen.lua`（魅惑魔女/陈），仅为薄封装层，
+  将 `MinionThink` 委托给 `MinionUtility.MinionThink()` 复用共享的召唤物 AI。
+
+**注意**：`MinionThink(hMinionUnit)` 是 Dota2 引擎的标准回调函数，引擎自动为每个非英雄单位
+（召唤物、野怪、幻象）调用。
+该函数与 `Think()` / `AbilityUsageThink()` 并列，由引擎按文件名自动发现。
 
 #### `hero_selection.lua`（选人系统）
 - 维护全英雄池 `hero_pool`
@@ -159,6 +168,7 @@
 - **智能购买**: 区分普通商店/神秘商店/信使购买
 - **格子管理**: `SellExtraItem()` / `SellSpecifiedItem()` 自动出售低价值物品
 - **TP 管理**: `WeNeedTpscroll()` 确保英雄有 TP，`NoNeedTpscrollForTravelBoots()` 飞鞋替代 TP
+- **物品名快捷引用**: `ItemName` 表通过 `__index` 元方法实现 `ItemName.tango → "item_tango"` 自动补全，但当前项目中无实际使用，属死代码
 
 #### `ItemUsageSystem.lua` — 物品使用引擎
 - 魔法棒/大魔棒使用
@@ -186,15 +196,15 @@
 - 根据防御塔状态选择眼位
 
 #### 其他工具
-| 工具                 | 功能                                            |
-| -------------------- | ----------------------------------------------- |
-| `CampUtility.lua`    | 野怪营地管理（刷新时间、拉野点坐标）            |
-| `RoleUtility.lua`    | 英雄角色评分（carry/support/nuker 等 9 个维度） |
-| `BotNameUtility.lua` | 从 TI 职业战队数据生成 Bot 名称                 |
-| `MinionUtility.lua`  | 召唤物控制（死灵书、野怪、幻象）                |
-| `NewMinionUtil.lua`  | 新召唤物系统（熊灵、豪猪、战鹰等）              |
-| `ChatSystem.lua`     | 版本公告/聊天消息                               |
-| `BinDecHex.lua`      | 二进制/十六进制转换（MIT 协议）                 |
+| 工具                 | 功能                                                                                  |
+| -------------------- | ------------------------------------------------------------------------------------- |
+| `CampUtility.lua`    | 野怪营地管理（刷新时间、拉野点坐标）                                                  |
+| `RoleUtility.lua`    | 英雄角色评分（carry/support/nuker 等 9 个维度）                                       |
+| `BotNameUtility.lua` | 从 TI 职业战队数据生成 Bot 名称                                                       |
+| `MinionUtility.lua`  | 召唤物控制（死灵书、野怪、幻象），通过 `MinionThink` 回调被引擎自动调用               |
+| `NewMinionUtil.lua`  | 新召唤物系统（熊灵、豪猪、战鹰、地狱火等），提供 `IsBear()`/`IsHawk()` 等类型判断工具 |
+| `ChatSystem.lua`     | 版本公告/聊天消息                                                                     |
+| `BinDecHex.lua`      | 二进制/十六进制转换（MIT 协议）                                                       |
 
 ### 3.5 常量与配置层
 
@@ -292,7 +302,7 @@ AbilityExtensions
 - 当技能名无效时自动跳过并记录
 - 脚本重载时 `abilityInited` 标志确保状态重置
 
-### 4.5 装饰器模式 (函数包装)
+### 4.6 装饰器模式 (函数包装)
 
 `AbilityAbstraction.lua` 通过包装原技能考虑函数来附加功能：
 
@@ -322,6 +332,8 @@ Dota2 Engine Tick
     ├─ AbilityLevelUpThink()      ← 技能加点
     │
     ├─ ItemPurchaseThink()        ← 物品购买
+    │
+    ├─ MinionThink(hMinionUnit)   ← 每个非英雄单位的 AI 回调（召唤物/野怪/幻象）
     │
     └─ GetDesire() × N 个模式     ← 选择当前行为模式
          │
@@ -370,6 +382,10 @@ item_purchase_<hero>.lua
   └── util/ItemPurchaseSystem.lua
         └── utility/AbilityAbstraction.lua
 
+bot_<hero>.lua
+  └── utility/MinionUtility.lua（委托实现时）
+        └── utility/Utility.lua
+
 mode_*.lua
   ├── utility/Utility.lua
   ├── utility/AbilityAbstraction.lua
@@ -393,7 +409,8 @@ hero_selection.lua
 5. **部分英雄被移出池子** — 齐天大圣、小小等因 bug 被暂时禁用
 6. ~~**`Trim` 函数缺少 `end`** — `AbilityAbstraction.lua` 中 `Trim` 函数的 else 分支缺少一个 `end`，可能导致解析错误~~ ✅ **已修复** — `src/util/AbilityAbstraction.lua` 中所有 `end` 已补全，函数结构正确
 7. **死亡的代码存在** — 多处注释掉的旧代码（神泉系统、信使购买等）
-8. **文件命名不一致** — 部分英雄使用原名（`nevermore`、`rattletrap`），部分使用新名
+8. **`ItemPurchaseUtility.ItemName` 死代码** — 通过 `__index` 元方法实现 `item_` 前缀自动补全，但项目中无任何调用方
+9. **文件命名不一致** — 部分英雄使用原名（`nevermore`、`rattletrap`），部分使用新名
 
 ---
 
